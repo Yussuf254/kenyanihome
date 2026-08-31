@@ -1,0 +1,579 @@
+<%- include('partials/head') %>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+  :root {
+    --knh-green: #1a6b3c;
+    --knh-green-dark: #144e2b;
+    --knh-red: #c1272d;
+    --knh-ink: #15201c;
+    --knh-ink-soft: #2c3a3b;
+    --knh-grey: #5f6b6c;
+    --knh-grey-light: #8a9495;
+    --knh-line: #e6e1d8;
+    --knh-line-soft: #f0ede7;
+    --knh-paper: #f6f7f5;
+    --knh-white: #ffffff;
+    --knh-radius: 12px;
+    --knh-shadow: 0 1px 3px rgba(16,32,28,.06), 0 12px 32px rgba(16,32,28,.06);
+    --knh-shadow-sm: 0 1px 2px rgba(16,32,28,.05);
+  }
+
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: var(--knh-paper);
+    color: var(--knh-ink);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  .receipt-page {
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .receipt {
+    background: var(--knh-white);
+    border: 1px solid var(--knh-line);
+    border-radius: var(--knh-radius);
+    box-shadow: var(--knh-shadow);
+    max-width: 720px;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .receipt-header {
+    background: linear-gradient(135deg, var(--knh-green) 0%, var(--knh-green-dark) 100%);
+    color: #fff;
+    padding: 32px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .receipt-header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 90% 10%, rgba(193,39,45,.18) 0%, transparent 45%),
+      radial-gradient(circle at 10% 90%, rgba(255,255,255,.06) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .receipt-header-inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  .receipt-brand {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    opacity: .9;
+    margin-bottom: 6px;
+  }
+
+  .receipt-title {
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: -.02em;
+    line-height: 1.1;
+  }
+
+  .receipt-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 18px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .receipt-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.2);
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .receipt-badge .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 0 0 rgba(255,255,255,.6);
+    animation: receipt-pulse 1.6s infinite;
+  }
+
+  @keyframes receipt-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255,255,255,.5); }
+    70% { box-shadow: 0 0 0 10px rgba(255,255,255,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+  }
+
+  .receipt-body {
+    padding: 28px 36px;
+  }
+
+  .receipt-section {
+    margin-bottom: 24px;
+  }
+
+  .receipt-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .receipt-section-title {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--knh-grey);
+    margin-bottom: 10px;
+  }
+
+  .receipt-seller {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: var(--knh-paper);
+    border: 1px solid var(--knh-line);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+
+  .receipt-seller-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--knh-green), var(--knh-green-dark));
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .receipt-seller-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .receipt-seller-name {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--knh-ink);
+    margin-bottom: 2px;
+    line-height: 1.3;
+  }
+
+  .receipt-seller-contact {
+    font-size: 12px;
+    color: var(--knh-grey);
+    line-height: 1.5;
+    margin-top: 4px;
+  }
+
+  .receipt-product {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    border: 1px solid var(--knh-line);
+    border-radius: 10px;
+    padding: 18px 20px;
+    background: #fff;
+  }
+
+  .receipt-product-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: #fff7ed;
+    color: #ea580c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    border: 1px solid #ffe4c4;
+  }
+
+  .receipt-product-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .receipt-product-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--knh-ink);
+    margin-bottom: 4px;
+    line-height: 1.35;
+  }
+
+  .receipt-product-desc {
+    font-size: 13px;
+    color: var(--knh-grey);
+    line-height: 1.55;
+    margin-top: 4px;
+  }
+
+  .receipt-product-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .receipt-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 100px;
+    background: var(--knh-paper);
+    border: 1px solid var(--knh-line);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--knh-ink);
+  }
+
+  .receipt-pill i {
+    font-size: 10px;
+    color: var(--knh-green);
+  }
+
+  .receipt-price-block {
+    background: linear-gradient(135deg, #f6faf7 0%, #fff 100%);
+    border: 1px solid var(--knh-line);
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .receipt-price-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--knh-grey);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  .receipt-price-value {
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--knh-ink);
+    letter-spacing: -.02em;
+  }
+
+  .receipt-price-currency {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--knh-grey);
+    margin-right: 4px;
+  }
+
+  .receipt-contacts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+  }
+
+  .receipt-contact-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--knh-line);
+    background: #fff;
+    text-decoration: none;
+    color: inherit;
+    transition: all .2s ease;
+  }
+
+  .receipt-contact-item:hover {
+    border-color: var(--knh-green);
+    box-shadow: var(--knh-shadow-sm);
+    transform: translateY(-1px);
+  }
+
+  .receipt-contact-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .receipt-contact-icon.phone { background: #e8f3ec; color: var(--knh-green); }
+  .receipt-contact-icon.whatsapp { background: #e8f5ee; color: #25D366; }
+  .receipt-contact-icon.email { background: #eef2ff; color: #4f46e5; }
+  .receipt-contact-icon.web { background: #fff7ed; color: #ea580c; }
+
+  .receipt-contact-label {
+    font-size: 10px;
+    color: var(--knh-grey);
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  .receipt-contact-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--knh-ink);
+    margin-top: 1px;
+  }
+
+  .receipt-footer {
+    background: var(--knh-paper);
+    border-top: 1px solid var(--knh-line);
+    padding: 18px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .receipt-footer-note {
+    font-size: 11px;
+    color: var(--knh-grey);
+    line-height: 1.5;
+    max-width: 400px;
+  }
+
+  .receipt-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-receipt {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 100px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-decoration: none;
+    transition: all .2s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-receipt-primary {
+    background: var(--knh-green);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(26,107,60,.25);
+  }
+
+  .btn-receipt-primary:hover {
+    background: var(--knh-green-dark);
+    transform: translateY(-1px);
+  }
+
+  .btn-receipt-secondary {
+    background: #fff;
+    color: var(--knh-ink);
+    border: 1px solid var(--knh-line);
+  }
+
+  .btn-receipt-secondary:hover {
+    border-color: var(--knh-green);
+    color: var(--knh-green);
+  }
+
+  @media print {
+    body { background: #fff; }
+    .receipt-page { padding: 0; }
+    .receipt { box-shadow: none; border: 1px solid #e6e1d8; max-width: 100%; }
+    .receipt-footer { background: #fff; }
+    .btn-receipt { display: none !important; }
+  }
+
+  @media (max-width: 640px) {
+    .receipt-header { padding: 24px 20px; }
+    .receipt-body { padding: 20px; }
+    .receipt-footer { padding: 16px 20px; flex-direction: column; align-items: stretch; }
+    .receipt-title { font-size: 22px; }
+    .receipt-price-value { font-size: 22px; }
+    .receipt-contacts { grid-template-columns: 1fr; }
+    .receipt-actions { flex-direction: column; }
+    .btn-receipt { justify-content: center; }
+  }
+</style>
+
+<main class="receipt-page">
+  <div class="receipt">
+    <div class="receipt-header">
+      <div class="receipt-header-inner">
+        <div class="receipt-brand">Kenya ni Home — Advertised Products</div>
+        <div class="receipt-title">Seller Contact Receipt</div>
+        <div class="receipt-meta-row">
+          <div class="receipt-badge">
+            <span class="dot"></span>
+            Contact Details Receipt
+          </div>
+          <div style="font-size:12px; font-weight:600; opacity:.85;">
+            Receipt #: <span style="font-weight:800;"><%= product.id %></span> · <%= formatDate(new Date()) %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="receipt-body">
+      <div class="receipt-section">
+        <div class="receipt-section-title">Seller / Company</div>
+        <div class="receipt-seller">
+          <div class="receipt-seller-icon">
+            <i class="fa-solid fa-store"></i>
+          </div>
+          <div class="receipt-seller-info">
+            <div class="receipt-seller-name"><%= product.businessName || 'Business' %></div>
+            <div class="receipt-seller-contact">
+              <%= product.contactPerson ? 'Contact: ' + product.contactPerson + '<br>' : '' %>
+              <%= product.location ? 'Location: ' + product.location : 'Kenya' %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="receipt-section">
+        <div class="receipt-section-title">Product Details</div>
+        <div class="receipt-product">
+          <div class="receipt-product-icon">
+            <i class="fa-solid fa-box"></i>
+          </div>
+          <div class="receipt-product-info">
+            <div class="receipt-product-name"><%= product.productName %></div>
+            <div class="receipt-product-desc"><%= product.fullDescription || product.shortDescription || '' %></div>
+            <div class="receipt-product-meta">
+              <span class="receipt-pill"><i class="fa-solid fa-tag"></i> <%= product.category || 'General' %></span>
+              <% if (product.discount) { %>
+                <span class="receipt-pill" style="color:var(--knh-red);"><i class="fa-solid fa-percent"></i> <%= product.discount %> OFF</span>
+              <% } %>
+              <span class="receipt-pill"><i class="fa-solid fa-calendar"></i> <%= formatDate(product.createdAt) %></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="receipt-section">
+        <div class="receipt-section-title">Amount</div>
+        <div class="receipt-price-block">
+          <div>
+            <div class="receipt-price-label">Total Amount</div>
+            <div class="receipt-price-value">
+              <span class="receipt-price-currency"><%= product.currency || 'KSh' %></span>
+              <%= Number(product.price || 0).toLocaleString() %>
+            </div>
+          </div>
+          <div style="font-size:12px; color:var(--knh-grey); font-weight:600; text-align:right;">
+            <% if (product.originalPrice && Number(product.originalPrice) > Number(product.price || 0)) { %>
+              <div style="text-decoration:line-through; opacity:.6;">KSh <%= Number(product.originalPrice).toLocaleString() %></div>
+              <div style="color:var(--knh-red); font-weight:800;">Save KSh <%= Number(product.originalPrice - (product.price || 0)).toLocaleString() %></div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <div class="receipt-section">
+        <div class="receipt-section-title">Contact Information</div>
+        <div class="receipt-contacts">
+          <% if (product.phone) { %>
+            <a href="tel:<%= product.phone %>" class="receipt-contact-item">
+              <div class="receipt-contact-icon phone"><i class="fa-solid fa-phone"></i></div>
+              <div>
+                <div class="receipt-contact-label">Call</div>
+                <div class="receipt-contact-value"><%= product.phone %></div>
+              </div>
+            </a>
+          <% } %>
+          <% if (product.whatsapp || product.whatsappLink) { %>
+            <% var waHref = (product.whatsappLink || 'https://wa.me/' + (product.whatsapp || '').replace(/[^0-9]/g, '')).trim(); %>
+            <a href="<%= waHref %>" target="_blank" rel="noopener" class="receipt-contact-item">
+              <div class="receipt-contact-icon whatsapp"><i class="fa-brands fa-whatsapp"></i></div>
+              <div>
+                <div class="receipt-contact-label">WhatsApp</div>
+                <div class="receipt-contact-value">Chat now</div>
+              </div>
+            </a>
+          <% } %>
+          <% if (product.email) { %>
+            <a href="mailto:<%= product.email %>" class="receipt-contact-item">
+              <div class="receipt-contact-icon email"><i class="fa-solid fa-envelope"></i></div>
+              <div>
+                <div class="receipt-contact-label">Email</div>
+                <div class="receipt-contact-value"><%= product.email %></div>
+              </div>
+            </a>
+          <% } %>
+          <% if (product.website) { %>
+            <a href="<%= product.website %>" target="_blank" rel="noopener" class="receipt-contact-item">
+              <div class="receipt-contact-icon web"><i class="fa-solid fa-globe"></i></div>
+              <div>
+                <div class="receipt-contact-label">Website</div>
+                <div class="receipt-contact-value">Visit website</div>
+              </div>
+            </a>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="receipt-section">
+        <div class="receipt-section-title">Important Notice</div>
+        <div style="background:#fff7ed; border:1px solid #ffe4c4; border-radius:10px; padding:16px 20px; display:flex; align-items:flex-start; gap:12px;">
+          <div style="width:32px; height:32px; border-radius:8px; background:#fff; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; border:1px solid #ffe4c4;">
+            <i class="fa-solid fa-circle-info" style="color:#ea580c;"></i>
+          </div>
+          <div>
+            <div style="font-size:13px; font-weight:800; color:var(--knh-ink); margin-bottom:4px;">This is NOT a proof of purchase</div>
+            <div style="font-size:12px; color:var(--knh-grey); line-height:1.6;">
+              This receipt only confirms that you have viewed the seller's contact details for the product listed above. It does not constitute a transaction, reservation, or guarantee of product availability. All purchases must be arranged directly with the seller.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="receipt-footer">
+      <div class="receipt-footer-note">
+        This document serves as a reference for the seller's contact information. Please contact the seller directly to discuss pricing, availability, and delivery arrangements.
+      </div>
+      <div class="receipt-actions">
+        <button class="btn-receipt btn-receipt-primary" onclick="window.print()">
+          <i class="fa-solid fa-print"></i> Print Receipt
+        </button>
+        <a href="/advertised-products/<%= product.id %>" class="btn-receipt btn-receipt-secondary">
+          <i class="fa-solid fa-arrow-left"></i> Back to Product
+        </a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/foot') %>

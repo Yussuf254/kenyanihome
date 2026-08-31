@@ -1,0 +1,293 @@
+<%- include('partials/head') %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="/public/css/advertise.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap');
+.advertised-page{background:#fff;min-height:100vh;font-family:'Montserrat',sans-serif !important}
+
+/* ===== MARKETPLACE HERO - AWARD WINNING ===== */
+.advertised-hero{background:linear-gradient(135deg,#0d1b14 0%,#1a3a2a 50%,#0d1b14 100%);padding:0;position:relative;overflow:hidden}
+.advertised-hero::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat}
+.advertised-hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;padding:60px 0;position:relative;z-index:2}
+.advertised-hero-copy{color:#fff}
+.advertised-hero-copy h1{font-size:56px;line-height:1.1;font-weight:900;margin:0 0 24px;letter-spacing:-0.03em;color:#fff}
+.advertised-hero-copy h1 .accent{color:#4ade80;position:relative;display:inline-block}
+.advertised-hero-copy p{font-size:18px;color:rgba(255,255,255,.7);max-width:520px;line-height:1.7;margin:0 0 32px;font-weight:400}
+.advertised-hero-actions{display:flex;gap:16px;flex-wrap:wrap}
+.btn-hero{display:inline-flex;align-items:center;gap:10px;padding:16px 32px;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;transition:all .3s ease;border:none;cursor:pointer}
+.btn-hero-primary{background:linear-gradient(135deg,#0B6B3A 0%,#084d29 100%);color:#fff;box-shadow:0 8px 24px rgba(11,107,58,.3)}
+.btn-hero-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(11,107,58,.4)}
+.btn-hero-secondary{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(10px)}
+.btn-hero-secondary:hover{background:rgba(255,255,255,.2);transform:translateY(-2px)}
+.advertised-hero-visual{display:flex;align-items:center;justify-content:center;position:relative}
+.advertised-hero-visual::before{content:'';position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(11,107,58,.3) 0%,transparent 70%);border-radius:50%;filter:blur(60px)}
+.advertised-hero-visual img{max-height:320px;max-width:100%;object-fit:contain;position:relative;z-index:2;filter:drop-shadow(0 20px 40px rgba(0,0,0,.3))}
+.advertised-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:48px;padding:24px;background:rgba(255,255,255,.05);border-radius:20px;border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(20px)}
+.advertised-stats .stat-item{display:flex;align-items:center;gap:14px;padding:12px}
+.advertised-stats .stat-icon{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,rgba(11,107,58,.3),rgba(8,77,41,.3));color:#4ade80;display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid rgba(11,107,58,.3)}
+.advertised-stats .stat-num{font-weight:800;font-size:22px;line-height:1.2;color:#fff}
+.advertised-stats .stat-label{font-size:12px;color:rgba(255,255,255,.5);line-height:1.3;font-weight:500;margin-top:2px}
+
+@media (max-width:860px){
+  .advertised-hero-grid{grid-template-columns:1fr;gap:40px;padding:40px 0}
+  .advertised-hero-visual{order:-1}
+  .advertised-hero-visual::before{width:280px;height:280px}
+  .advertised-hero-visual img{max-height:220px}
+  .advertised-hero-copy h1{font-size:38px}
+  .advertised-hero-copy p{font-size:16px}
+  .advertised-stats{grid-template-columns:repeat(2,1fr);margin-top:32px}
+}
+@media (max-width:600px){
+  .advertised-hero-grid{padding:40px 0}
+  .advertised-hero-copy h1{font-size:32px}
+  .advertised-hero-copy .eyebrow{font-size:11px;padding:8px 16px}
+  .advertised-hero-actions{flex-direction:column}
+  .btn-hero{width:100%;justify-content:center}
+  .advertised-stats{grid-template-columns:1fr 1fr;padding:16px}
+  .advertised-stats .stat-icon{width:40px;height:40px;font-size:16px}
+  .advertised-stats .stat-num{font-size:18px}
+}
+@media (max-width:420px){
+  .advertised-stats{grid-template-columns:1fr}
+  .advertised-hero-copy h1{font-size:28px}
+}
+</style>
+
+<main class="advertised-page">
+  <!-- HERO -->
+  <section class="advertised-hero">
+    <div class="container">
+      <div class="advertised-hero-grid">
+        <div class="advertised-hero-copy">
+          <h1 style="color:#fff;">Discover. Shop. Support.<br><span style="color:#4ade80;">Kenyan Businesses.</span></h1>
+          <p style="color:rgba(255,255,255,.7);">Explore quality products and services from verified businesses across Kenya. When you buy local, we all grow.</p>
+          <div class="advertised-hero-actions">
+            <a href="/advertised-products" class="btn-hero btn-hero-primary">Start Shopping <i class="fa-solid fa-arrow-right"></i></a>
+            <a href="/advertise" class="btn-hero btn-hero-secondary">Sell With Us</a>
+          </div>
+          <div class="advertised-stats">
+            <div class="stat-item">
+              <div class="stat-icon"><i class="fa-solid fa-gift"></i></div>
+              <div><div class="stat-num">500+</div><div class="stat-label">Verified Businesses</div></div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon"><i class="fa-solid fa-box"></i></div>
+              <div><div class="stat-num">10,000+</div><div class="stat-label">Products &amp; Services</div></div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+              <div><div class="stat-num">50,000+</div><div class="stat-label">Happy Customers</div></div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon"><i class="fa-solid fa-truck-fast"></i></div>
+              <div><div class="stat-num">Nationwide</div><div class="stat-label">Delivery</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="advertised-hero-visual">
+          <% if (advertising && advertising.marketplaceLogo) { %>
+            <div class="logo-card">
+              <img src="<%= advertising.marketplaceLogo %>" alt="Marketplace">
+            </div>
+          <% } else { %>
+            <svg viewBox="0 0 260 290" width="220" height="240" class="cart-illustration">
+              <rect x="65" y="30" width="40" height="70" rx="6" fill="#1c1f22"/>
+              <rect x="130" y="60" width="55" height="65" rx="4" fill="#c1272d"/>
+              <rect x="185" y="70" width="6" height="30" fill="#c1272d"/>
+              <path d="M60 100 L100 90 L95 130 L55 135 Z" fill="#111"/>
+              <ellipse cx="150" cy="55" rx="14" ry="20" fill="#3f7a4f"/>
+              <rect x="40" y="130" width="180" height="14" fill="#000"/>
+              <rect x="40" y="144" width="180" height="10" fill="#c1272d"/>
+              <rect x="40" y="154" width="180" height="10" fill="#f2f2f2"/>
+              <rect x="40" y="164" width="180" height="14" fill="#1a6b3c"/>
+              <path d="M20 130 H50 L80 235 H210" stroke="#8a8f93" stroke-width="6" fill="none" stroke-linecap="round"/>
+              <rect x="55" y="130" width="175" height="90" rx="4" fill="none" stroke="#8a8f93" stroke-width="6"/>
+              <circle cx="100" cy="265" r="16" fill="#3a3d40"/>
+              <circle cx="190" cy="265" r="16" fill="#3a3d40"/>
+              <circle cx="100" cy="265" r="5" fill="#c9c9c9"/>
+              <circle cx="190" cy="265" r="5" fill="#c9c9c9"/>
+            </svg>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOP BY CATEGORY -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head"><h2>Shop by Category</h2></div>
+      <div class="cat-grid">
+        <div class="cat-card active"><div class="cat-icon"><i class="fa-solid fa-table-cells-large"></i></div><div class="cat-name">All Categories</div></div>
+        <div class="cat-card"><div class="cat-icon"><i class="fa-solid fa-display"></i></div><div class="cat-name">Electronics</div></div>
+        <div class="cat-card"><div class="cat-icon"><i class="fa-solid fa-shirt"></i></div><div class="cat-name">Fashion</div></div>
+        <div class="cat-card"><div class="cat-icon"><i class="fa-solid fa-couch"></i></div><div class="cat-name">Home &amp; Living</div></div>
+        <div class="cat-card"><div class="cat-icon"><i class="fa-solid fa-pump-soap"></i></div><div class="cat-name">Beauty</div></div>
+        <div class="cat-card"><div class="cat-icon"><i class="fa-solid fa-cassette-tape"></i></div><div class="cat-name">Food &amp; Drinks</div></div>
+        <div class="cat-card"><div class="cat-icon"><i class="fa-solid fa-car"></i></div><div class="cat-name">Automotive</div></div>
+        <div class="cat-card"><div class="cat-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div><div class="cat-name">Services</div></div>
+        <div class="cat-card"><div class="cat-icon grid-icon"><i class="fa-solid fa-table-cells"></i></div><div class="cat-name">View All</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED PRODUCTS -->
+  <section class="section" style="padding-top:6px; border-top:1px solid var(--line);">
+    <div class="container">
+      <div class="section-head">
+        <h2>Featured Products &amp; Services</h2>
+        <a class="view-all" href="/advertised-products">View All Products <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+
+      <% 
+        function renderCard(item, isFeatured) {
+          var imgSrc = '';
+          if (item.images && item.images.length) imgSrc = item.images[0];
+          else if (item.logo) imgSrc = item.logo;
+          
+          var placeholderIcons = {
+            'electronics': 'fa-display',
+            'fashion': 'fa-shirt',
+            'home & living': 'fa-couch',
+            'home-and-living': 'fa-couch',
+            'beauty': 'fa-pump-soap',
+            'food & drinks': 'fa-cassette-tape',
+            'food-drinks': 'fa-cassette-tape',
+            'automotive': 'fa-car',
+            'services': 'fa-screwdriver-wrench',
+            'general': 'fa-box'
+          };
+          var iconClass = placeholderIcons[(item.category || '').toLowerCase()] || 'fa-box';
+          var tagClass = isFeatured ? 'tag-featured' : 'tag-fresh';
+      %>
+        <div class="ad-card">
+          <div class="pic">
+            <% if (imgSrc) { %>
+              <img src="<%= imgSrc %>" alt="<%= item.productName %>">
+            <% } else { %>
+              <div class="placeholder-icon"><i class="fa-solid <%= iconClass %>"></i></div>
+            <% } %>
+            <span class="tag <%= tagClass %>"><%= item.promotionType || 'Product' %></span>
+            <a href="/advertised-products/<%= item.id %>" class="fav-btn" title="View details"><i class="fa-regular fa-heart"></i></a>
+            <a href="/advertised-products/<%= item.id %>/receipt" class="fav-btn" title="Get receipt" style="background:rgba(255,255,255,.95); color:var(--green);"><i class="fa-solid fa-receipt"></i></a>
+          </div>
+          <div class="body">
+            <div class="cat"><%= (item.category || '').toUpperCase() %></div>
+            <h3><a href="/advertised-products/<%= item.id %>"><%= item.productName %></a></h3>
+            <p class="desc"><%= item.shortDescription || item.fullDescription || '' %></p>
+            <div class="price"><%= item.currency || 'KSh' %> <%= Number(item.price || 0).toLocaleString() %></div>
+            <div class="seller"><%= item.businessName || 'Business' %></div>
+          </div>
+        </div>
+      <% } %>
+
+      <% 
+        var hasRealProducts = false;
+        if (featured && featured.length) hasRealProducts = true;
+        Object.keys(byCategory).forEach(function(k){ if (byCategory[k].length) hasRealProducts = true; });
+        
+        if (featured && featured.length) { %>
+          <div class="advertised-grid">
+            <% featured.forEach(function(s) { renderCard(s, true); }); %>
+          </div>
+      <% } %>
+
+      <% 
+        var catKeys = Object.keys(byCategory).filter(function(k){ return byCategory[k].length > 0 && !(featured && featured.some(function(f){ return f.category === k; })); });
+        if (catKeys.length) { %>
+          <div class="advertised-grid" style="margin-top:16px">
+            <% catKeys.forEach(function(cat) { %>
+              <% byCategory[cat].forEach(function(s) { %>
+                <% renderCard(s, false); %>
+              <% }) %>
+            <% }) %>
+          </div>
+      <% } %>
+
+      <% if (!hasRealProducts) { %>
+        <div class="advertised-grid">
+          <% 
+            var placeholders = [
+              { id: 1001, productName: 'Samsung Galaxy S24 Ultra', category: 'Electronics', shortDescription: 'Experience next-gen AI photography and titanium design.', price: 185000, businessName: 'Samsung Kenya', promotionType: 'Featured' },
+              { id: 1002, productName: 'Nike Air Max 270', category: 'Fashion', shortDescription: 'Iconic cushioning meets street-ready style.', price: 24500, businessName: 'Nike Nairobi', promotionType: 'Product' },
+              { id: 1003, productName: 'Safaricom Home Fibre', category: 'Services', shortDescription: 'Unlimited internet for your home from KSh 3,500/month.', price: 3500, businessName: 'Safaricom', promotionType: 'Service' },
+              { id: 1004, productName: 'Coca-Cola 1.5L Pack', category: 'Food & Drinks', shortDescription: 'Real refreshment for every moment. Ice-cold and ready.', price: 180, businessName: 'Coca-Cola Kenya', promotionType: 'Product' },
+              { id: 1005, productName: 'Kingsize Mattress Set', category: 'Home & Living', shortDescription: 'Premium memory foam for the best sleep of your life.', price: 45000, businessName: 'HomeStyle KE', promotionType: 'Featured' },
+              { id: 1006, productName: 'L\'Oreal Paris Serum', category: 'Beauty', shortDescription: 'Advanced skincare for radiant, youthful skin.', price: 3200, businessName: 'BeautyBox', promotionType: 'Product' },
+              { id: 1007, productName: 'Bridgestone Tyres', category: 'Automotive', shortDescription: 'Durable, safe, and built for Kenyan roads.', price: 12000, businessName: 'AutoHub', promotionType: 'Service' }
+            ];
+            placeholders.forEach(function(p) {
+          %>
+            <% renderCard(p, false); %>
+          <% }) %>
+        <% } %>
+      </div>
+  </section>
+
+  <!-- WHY ADVERTISE -->
+  <section class="section" style="padding-top:10px; border-top:1px solid var(--line);">
+    <div class="container">
+      <h2 style="font-size:19px;font-weight:800;margin:0 0 20px;text-align:center;">Why Advertise With Kenya ni Home?</h2>
+      <div class="why-grid" style="grid-template-columns:repeat(4,1fr); gap:20px; max-width:1000px; margin:0 auto;">
+        <% 
+          var whyItems = (advertising && advertising.whyAdvertise && advertising.whyAdvertise.length) ? advertising.whyAdvertise : [
+            { icon: 'fa-location-dot', title: 'High Visibility', body: 'Reach thousands of readers every day.' },
+            { icon: 'fa-shield-halved', title: 'Trusted Platform', body: 'Showcase your brand on a trusted news platform.' },
+            { icon: 'fa-user-group', title: 'Targeted Audience', body: 'Connect with engaged and relevant customers.' },
+            { icon: 'fa-tag', title: 'Affordable Plans', body: 'Flexible packages that suit every business size.' }
+          ];
+          whyItems.forEach(function(item) {
+        %>
+          <div class="why-item">
+            <div class="why-icon">
+              <%
+                var iconSvg = (item.icon && item.icon.indexOf('<svg') === 0) ? item.icon : ({
+                  '♧': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+                  '◉': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+                  '◇': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>',
+                  '✓': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+                  'fa-location-dot': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+                  'fa-shield': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+                  'fa-shield-halved': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+                  'fa-eye': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+                  'fa-user-group': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><circle cx="16.5" cy="7.5" r="2.5"/></svg>',
+                  'fa-tag': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>',
+                  'fa-check': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+                }[item.icon || ''] || '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>');
+              %>
+              <!-- DEBUG: icon=<%= item.icon %> -->
+              <%- iconSvg %>
+            </div>
+            <h3><%= item.title %></h3>
+            <p><%= item.body %></p>
+          </div>
+        <% }) %>
+      </div>
+      <div style="text-align:center; margin-top:28px;">
+        <a href="/advertise" class="btn btn-outline">Advertise Your Product <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section" style="padding-top:6px; border-top:1px solid var(--line);">
+    <div class="container">
+      <div class="cta-banner" style="background:linear-gradient(135deg,#f6faf7 0%,#e8f3ec 100%); border:1px solid var(--line); padding:40px; border-radius:20px; text-align:center;">
+        <h3 style="font-size:24px;font-weight:800;color:var(--ink);margin:0 0 12px;"><%= (advertising && advertising.ctaTitle) ? advertising.ctaTitle : 'Do you have a product or service to showcase?' %></h3>
+        <p style="font-size:15px;color:var(--m);margin:0 0 24px;max-width:500px;margin-left:auto;margin-right:auto;"><%= (advertising && advertising.ctaSubtitle) ? advertising.ctaSubtitle : 'List it on Kenya ni Home and get noticed by thousands of potential customers.' %></p>
+        <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;align-items:center;">
+          <a href="/advertise" class="btn-hero btn-hero-primary" style="background:linear-gradient(135deg,var(--green) 0%,var(--green-dark) 100%); box-shadow:0 4px 14px rgba(26,107,60,.25);">Get Started Now <i class="fa-solid fa-arrow-right"></i></a>
+          <% 
+            var waNumber = (advertising && advertising.contactPhone) ? advertising.contactPhone.replace(/[^0-9]/g, '') : '254700123456';
+            var waLink = 'https://wa.me/' + waNumber;
+          %>
+          <a href="<%= waLink %>" target="_blank" rel="noopener" style="color:#1a6b3c; font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:8px; font-size:15px;">
+            <i class="fa-brands fa-whatsapp" style="font-size:20px; color:#25D366;"></i> WhatsApp: <strong><%= (advertising && advertising.contactPhone) ? advertising.contactPhone : '+254 700 123 456' %></strong>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/foot') %>

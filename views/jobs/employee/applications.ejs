@@ -1,0 +1,76 @@
+<%- include('../../partials/head') %>
+
+<style>
+  .dash-layout { display: flex; min-height: 100vh; }
+  .dash-sidebar { width: 260px; background: #0C1210; color: #fff; padding: 24px 0; flex-shrink: 0; }
+  .dash-sidebar .brand { padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; }
+  .dash-sidebar .brand h2 { font-family: 'Roboto Slab', serif; font-size: 18px; color: #fff; margin: 0; }
+  .dash-sidebar .brand span { font-size: 11px; color: #999; }
+  .dash-sidebar .nav a { display: block; padding: 12px 24px; color: rgba(255,255,255,.7); text-decoration: none; font-size: 14px; }
+  .dash-sidebar .nav a:hover, .dash-sidebar .nav a.active { background: rgba(255,255,255,.1); color: #fff; }
+  .dash-main { flex: 1; background: #f8f7f4; padding: 32px; }
+  .dash-header { margin-bottom: 24px; }
+  .dash-header h1 { font-family: 'Roboto Slab', serif; font-size: 24px; margin: 0; }
+  .card { background: #fff; border-radius: 12px; border: 1px solid #e8e5e0; overflow: hidden; }
+  .table { width: 100%; border-collapse: collapse; }
+  .table th, .table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
+  .table th { background: #f8f7f4; font-weight: 600; }
+  .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge-submitted { background: #e3f2fd; color: #1565c0; }
+  .badge-under_review { background: #fff3e0; color: #e65100; }
+  .badge-shortlisted { background: #e6f4ea; color: #1a4d2e; }
+  .badge-rejected { background: #ffebee; color: #c62828; }
+  .badge-hired { background: #e8f5e9; color: #2e7d32; }
+</style>
+
+<div class="dash-layout">
+  <aside class="dash-sidebar">
+    <div class="brand">
+      <h2>Jobs Portal</h2>
+      <span>Job Seeker</span>
+    </div>
+    <nav class="nav">
+      <a href="/jobs/dashboard">Dashboard</a>
+      <a href="/jobs/applications" class="active">My Applications</a>
+      <a href="/jobs/saved">Saved Jobs</a>
+      <a href="/jobs/profile">My Profile</a>
+      <a href="/jobs">Browse Jobs</a>
+      <a href="/logout">Logout</a>
+    </nav>
+  </aside>
+
+  <main class="dash-main">
+    <div class="dash-header">
+      <h1>My Applications</h1>
+    </div>
+
+    <div class="card">
+      <% if (applications.length === 0) { %>
+        <p style="padding: 40px; text-align: center; color: #666;">No applications yet. <a href="/jobs">Browse jobs</a></p>
+      <% } else { %>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Job</th>
+              <th>Company</th>
+              <th>Status</th>
+              <th>Applied</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% applications.forEach(function(app) { %>
+              <tr>
+                <td><strong><%= app.jobTitle %></strong></td>
+                <td><%= app.company || 'Company' %></td>
+                <td><span class="badge badge-<%= app.status %>"><%= app.status.replace('_', ' ') %></span></td>
+                <td><%= formatDate(app.createdAt) %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </main>
+</div>
+
+<%- include('../../partials/foot') %>

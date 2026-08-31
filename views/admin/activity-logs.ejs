@@ -1,0 +1,210 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: 'Activity Log', crumb: logs.length + ' entries', topbarRight: '<form action="/admin/activity-logs/clear" method="post" onsubmit="return confirm(\'Clear all activity logs?\');" style="display:inline; margin-right:8px;"><button type="submit" class="btn btn-signal btn-sm"><i class="bi bi-trash3"></i>&nbsp; Clear Log</button></form><a href="/admin/activity-logs/export" class="btn btn-green btn-sm"><i class="bi bi-download"></i>&nbsp; Export CSV</a>' }) %>
+
+<% const usersMap = {}; if (users) { users.forEach(u => { usersMap[u.id] = u; }); } %>
+
+  <div class="activity-filters">
+    <div class="filter-group">
+      <label>User</label>
+      <select class="filter-select" id="filter-user">
+        <option value="">All Users</option>
+        <% if (users) { users.forEach(u => { %>
+          <option value="<%= u.id %>"><%= u.username %></option>
+        <% }); } %>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Action</label>
+      <select class="filter-select" id="filter-action">
+        <option value="">All Actions</option>
+        <option value="login">Login</option>
+        <option value="user.create">Create User</option>
+        <option value="user.update">Update User</option>
+        <option value="user.delete">Delete User</option>
+        <option value="user.approve">Approve User</option>
+        <option value="user.reject">Reject User</option>
+        <option value="post.create">Create Post</option>
+        <option value="post.update">Update Post</option>
+        <option value="post.delete">Delete Post</option>
+        <option value="post.restore">Restore Post</option>
+        <option value="category.create">Create Category</option>
+        <option value="category.update">Update Category</option>
+        <option value="category.delete">Delete Category</option>
+        <option value="media.upload">Upload Media</option>
+        <option value="media.delete">Delete Media</option>
+        <option value="comment.approve">Approve Comment</option>
+        <option value="comment.delete">Delete Comment</option>
+        <option value="message.delete">Delete Message</option>
+        <option value="message.reply">Reply Message</option>
+        <option value="ad.create">Create Ad</option>
+        <option value="ad.update">Update Ad</option>
+        <option value="ad.delete">Delete Ad</option>
+        <option value="settings.update">Update Settings</option>
+        <option value="settings.password">Change Password</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Module</label>
+      <select class="filter-select" id="filter-module">
+        <option value="">All Modules</option>
+        <option value="auth">Auth</option>
+        <option value="users">Users</option>
+        <option value="post">Posts</option>
+        <option value="category">Categories</option>
+        <option value="header">Navigation</option>
+        <option value="media">Media</option>
+        <option value="comment">Comments</option>
+        <option value="message">Messages</option>
+        <option value="ad">Ads</option>
+        <option value="subscriber">Subscribers</option>
+        <option value="logs">Logs</option>
+        <option value="settings">Settings</option>
+        <option value="notifications">Notifications</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Date Range</label>
+      <select class="filter-select" id="filter-range">
+        <option value="">All Time</option>
+        <option value="7d">Last 7 Days</option>
+        <option value="30d">Last 30 Days</option>
+      </select>
+    </div>
+  </div>
+
+<div class="activity-table-wrap" style="overflow-x:auto;">
+  <table class="activity-table" id="activity-table">
+    <thead>
+      <tr>
+        <th class="col-icon"></th>
+        <th class="col-time">TIME</th>
+        <th class="col-user">USER</th>
+        <th class="col-action">ACTION</th>
+        <th class="col-module">MODULE</th>
+        <th class="col-desc">DESCRIPTION</th>
+        <th class="col-ip">IP ADDRESS</th>
+        <th class="col-actions"></th>
+      </tr>
+    </thead>
+    <tbody id="activity-logs-body">
+      <% if (logs.length === 0) { %>
+        <tr class="empty-row"><td colspan="8">No activity recorded yet.</td></tr>
+      <% } %>
+      <% logs.forEach(l => {
+        const user = l.userId ? usersMap[l.userId] : null;
+        const uname = user ? user.username : 'System';
+        const uinitial = uname.charAt(0).toUpperCase();
+        const actionUpper = l.action ? l.action.toUpperCase().replace('USER.', '') : '';
+        let badgeClass = 'login';
+        if (l.action === 'user.create') badgeClass = 'create';
+        else if (l.action === 'user.update') badgeClass = 'update';
+        else if (l.action === 'user.delete') badgeClass = 'delete';
+        else if (l.action === 'user.approve') badgeClass = 'approve';
+        else if (l.action === 'user.reject') badgeClass = 'reject';
+        else if (l.action && l.action.includes('.create')) badgeClass = 'create';
+        else if (l.action && l.action.includes('.update')) badgeClass = 'update';
+        else if (l.action && l.action.includes('.delete')) badgeClass = 'delete';
+        else if (l.action && l.action.includes('.approve')) badgeClass = 'approve';
+        else if (l.action && l.action.includes('.reject')) badgeClass = 'reject';
+
+        const moduleLabel = l.action === 'login' ? 'Auth' : (l.action ? l.action.split('.')[0] : 'System');
+        const moduleClass = l.action === 'login' ? 'auth' : 'users';
+
+        let icon = '•';
+        if (l.action === 'login') icon = '⇥';
+        else if (l.action === 'user.create' || l.action === 'post.create' || l.action === 'category.create' || l.action === 'header.create' || l.action === 'ad.create') icon = '♙';
+        else if (l.action === 'user.update' || l.action === 'post.update' || l.action === 'category.update' || l.action === 'header.update' || l.action === 'ad.update') icon = '✎';
+        else if (l.action === 'user.delete' || l.action === 'post.delete' || l.action === 'category.delete' || l.action === 'header.delete' || l.action === 'ad.delete' || l.action === 'subscriber.delete' || l.action === 'message.delete' || l.action === 'comment.delete' || l.action === 'media.delete') icon = '🗑';
+        else if (l.action === 'user.approve' || l.action === 'comment.approve') icon = '✓';
+        else if (l.action === 'user.reject') icon = '✕';
+        else if (l.action && l.action.includes('.restore')) icon = '↻';
+        else if (l.action && l.action.includes('.reorder')) icon = '⇅';
+        else if (l.action && l.action.includes('.upload')) icon = '↑';
+        else if (l.action && l.action.includes('.reply')) icon = '↪';
+        else if (l.action && l.action.includes('.clear')) icon = '⊗';
+        else if (l.action && l.action.includes('.settings')) icon = '⚙';
+
+        const ipDisplay = l.ip || '127.0.0.1';
+        const actionLower = l.action ? l.action.toLowerCase().replace('user.', '') : '';
+        const moduleLower = l.action === 'login' ? 'auth' : (l.action ? l.action.split('.')[0] : 'system');
+      %>
+        <tr data-user-id="<%= l.userId || '' %>" data-action="<%= actionLower %>" data-module="<%= moduleLower %>" data-date="<%= l.createdAt %>">
+          <td class="cell-icon"><span class="log-icon"><%= icon %></span></td>
+          <td class="cell-time">
+            <span class="time-bold"><%= formatLogTime(l.createdAt) %></span>
+            <span class="time-ago"><%= timeAgo(l.createdAt) %></span>
+          </td>
+          <td class="cell-user">
+            <span class="mini-avatar" style="<%= user ? '' : 'background:#6b7078' %>"><%= uinitial %></span>
+            <span class="user-name"><%= uname %></span>
+          </td>
+          <td class="cell-action"><span class="badge badge-<%= badgeClass %>"><%= actionUpper %></span></td>
+          <td class="cell-module"><span class="badge badge-module badge-module-<%= moduleClass %>"><%= moduleLabel %></span></td>
+          <td class="cell-desc"><%= l.details || '' %></td>
+          <td class="cell-ip"><%= ipDisplay %></td>
+          <td class="cell-actions"><span class="row-menu">⋮</span></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <div class="activity-foot">
+    <span>Showing <span id="showing-count">1</span> to <span id="showing-total"><%= logs.length %></span> of <span id="showing-total-2"><%= logs.length %></span> entries</span>
+    <div class="pages">
+      <span class="page">‹</span>
+      <span class="page sel">1</span>
+      <span class="page">›</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    var logs = [];
+    <% logs.forEach(l => { %>
+      logs.push({
+        userId: <%= l.userId || 'null' %>,
+        action: '<%= (l.action || '').toLowerCase().replace('user.', '') %>',
+        module: '<%= l.action === 'login' ? 'auth' : 'users' %>',
+        createdAt: '<%= l.createdAt %>'
+      });
+    <% }) %>
+
+    function applyFilters() {
+      var userVal = document.getElementById('filter-user').value;
+      var actionVal = document.getElementById('filter-action').value;
+      var moduleVal = document.getElementById('filter-module').value;
+      var rangeVal = document.getElementById('filter-range').value;
+
+      var now = new Date();
+      var cutoff = null;
+      if (rangeVal === '7d') cutoff = new Date(now.getTime() - 7 * 86400000);
+      else if (rangeVal === '30d') cutoff = new Date(now.getTime() - 30 * 86400000);
+
+      var rows = document.querySelectorAll('#activity-logs-body tr');
+      var visible = 0;
+      rows.forEach(function(row) {
+        var uid = row.getAttribute('data-user-id') || '';
+        var action = row.getAttribute('data-action') || '';
+        var module = row.getAttribute('data-module') || '';
+        var date = row.getAttribute('data-date') || '';
+        var match = true;
+        if (userVal && uid !== userVal) match = false;
+        if (actionVal && action !== actionVal) match = false;
+        if (moduleVal && module !== moduleVal) match = false;
+        if (cutoff && new Date(date) < cutoff) match = false;
+        row.style.display = match ? '' : 'none';
+        if (match) visible++;
+      });
+      document.getElementById('showing-count').textContent = visible || 0;
+      document.getElementById('showing-total').textContent = visible || 0;
+      document.getElementById('showing-total-2').textContent = visible || 0;
+    }
+
+    document.getElementById('filter-user').addEventListener('change', applyFilters);
+    document.getElementById('filter-action').addEventListener('change', applyFilters);
+    document.getElementById('filter-module').addEventListener('change', applyFilters);
+    document.getElementById('filter-range').addEventListener('change', applyFilters);
+  })();
+</script>
+
+<%- include('partials/foot') %>

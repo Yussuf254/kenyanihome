@@ -1,0 +1,55 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: category ? 'Edit Category' : 'New Category', crumb: 'Category details' }) %>
+
+  <div class="admin-split-2">
+    <form action="<%= category ? '/admin/categories/' + category.id + '?_method=PUT' : '/admin/categories' %>" method="post">
+      <div class="form-section">
+        <div class="form-section-head">Category Details</div>
+        <div class="form-section-body">
+          <div class="field">
+            <label>Name</label>
+            <input type="text" name="name" value="<%= category ? category.name : '' %>" required placeholder="e.g. National Politics">
+          </div>
+          <div class="field">
+            <label>Slug</label>
+            <input type="text" name="slug" value="<%= category ? category.slug : '' %>" placeholder="auto-generated from name if left blank">
+            <p class="help">URL-friendly identifier (lowercase, hyphens only).</p>
+          </div>
+          <div class="field">
+            <label>Parent Header Item</label>
+            <select name="headerItemId">
+              <option value="">— none (top-level / standalone) —</option>
+              <% headerItems.forEach(hi => { %>
+                <option value="<%= hi.id %>" <%= category && category.headerItemId === hi.id ? 'selected' : '' %>><%= hi.name %> (<%= hi.type %>)</option>
+              <% }) %>
+            </select>
+            <p class="help">Assign this category to a navigation header item. It will appear in that item's dropdown.</p>
+          </div>
+          <div class="field">
+            <label>Status</label>
+            <select name="status">
+              <option value="published" <%= category && category.status === 'published' ? 'selected' : '' %>>Published</option>
+              <option value="draft" <%= category && category.status === 'draft' ? 'selected' : '' %>>Draft</option>
+            </select>
+          </div>
+          <div class="checkbox-field field">
+            <input type="checkbox" name="showInNavigation" id="showInNavigation" <%= category && category.showInNavigation ? 'checked' : '' %>>
+            <label for="showInNavigation" style="margin:0;">Show in Navigation</label>
+            <p class="help">Display this category in the header dropdown. Hide to use it only for articles.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a href="/admin/categories" class="btn btn-ghost btn-sm">Cancel</a>
+        <button type="submit" class="btn btn-signal"><i class="bi bi-tags"></i>&nbsp; <%= category ? 'Save Changes' : 'Create Category' %></button>
+        <% if (category) { %>
+          <form action="/admin/categories/<%= category.id %>?_method=DELETE" method="post" style="display:inline;" onsubmit="return confirm('Delete this category? Existing posts will keep the old category value.');">
+            <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash3"></i>&nbsp; Delete</button>
+          </form>
+        <% } %>
+      </div>
+    </form>
+  </div>
+
+<%- include('partials/foot') %>

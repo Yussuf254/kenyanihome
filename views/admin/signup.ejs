@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600;1,700&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="/public/css/admin.css" rel="stylesheet">
+</head>
+<body class="admin-body">
+  <div class="login-shell">
+    <div class="login-card">
+      <div class="login-brand">
+        <% if (settings.logo) { %><img src="<%= settings.logo %>" alt="<%= settings.siteName %> logo" class="brand-logo"><% } else { %><span class="login-brand-word brand-text"><%= settings.siteName %></span><% } %>
+      </div>
+      <p class="login-title">Create account</p>
+      <p class="sub">Request access to the newsroom workspace</p>
+
+      <% if (typeof error !== 'undefined' && error.length) { %><div class="flash flash-error" style="margin-bottom:20px;"><%= error[0] %></div><% } %>
+      <% if (typeof success !== 'undefined' && success.length) { %><div class="flash flash-success" style="margin-bottom:20px;"><%= success[0] %></div><% } %>
+
+      <form action="/admin/signup" method="post">
+        <div class="field">
+          <label>Username</label>
+          <input type="text" name="username" required autofocus>
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" name="email" required>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <div class="input-wrap">
+            <input type="password" name="password" required id="signup-password">
+            <button type="button" class="toggle-pw" id="toggle-pw-signup" aria-label="Show password"><i class="bi bi-eye"></i></button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-signal btn-block"><i class="bi bi-person-plus"></i>&nbsp; Request Access</button>
+      </form>
+      <p class="hint">Your account will need admin approval before you can sign in.<br>Already have an account? <a href="/admin/login">Sign in</a></p>
+    </div>
+  </div>
+  <script>
+    (function(){
+      var btn = document.getElementById('toggle-pw-signup');
+      var inp = document.getElementById('signup-password');
+      if (!btn || !inp) return;
+      btn.addEventListener('click', function(){
+        var isPassword = inp.type === 'password';
+        inp.type = isPassword ? 'text' : 'password';
+        btn.innerHTML = isPassword ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+        btn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: 'Ad Categories', crumb: categories.length + ' total' }) %>
+
+
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px; margin-top:32px;">
+    <h3 style="font-family: var(--font-display); font-size: 17px; margin:0; font-weight:600;">All Ad Categories</h3>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <a href="/admin/ad-categories/new" class="btn btn-signal btn-sm"><i class="bi bi-plus-lg"></i>&nbsp; New Ad Category</a>
+      <button type="button" id="save-ad-cat-order" class="btn btn-signal btn-sm"><i class="bi bi-save"></i>&nbsp; Save Order</button>
+    </div>
+  </div>
+
+  <div class="panel-card" style="overflow-x:auto;">
+    <table class="data-table" id="ad-category-table">
+      <thead>
+        <tr>
+          <th style="width:44px; text-align:left; white-space:nowrap;">Icon</th>
+          <th>Name</th>
+          <th style="white-space:nowrap;">Slug</th>
+          <th style="width:120px; text-align:center; white-space:nowrap;">Status</th>
+          <th style="text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="ad-category-list">
+        <% categories.forEach(function(c) { %>
+          <tr id="ad-cat-row-<%= c.id %>" data-id="<%= c.id %>">
+            <td style="text-align:left;"><span class="ad-icon"><%= c.icon || '📦' %></span></td>
+            <td class="rt-title" id="ad-cat-name-<%= c.id %>"><%= c.name %></td>
+            <td style="padding-left:16px;"><span class="rt-sub">/ad-category/<%= c.slug %></span></td>
+            <td style="text-align:center;">
+              <% if (c.active) { %>
+                <span class="status-dot status-published" title="Active"></span>&nbsp;<span style="font-size:11px; color:#006600;">Active</span>
+              <% } else { %>
+                <span class="status-dot status-draft" title="Inactive"></span>&nbsp;<span style="font-size:11px; color:#5f6b6c;">Draft</span>
+              <% } %>
+            </td>
+            <td class="table-actions">
+              <a href="/admin/ad-categories/<%= c.id %>/edit" class="icon-btn" aria-label="Edit"><i class="bi bi-pencil"></i></a>
+              <form action="/admin/ad-categories/<%= c.id %>?_method=DELETE" method="post" onsubmit="return confirm('Delete this ad category and all its subcategories?');">
+                <button class="icon-btn" type="submit" aria-label="Delete"><i class="bi bi-trash3"></i></button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+
+  <script>
+    (function() {
+      var tbody = document.getElementById('ad-category-list');
+      if (!tbody) return;
+      var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr[data-id]'));
+      var dragSrc = null;
+      rows.forEach(function(row, i) {
+        row.style.cursor = 'grab';
+        row.addEventListener('mousedown', function(e) {
+          e.preventDefault();
+          dragSrc = row;
+          dragSrc.style.opacity = '0.5';
+          document.body.style.userSelect = 'none';
+        });
+      });
+      function handleDragOver(e) {
+        e.preventDefault();
+        if (!dragSrc) return;
+        var afterElement = getDragAfter(tbody, e.clientY);
+        if (afterElement == null) { tbody.appendChild(dragSrc); }
+        else { tbody.insertBefore(dragSrc, afterElement); }
+      }
+      function handleDragDrop(e) {
+        e.preventDefault();
+        if (!dragSrc) return;
+        dragSrc.style.opacity = '';
+        document.body.style.userSelect = '';
+        dragSrc = null;
+      }
+      function getDragAfter(container, y) {
+        var draggableElements = container.querySelectorAll('tr[data-id]:not(.dragging)');
+        var closest = null;
+        var closestOffset = -100;
+        draggableElements.forEach(function(child) {
+          var rect = child.getBoundingClientRect();
+          var offset = y - rect.top - rect.height / 2;
+          if (offset < 0 && offset > closestOffset) { closestOffset = offset; closest = child; }
+        });
+        return closest;
+      }
+      tbody.addEventListener('dragover', handleDragOver);
+      tbody.addEventListener('drop', handleDragDrop);
+      document.getElementById('save-ad-cat-order').addEventListener('click', function() {
+        var rows = tbody.querySelectorAll('tr[data-id]');
+        var order = [];
+        rows.forEach(function(row, i) {
+          order.push({ id: Number(row.getAttribute('data-id')), order: i });
+        });
+        fetch('/admin/ad-categories/reorder', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ order: order })
+        }).then(function(r) { return r.json(); }).then(function(data) {
+          if (data.ok) location.reload();
+        }).catch(function() { alert('Failed to save order.'); });
+      });
+    })();
+  </script>
+
+<%- include('partials/foot') %>

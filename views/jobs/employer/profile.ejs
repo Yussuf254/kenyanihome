@@ -1,0 +1,81 @@
+<%- include('../../partials/head') %>
+
+<style>
+  .dash-layout { display: flex; min-height: 100vh; }
+  .dash-sidebar { width: 260px; background: #0C1210; color: #fff; padding: 24px 0; flex-shrink: 0; }
+  .dash-sidebar .brand { padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; }
+  .dash-sidebar .brand h2 { font-family: 'Roboto Slab', serif; font-size: 18px; color: #fff; margin: 0; }
+  .dash-sidebar .brand span { font-size: 11px; color: #999; }
+  .dash-sidebar .nav a { display: block; padding: 12px 24px; color: rgba(255,255,255,.7); text-decoration: none; font-size: 14px; }
+  .dash-sidebar .nav a:hover, .dash-sidebar .nav a.active { background: rgba(255,255,255,.1); color: #fff; }
+  .dash-main { flex: 1; background: #f8f7f4; padding: 32px; }
+  .dash-header { margin-bottom: 32px; }
+  .dash-header h1 { font-family: 'Roboto Slab', serif; font-size: 24px; margin: 0; }
+  .card { background: #fff; border-radius: 12px; border: 1px solid #e8e5e0; padding: 32px; }
+  .form-group { margin-bottom: 20px; }
+  .form-group label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
+  .form-group input, .form-group textarea { width: 100%; padding: 12px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .btn { display: inline-block; padding: 12px 24px; background: #1a4d2e; color: #fff; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; border: none; cursor: pointer; }
+  .btn:hover { background: #0d2615; }
+</style>
+
+<div class="dash-layout">
+  <aside class="dash-sidebar">
+    <div class="brand">
+      <h2>Jobs Portal</h2>
+      <span>Employer Dashboard</span>
+    </div>
+    <nav class="nav">
+      <a href="/employer/dashboard">Dashboard</a>
+      <a href="/employer/jobs/create">Post a Job</a>
+      <a href="/employer/jobs">My Jobs</a>
+      <a href="/employer/profile" class="active">Company Profile</a>
+      <a href="/employer/payments">Payments</a>
+      <a href="/jobs">View Site</a>
+      <a href="/logout">Logout</a>
+    </nav>
+  </aside>
+
+  <main class="dash-main">
+    <div class="dash-header">
+      <h1>Company Profile</h1>
+    </div>
+
+    <div class="card">
+      <form action="/employer/profile" method="POST">
+        <div class="form-group">
+          <label>Company Name</label>
+          <input type="text" name="companyName" value="<%= company?.companyName || user.username %>">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" value="<%= user.email %>" disabled>
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" name="phone" value="<%= company?.phone || '' %>">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Company Description</label>
+          <textarea name="description" rows="4"><%= company?.description || '' %></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Website</label>
+            <input type="url" name="website" value="<%= company?.website || '' %>">
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" name="location" value="<%= company?.location || '' %>">
+          </div>
+        </div>
+        <button type="submit" class="btn">Update Profile</button>
+      </form>
+    </div>
+  </main>
+</div>
+
+<%- include('../../partials/foot') %>

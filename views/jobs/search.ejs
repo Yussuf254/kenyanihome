@@ -1,0 +1,143 @@
+<%- include('../partials/head') %>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+:root {
+  --green: #0B6B3A;
+  --green-dark: #084d29;
+  --green-light: #e8f5e9;
+  --text: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --border: #e5e7eb;
+  --bg: #f8f9fa;
+  --white: #ffffff;
+  --radius: 8px;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+a { text-decoration: none; color: inherit; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+
+/* Header */
+.jobs-header { background: var(--white); border-bottom: 1px solid var(--border); padding: 16px 0; }
+.jobs-header-inner { display: flex; align-items: center; justify-content: space-between; }
+.jobs-logo { font-size: 22px; font-weight: 800; color: var(--green); }
+.jobs-logo span { color: var(--text); }
+
+/* Search */
+.search-page { padding: 32px 0; }
+.search-header { margin-bottom: 24px; }
+.search-header h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+.search-header p { font-size: 14px; color: var(--text-muted); }
+.search-form { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; padding: 16px; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); }
+.search-form .field { flex: 1; min-width: 180px; display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; }
+.search-form .field i { color: var(--text-muted); }
+.search-form .field input, .search-form .field select { flex: 1; border: none; outline: none; font-size: 14px; font-family: 'Montserrat', sans-serif; background: transparent; }
+.search-form button { padding: 10px 24px; background: var(--green); color: var(--white); border: none; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; font-family: 'Montserrat', sans-serif; white-space: nowrap; }
+.search-form button:hover { background: var(--green-dark); }
+
+/* Jobs List */
+.jobs-list { display: grid; gap: 12px; }
+.job-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); transition: all .2s; }
+.job-row:hover { border-color: var(--green); box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+.job-row .info { flex: 1; min-width: 0; }
+.job-row .info h3 { font-size: 16px; font-weight: 600; margin: 0 0 6px; }
+.job-row .info h3 a { color: var(--green); }
+.job-row .info h3 a:hover { text-decoration: underline; }
+.job-row .info .meta { font-size: 13px; color: var(--text-secondary); display: flex; gap: 12px; flex-wrap: wrap; }
+.job-row .info .meta span { display: flex; align-items: center; gap: 4px; }
+.job-row .apply { padding: 8px 20px; background: var(--green); color: var(--white); border-radius: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+.job-row .apply:hover { background: var(--green-dark); }
+.no-results { text-align: center; padding: 60px 20px; color: var(--text-muted); background: var(--white); border-radius: var(--radius); }
+
+/* Footer */
+.jobs-footer { background: #1a1a1a; padding: 32px 0; text-align: center; margin-top: 48px; }
+.jobs-footer p { font-size: 13px; color: rgba(255,255,255,.6); }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-form { flex-direction: column; }
+  .search-form .field { width: 100%; }
+  .job-row { flex-direction: column; align-items: flex-start; }
+  .job-row .apply { align-self: stretch; text-align: center; }
+}
+</style>
+
+<header class="jobs-header">
+  <div class="container">
+    <div class="jobs-header-inner">
+      <a href="/jobs" class="jobs-logo">Kenya ni Home <span>Jobs</span></a>
+    </div>
+  </div>
+</header>
+
+<main class="search-page container">
+  <div class="search-header">
+    <h1>Search Jobs</h1>
+    <p><strong><%= jobs.length %></strong> jobs found</p>
+  </div>
+
+  <form class="search-form" action="/jobs/search" method="get">
+    <div class="field">
+      <i class="fas fa-search"></i>
+      <input type="text" name="q" value="<%= query %>" placeholder="Job title, keyword or company">
+    </div>
+    <div class="field">
+      <i class="fas fa-folder"></i>
+      <select name="category">
+        <option value="">All Categories</option>
+        <% categories.forEach(function(c) { %>
+          <option value="<%= c.slug %>" <%= selectedCategory === c.slug ? 'selected' : '' %>><%= c.name %></option>
+        <% }); %>
+      </select>
+    </div>
+    <div class="field">
+      <i class="fas fa-map-marker-alt"></i>
+      <select name="location">
+        <option value="">All Locations</option>
+        <option value="Nairobi" <%= selectedLocation === 'Nairobi' ? 'selected' : '' %>>Nairobi</option>
+        <option value="Mombasa" <%= selectedLocation === 'Mombasa' ? 'selected' : '' %>>Mombasa</option>
+        <option value="Kisumu" <%= selectedLocation === 'Kisumu' ? 'selected' : '' %>>Kisumu</option>
+        <option value="Nakuru" <%= selectedLocation === 'Nakuru' ? 'selected' : '' %>>Nakuru</option>
+        <option value="Remote" <%= selectedLocation === 'Remote' ? 'selected' : '' %>>Remote</option>
+      </select>
+    </div>
+    <button type="submit"><i class="fas fa-search"></i> Search</button>
+  </form>
+
+  <% if (jobs.length === 0) { %>
+    <div class="no-results">
+      <i class="fas fa-search" style="font-size:48px;color:var(--text-muted);margin-bottom:16px;"></i>
+      <h3 style="font-size:18px;margin-bottom:8px;">No jobs found</h3>
+      <p>Try adjusting your search criteria</p>
+    </div>
+  <% } else { %>
+    <div class="jobs-list">
+      <% jobs.forEach(function(job) { %>
+        <div class="job-row">
+          <div class="info">
+            <h3><a href="/jobs/<%= job.slug %>"><%= job.title %></a></h3>
+            <div class="meta">
+              <span><i class="fas fa-building" style="color:var(--text-muted);"></i> <%= job.company || 'Company' %></span>
+              <span><i class="fas fa-map-marker-alt" style="color:var(--text-muted);"></i> <%= job.location || 'Kenya' %></span>
+              <span><i class="fas fa-briefcase" style="color:var(--text-muted);"></i> <%= job.employmentType || 'Full Time' %></span>
+              <% if (job.salaryMin && job.salaryMax) { %>
+                <span style="color:var(--green);font-weight:600;">KSh <%= job.salaryMin.toLocaleString() %> - <%= job.salaryMax.toLocaleString() %></span>
+              <% } %>
+            </div>
+          </div>
+          <a href="/jobs/<%= job.slug %>" class="apply">View Job</a>
+        </div>
+      <% }); %>
+    </div>
+  <% } %>
+</main>
+
+<footer class="jobs-footer">
+  <div class="container">
+    <p>&copy; 2026 Kenya Ni Home Jobs &bull; Connecting Kenya's Talent with Opportunity</p>
+  </div>
+</footer>

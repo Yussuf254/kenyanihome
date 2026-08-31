@@ -1,0 +1,28 @@
+<%- include('partials/head') %>
+<%-
+  include('partials/topbar', {
+    heading: 'Error Log',
+    crumb: errors.length + ' entries',
+    topbarRight: errors.length ? '<form action="/admin/logs/clear" method="post" onsubmit="return confirm(\'Clear the error log?\');"><button class="btn btn-ghost btn-sm" type="submit"><i class="bi bi-eraser"></i>&nbsp; Clear Log</button></form>' : ''
+  })
+%>
+
+  <div class="panel-card">
+    <% if (!errors.length) { %>
+      <div class="panel-card-body">
+        <p class="empty-note">No errors logged. That's a good sign.</p>
+      </div>
+    <% } %>
+    <% errors.forEach(e => { %>
+      <div style="padding:16px 22px; border-bottom:1px solid var(--line);">
+        <div style="display:flex; justify-content:space-between; gap:12px; margin-bottom:6px;">
+          <span style="font-weight:600; font-size:13.5px; color:var(--signal-dim);"><%= e.message %></span>
+          <span class="rt-sub"><%= timeAgo(e.createdAt) %></span>
+        </div>
+        <% if (e.path) { %><div class="rt-sub" style="margin-bottom:6px;"><%= e.method %> <%= e.path %></div><% } %>
+        <% if (e.stack) { %><pre style="font-family:var(--font-mono); font-size:11px; color:var(--grey); white-space:pre-wrap; margin:0; background:var(--paper-dim); padding:10px; overflow-x:auto;"><%= e.stack %></pre><% } %>
+      </div>
+    <% }) %>
+  </div>
+
+<%- include('partials/foot') %>

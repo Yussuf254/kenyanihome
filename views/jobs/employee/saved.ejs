@@ -1,0 +1,68 @@
+<%- include('../../partials/head') %>
+
+<style>
+  .dash-layout { display: flex; min-height: 100vh; }
+  .dash-sidebar { width: 260px; background: #0C1210; color: #fff; padding: 24px 0; flex-shrink: 0; }
+  .dash-sidebar .brand { padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; }
+  .dash-sidebar .brand h2 { font-family: 'Roboto Slab', serif; font-size: 18px; color: #fff; margin: 0; }
+  .dash-sidebar .brand span { font-size: 11px; color: #999; }
+  .dash-sidebar .nav a { display: block; padding: 12px 24px; color: rgba(255,255,255,.7); text-decoration: none; font-size: 14px; }
+  .dash-sidebar .nav a:hover, .dash-sidebar .nav a.active { background: rgba(255,255,255,.1); color: #fff; }
+  .dash-main { flex: 1; background: #f8f7f4; padding: 32px; }
+  .dash-header { margin-bottom: 24px; }
+  .dash-header h1 { font-family: 'Roboto Slab', serif; font-size: 24px; margin: 0; }
+  .jobs-list { display: grid; gap: 16px; }
+  .job-row { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: #fff; border: 1px solid #e8e5e0; border-radius: 10px; }
+  .job-row:hover { border-color: #1a4d2e; }
+  .job-row .info h3 { font-family: 'Roboto Slab', serif; font-size: 16px; margin: 0 0 6px; }
+  .job-row .info h3 a { color: #0B1913; text-decoration: none; }
+  .job-row .info .meta { font-size: 13px; color: #666; display: flex; gap: 12px; flex-wrap: wrap; }
+  .job-row .apply { padding: 8px 20px; background: #1a4d2e; color: #fff; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; }
+</style>
+
+<div class="dash-layout">
+  <aside class="dash-sidebar">
+    <div class="brand">
+      <h2>Jobs Portal</h2>
+      <span>Job Seeker</span>
+    </div>
+    <nav class="nav">
+      <a href="/jobs/dashboard">Dashboard</a>
+      <a href="/jobs/applications">My Applications</a>
+      <a href="/jobs/saved" class="active">Saved Jobs</a>
+      <a href="/jobs/profile">My Profile</a>
+      <a href="/jobs">Browse Jobs</a>
+      <a href="/logout">Logout</a>
+    </nav>
+  </aside>
+
+  <main class="dash-main">
+    <div class="dash-header">
+      <h1>Saved Jobs</h1>
+    </div>
+
+    <% if (jobs.length === 0) { %>
+      <div style="background:#fff;padding:40px;text-align:center;border-radius:12px;border:1px solid #e8e5e0;">
+        <p style="color:#666;">No saved jobs yet. <a href="/jobs">Browse jobs</a></p>
+      </div>
+    <% } else { %>
+      <div class="jobs-list">
+        <% jobs.forEach(function(job) { %>
+          <div class="job-row">
+            <div class="info">
+              <h3><a href="/jobs/<%= job.slug %>"><%= job.title %></a></h3>
+              <div class="meta">
+                <span><%= job.company || 'Company' %></span>
+                <span>📍 <%= job.location || 'Kenya' %></span>
+                <span>💼 <%= job.employmentType || 'Full Time' %></span>
+              </div>
+            </div>
+            <a href="/jobs/<%= job.slug %>" class="apply">View</a>
+          </div>
+        <% }); %>
+      </div>
+    <% } %>
+  </main>
+</div>
+
+<%- include('../../partials/foot') %>

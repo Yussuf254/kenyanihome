@@ -1,0 +1,63 @@
+<%- include('partials/head') %>
+
+<main>
+  <!-- Hero -->
+  <section style="background:#fff; border-bottom:1px solid #e4dfd7; padding:48px 0 28px;">
+    <div class="container">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+        <span style="width:24px; height:2px; background:#0F6B34; display:inline-block; border-radius:1px;"></span>
+        <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.18em; color:#0F6B34;">Our Newsroom</span>
+      </div>
+      <h1 style="font-size:36px; font-weight:800; line-height:1.08; letter-spacing:-0.025em; margin:0; color:#0C1210;">About <%= settings.siteName %></h1>
+      <p style="font-size:15px; line-height:1.6; color:#5f6b6c; margin:8px 0 0;">Quality journalism from the heart of Kenya.</p>
+    </div>
+  </section>
+
+  <!-- Who we are -->
+  <section style="padding:40px 0; background:#fff;">
+    <div class="container">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px; align-items:center;">
+        <div>
+          <img src="<%= settings.aboutImage || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1000&q=70' %>" alt="<%= settings.siteName %> newsroom" loading="lazy" style="width:100%; height:100%; border-radius:16px; overflow:hidden; border:1px solid #e4dfd7; object-fit:cover; aspect-ratio:4/3; display:block;">
+        </div>
+        <div>
+          <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.18em; color:#0F6B34; display:block; margin-bottom:6px;">Who We Are</span>
+          <h2 style="font-size:26px; font-weight:800; line-height:1.2; color:#0C1210; margin:0 0 12px;"><%= settings.aboutTitle %></h2>
+          <p style="font-size:15px; line-height:1.7; color:#5f6b6c; margin:0 0 24px;"><%= settings.aboutBody %></p>
+          <div style="display:flex; gap:28px; flex-wrap:wrap;">
+            <div><span style="font-size:28px; font-weight:800; color:#0F6B34;"><%= settings.aboutStat1 || '120+' %></span><span style="display:block; font-size:12px; color:#5f6b6c;"><%= settings.aboutStat1Label || 'Stories a Month' %></span></div>
+            <div><span style="font-size:28px; font-weight:800; color:#0F6B34;"><%= settings.aboutStat2 || '18' %></span><span style="display:block; font-size:12px; color:#5f6b6c;"><%= settings.aboutStat2Label || 'Staff Reporters' %></span></div>
+            <div><span style="font-size:28px; font-weight:800; color:#0F6B34;"><%= settings.aboutStat3 || '2016' %></span><span style="display:block; font-size:12px; color:#5f6b6c;"><%= settings.aboutStat3Label || 'Founded' %></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team -->
+  <section style="padding:48px 0; background:#fff; border-bottom:1px solid #e4dfd7;">
+    <div class="container">
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:28px; padding-bottom:16px; border-bottom:1px solid #e4dfd7; position:relative;">
+        <div>
+          <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.18em; color:#0F6B34; display:block; margin-bottom:6px;">The people behind the stories</span>
+          <h2 style="font-size:26px; font-weight:800; color:#0C1210; margin:0;">Our Team</h2>
+          <p style="font-size:14px; color:#5f6b6c; margin:4px 0 0; line-height:1.5;">Meet the journalists, editors, and producers keeping Kenya informed.</p>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:24px;">
+        <% let team = []; try { team = JSON.parse(settings.team || '[]'); } catch (e) { team = []; } %>
+        <% team.forEach(m => { %>
+          <div style="background:#f7f5f2; border-radius:14px; overflow:hidden; border:1px solid #e4dfd7; text-align:center; padding:24px 16px;">
+            <div style="width:80px; height:80px; border-radius:50%; margin:0 auto 14px; overflow:hidden; border:4px solid rgba(15,107,52,0.1);">
+              <img src="<%= m.img %>" alt="<%= m.name %>" loading="lazy" style="width:100%; height:100%; object-fit:cover; display:block;">
+            </div>
+            <h4 style="font-size:15px; font-weight:700; margin:0 0 2px; color:#0C1210;"><%= m.name %></h4>
+            <span style="font-size:12px; color:#5f6b6c;"><%= m.role %></span>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/foot') %>

@@ -1,0 +1,80 @@
+<%- include('../partials/head') %>
+
+<style>
+  .apply-page { padding: 40px 0; max-width: 700px; margin: 0 auto; }
+  .apply-page h1 { font-family: 'Roboto Slab', serif; font-size: 28px; margin: 0 0 8px; }
+  .apply-page .job-info { color: #666; margin-bottom: 32px; padding: 20px; background: #f8f7f4; border-radius: 10px; }
+  .apply-page .job-info h3 { font-family: 'Roboto Slab', serif; font-size: 18px; margin: 0 0 8px; color: #0B1913; }
+  .apply-page .job-info .meta { display: flex; flex-wrap: wrap; gap: 12px; font-size: 14px; }
+  .card { background: #fff; border-radius: 12px; border: 1px solid #e8e5e0; padding: 32px; }
+  .form-group { margin-bottom: 20px; }
+  .form-group label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
+  .form-group input, .form-group textarea { width: 100%; padding: 12px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+  .form-group textarea { min-height: 100px; resize: vertical; }
+  .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #1a4d2e; }
+  .btn { display: inline-block; padding: 14px 32px; background: #1a4d2e; color: #fff; border-radius: 8px; text-decoration: none; font-size: 15px; font-weight: 700; border: none; cursor: pointer; }
+  .btn:hover { background: #0d2615; }
+  .login-prompt { text-align: center; padding: 40px; background: #fff; border-radius: 12px; border: 1px solid #e8e5e0; }
+  .login-prompt h2 { font-family: 'Roboto Slab', serif; margin-bottom: 12px; }
+  .login-prompt p { color: #666; margin-bottom: 20px; }
+  .login-prompt .btn-group { display: flex; gap: 12px; justify-content: center; }
+  .login-prompt .btn-outline { background: transparent; border: 2px solid #1a4d2e; color: #1a4d2e; }
+</style>
+
+<div class="apply-page wrap">
+  <h1>Apply for Job</h1>
+  
+  <div class="job-info">
+    <h3><%= job.title %></h3>
+    <div class="meta">
+      <span><%= company?.name || job.company || 'Company' %></span>
+      <span>📍 <%= job.location || 'Kenya' %></span>
+      <% if (job.salary) { %><span>💰 <%= job.salary %></span><% } %>
+    </div>
+  </div>
+
+  <% if (user && user.role === 'employee') { %>
+    <div class="card">
+      <form action="/jobs/<%= job.slug %>/apply" method="POST">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" name="name" required value="<%= user.username %>">
+        </div>
+        <div class="form-group">
+          <label>Email *</label>
+          <input type="email" name="email" required value="<%= user.email %>">
+        </div>
+        <div class="form-group">
+          <label>Phone *</label>
+          <input type="tel" name="phone" required placeholder="+254 700 000 000">
+        </div>
+        <div class="form-group">
+          <label>Cover Letter</label>
+          <textarea name="coverLetter" placeholder="Tell us why you're a great fit for this role..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Additional Information</label>
+          <textarea name="additionalInfo" placeholder="Any additional details you'd like to share..."></textarea>
+        </div>
+        <button type="submit" class="btn">Submit Application</button>
+      </form>
+    </div>
+  <% } else if (user) { %>
+    <div class="login-prompt">
+      <h2>Employee Account Required</h2>
+      <p>You need to be logged in as a job seeker to apply for jobs.</p>
+      <a href="/jobs" class="btn">Browse Jobs</a>
+    </div>
+  <% } else { %>
+    <div class="login-prompt">
+      <h2>Login Required</h2>
+      <p>Please log in or create an account to apply for this job.</p>
+      <div class="btn-group">
+        <a href="/jobs/login" class="btn">Login</a>
+        <a href="/jobs/register" class="btn btn-outline">Create Account</a>
+      </div>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/foot') %>

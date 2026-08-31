@@ -1,0 +1,104 @@
+<%- include('../partials/head') %>
+
+<style>
+  .job-detail { padding: 40px 0; max-width: 900px; margin: 0 auto; }
+  .job-detail h1 { font-family: 'Roboto Slab', serif; font-size: 32px; margin: 0 0 16px; }
+  .job-detail .company-info { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  .job-detail .company-logo { width: 56px; height: 56px; border-radius: 10px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+  .job-detail .meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 14px; color: #666; margin-bottom: 32px; padding: 20px; background: #f8f7f4; border-radius: 10px; }
+  .job-detail .meta span { display: flex; align-items: center; gap: 6px; }
+  .job-detail .apply-btn { display: inline-block; padding: 14px 32px; background: #1a4d2e; color: #fff; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 15px; margin-bottom: 32px; transition: all .3s ease; }
+  .job-detail .apply-btn:hover { background: #0d2615; }
+  .job-detail .section { margin-bottom: 32px; }
+  .job-detail .section h2 { font-family: 'Roboto Slab', serif; font-size: 20px; margin-bottom: 12px; color: #0B1913; }
+  .job-detail .section p { line-height: 1.7; color: #333; }
+  .job-detail .section ul { padding-left: 20px; }
+  .job-detail .section ul li { margin-bottom: 8px; line-height: 1.6; color: #333; }
+  .expired-banner { background: #fee; border: 1px solid #fcc; padding: 12px 16px; border-radius: 8px; color: #c33; margin-bottom: 24px; font-weight: 600; }
+  .related-jobs { padding: 40px 0; background: #f8f7f4; }
+  .related-jobs h2 { font-family: 'Roboto Slab', serif; font-size: 22px; margin-bottom: 24px; }
+  .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .related-card { background: #fff; border: 1px solid #e8e5e0; border-radius: 10px; padding: 20px; }
+  .related-card h3 { font-family: 'Roboto Slab', serif; font-size: 15px; margin: 0 0 8px; }
+  .related-card .meta { font-size: 12px; color: #666; }
+</style>
+
+<div class="job-detail wrap">
+  <% if (isExpired) { %>
+    <div class="expired-banner">This job posting has expired.</div>
+  <% } %>
+
+  <h1><%= job.title %></h1>
+
+  <div class="company-info">
+    <div class="company-logo">🏢</div>
+    <div>
+      <strong><%= company?.name || job.company || 'Company' %></strong>
+      <div style="font-size: 13px; color: #666;"><%= job.location || 'Kenya' %></div>
+    </div>
+  </div>
+
+  <div class="meta">
+    <span>📍 <%= job.location || 'Kenya' %></span>
+    <span>💼 <%= job.employmentType || 'Full Time' %></span>
+    <% if (job.salary) { %><span>💰 <%= job.salary %></span><% } %>
+    <span>📅 Posted <%= formatDate(job.createdAt) %></span>
+    <span>⏰ Deadline: <%= formatDate(job.deadline) %></span>
+  </div>
+
+  <% if (!isExpired) { %>
+    <a href="/jobs/<%= job.slug %>/apply" class="apply-btn">APPLY NOW</a>
+  <% } %>
+
+  <div class="section">
+    <h2>Job Description</h2>
+    <p><%= job.description %></p>
+  </div>
+
+  <% if (job.requirements) { %>
+    <div class="section">
+      <h2>Requirements</h2>
+      <ul>
+        <% job.requirements.split('\n').forEach(function(r) { %>
+          <% if (r.trim()) { %><li><%= r.trim() %></li><% } %>
+        <% }); %>
+      </ul>
+    </div>
+  <% } %>
+
+  <% if (job.responsibilities) { %>
+    <div class="section">
+      <h2>Responsibilities</h2>
+      <ul>
+        <% job.responsibilities.split('\n').forEach(function(r) { %>
+          <% if (r.trim()) { %><li><%= r.trim() %></li><% } %>
+        <% }); %>
+      </ul>
+    </div>
+  <% } %>
+
+  <% if (company) { %>
+    <div class="section">
+      <h2>About the Company</h2>
+      <p><%= company.description || 'No company description available.' %></p>
+    </div>
+  <% } %>
+</div>
+
+<% if (relatedJobs.length > 0) { %>
+<section class="related-jobs">
+  <div class="wrap">
+    <h2>Related Jobs</h2>
+    <div class="related-grid">
+      <% relatedJobs.forEach(function(rj) { %>
+        <a href="/jobs/<%= rj.slug %>" class="related-card" style="text-decoration:none;color:inherit;">
+          <h3><%= rj.title %></h3>
+          <div class="meta"><%= rj.company || 'Company' %> · <%= rj.location || 'Kenya' %></div>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<%- include('../partials/foot') %>

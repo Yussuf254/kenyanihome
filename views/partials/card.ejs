@@ -1,0 +1,55 @@
+<% if (typeof layout !== 'undefined' && layout === 'horizontal') { %>
+<article class="single-post-wrap style-box">
+  <a href="/post/<%= post.slug %>" class="thumb">
+    <img src="<%= post.coverImage || 'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=800&q=60' %>" alt="<%= post.title %>" loading="lazy">
+  </a>
+  <div class="details">
+    <% if (post.breaking) { %><span class="breaking-badge">BREAKING</span><% } %>
+    <h3 class="title"><a href="/post/<%= post.slug %>"><%= post.title %></a></h3>
+    <p><%= post.excerpt %></p>
+    <div class="post-meta-single">
+      <ul>
+        <li><%= formatDate(post.createdAt) %></li>
+        <li><%= readingTime(post.content) %> min read</li>
+      </ul>
+    </div>
+  </div>
+</article>
+<% } else if (typeof layout !== 'undefined' && layout === 'list') { %>
+<article class="single-post-list-wrap style-two">
+  <div class="media">
+    <div class="media-left">
+      <a href="/post/<%= post.slug %>" class="thumb">
+        <img src="<%= post.coverImage || 'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=400&q=60' %>" alt="<%= post.title %>" loading="lazy">
+      </a>
+    </div>
+    <div class="media-body">
+      <% if (post.breaking) { %><span class="breaking-badge">BREAKING</span><% } %>
+      <h6 class="title"><a href="/post/<%= post.slug %>"><%= post.title %></a></h6>
+      <div class="post-meta-single">
+        <ul>
+          <li><%= formatDate(post.createdAt) %></li>
+          <li><%= readingTime(post.content) %> min</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</article>
+<% } else { %>
+<article class="single-post-wrap style-box">
+  <a href="/post/<%= post.slug %>" class="thumb">
+    <img src="<%= post.coverImage || 'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=800&q=60' %>" alt="<%= post.title %>" loading="lazy">
+  </a>
+  <div class="details">
+    <% if (post.breaking) { %><span class="breaking-badge">BREAKING</span><% } %>
+    <h3 class="title"><a href="/post/<%= post.slug %>"><%= post.title %></a></h3>
+    <p><%= post.excerpt %></p>
+    <div class="post-meta-single">
+      <ul>
+        <li><%= formatDate(post.createdAt) %></li>
+        <li><%= readingTime(post.content) %> min read</li>
+      </ul>
+    </div>
+  </div>
+</article>
+<% } %>

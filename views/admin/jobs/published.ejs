@@ -1,0 +1,78 @@
+<%- include('../partials/head') %>
+<%-
+  include('../partials/topbar', {
+    heading: 'Published Jobs',
+    crumb: jobs.filter(function(j) { return !isExpired(j.deadline); }).length + ' live',
+    topbarRight: '<a href="/admin/jobs" class="btn btn-ghost btn-sm"><i class="bi bi-briefcase"></i>&nbsp; All Jobs</a>'
+  })
+%>
+
+<div class="panel-card" style="overflow-x:auto;">
+  <table class="data-table" id="published-jobs-table">
+    <thead>
+      <tr>
+        <th>Job Title</th>
+        <th>Company</th>
+        <th>Views</th>
+        <th>Deadline</th>
+        <th>Featured</th>
+        <th>Published</th>
+        <th class="table-actions" style="text-align:right;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (jobs.length === 0) { %>
+        <tr class="empty-row"><td colspan="7">No published jobs.</td></tr>
+      <% } %>
+      <% jobs.forEach(function(job) { %>
+        <tr class="<%= isExpired(job.deadline) ? 'expired-row' : '' %>">
+          <td>
+            <div class="row-title">
+              <div><div class="rt-title"><%= job.title %><%= job.featured ? ' ⭐' : '' %></div><div class="rt-sub"><%= job.company || 'N/A' %></div></div>
+            </div>
+          </td>
+          <td><%= job.company || 'N/A' %></td>
+          <td><%= job.views || 0 %></td>
+          <td>
+            <%= formatDate(job.deadline) %>
+            <% if (isExpired(job.deadline)) { %><span class="pill pill-rejected">Expired</span><% } %>
+          </td>
+          <td>
+            <% if (job.featured) { %>
+              <span class="pill" style="background:#fff8e1; color:#ff8f00;">Yes</span>
+            <% } else { %>
+              <span style="color:var(--grey);">No</span>
+            <% } %>
+          </td>
+          <td><%= formatDate(job.createdAt) %></td>
+          <td class="table-actions" style="text-align:right;">
+            <a class="icon-btn" href="/admin/jobs/<%= job.id %>" title="View"><i class="bi bi-eye"></i></a>
+            <a class="icon-btn" href="/jobs/<%= job.slug %>" target="_blank" title="Live View"><i class="bi bi-box-arrow-up-right"></i></a>
+            <a class="icon-btn" href="javascript:void(0)" onclick="toggleFeatured(<%= job.id %>)" title="Toggle Featured"><i class="bi bi-star"></i></a>
+            <a class="icon-btn" href="javascript:void(0)" onclick="unpublishJob(<%= job.id %>)" title="Unpublish" style="color:#e51d3e;"><i class="bi bi-arrow-bar-down"></i></a>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+   </table>
+  </div>
+
+  <style>
+  .expired-row { background: #fff5f5; }
+  </style>
+
+<script>
+function toggleFeatured(id) {
+  fetch('/admin/jobs/' + id + '/featured', { method: 'POST' })
+    .then(r => r.json())
+    .then(() => location.reload());
+}
+function unpublishJob(id) {
+  if (confirm('Unpublish this job?')) {
+    fetch('/admin/jobs/' + id + '/unpublish', { method: 'POST' })
+      .then(() => location.reload());
+  }
+}
+</script>
+
+<%- include('../partials/foot') %>

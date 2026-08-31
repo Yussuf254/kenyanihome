@@ -1,0 +1,75 @@
+<%- include('../partials/head') %>
+<%-
+  include('../partials/topbar', {
+    heading: 'Pending Jobs',
+    crumb: jobs.length + ' awaiting review',
+    topbarRight: '<a href="/admin/jobs" class="btn btn-ghost btn-sm"><i class="bi bi-briefcase"></i>&nbsp; All Jobs</a>'
+  })
+%>
+
+<div class="panel-card" style="overflow-x:auto;">
+  <table class="data-table" id="pending-jobs-table">
+    <thead>
+      <tr>
+        <th>Job Title</th>
+        <th>Company</th>
+        <th>Category</th>
+        <th>Type</th>
+        <th>Location</th>
+        <th>Submitted</th>
+        <th style="text-align:right;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (jobs.length === 0) { %>
+        <tr class="empty-row"><td colspan="7">No pending jobs at the moment.</td></tr>
+      <% } %>
+      <% jobs.forEach(function(job) { %>
+        <tr>
+          <td>
+            <div class="row-title">
+              <div><div class="rt-title"><%= job.title %></div><div class="rt-sub"><%= job.company || 'N/A' %></div></div>
+            </div>
+          </td>
+          <td><%= job.company || 'N/A' %></td>
+          <td><%= job.categoryName || job.category || 'N/A' %></td>
+          <td><%= job.employmentType || 'N/A' %></td>
+          <td><%= job.location || 'N/A' %></td>
+          <td><%= formatDate(job.createdAt) %></td>
+          <td class="table-actions" style="text-align:right;">
+            <a class="icon-btn" href="/admin/jobs/<%= job.id %>" title="Review"><i class="bi bi-eye"></i></a>
+            <a class="icon-btn" href="/jobs/<%= job.slug %>" target="_blank" title="Preview"><i class="bi bi-box-arrow-up-right"></i></a>
+            <a class="icon-btn" href="javascript:void(0)" onclick="approveJob(<%= job.id %>)" title="Approve" style="color:var(--kenya-green);"><i class="bi bi-check"></i></a>
+            <a class="icon-btn" href="javascript:void(0)" onclick="rejectJob(<%= job.id %>)" title="Reject" style="color:#e51d3e;"><i class="bi bi-x"></i></a>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+   </table>
+  </div>
+
+  <style>
+  #pending-jobs-table tbody tr.pending-row { background: #fff8f0; }
+  </style>
+
+  <script>
+  function approveJob(id) {
+    if (confirm('Approve this job? It will be published immediately.')) {
+      fetch('/admin/jobs/' + id + '/approve', { method: 'POST' })
+        .then(r => r.json())
+        .then(() => location.reload());
+    }
+  }
+  function rejectJob(id) {
+    const reason = prompt('Reason for rejection:');
+    if (reason) {
+      fetch('/admin/jobs/' + id + '/reject', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason })
+      }).then(() => location.reload());
+    }
+  }
+  </script>
+
+  <%- include('../partials/foot') %>

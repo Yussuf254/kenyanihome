@@ -1,0 +1,182 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: submission.productName, crumb: 'Ad Submissions' }) %>
+
+  <div class="admin-split">
+    <div>
+      <div class="form-section">
+        <div class="form-section-head">Business Information</div>
+        <div class="form-section-body">
+          <div class="field-row">
+            <div class="field">
+              <label>Business / Brand Name</label>
+              <div style="font-size:13.5px;font-weight:600;"><%= submission.businessName %></div>
+            </div>
+            <div class="field">
+              <label>Contact Person</label>
+              <div style="font-size:13.5px;font-weight:600;"><%= submission.contactPerson %></div>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Phone</label>
+              <div style="font-size:13.5px;"><%= submission.phone %></div>
+            </div>
+            <div class="field">
+              <label>WhatsApp</label>
+              <div style="font-size:13.5px;"><%= submission.whatsapp || '—' %></div>
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <div style="font-size:13.5px;"><a href="mailto:<%= submission.email %>"><%= submission.email %></a></div>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Location</label>
+              <div style="font-size:13.5px;"><%= submission.location || '—' %></div>
+            </div>
+            <div class="field">
+              <label>Website</label>
+              <div style="font-size:13.5px;"><%= submission.website ? '<a href="' + submission.website + '" target="_blank">' + submission.website + '</a>' : '—' %></div>
+            </div>
+          </div>
+          <% if (submission.logo) { %>
+            <div class="field">
+              <label>Logo</label>
+              <img src="<%= submission.logo %>" style="max-height:120px;border-radius:8px;border:1px solid var(--line);">
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-head">Promotion Information</div>
+        <div class="form-section-body">
+          <div class="field">
+            <label>Promotion Type</label>
+            <span class="pill"><%= submission.promotionType %></span>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Product / Service Name</label>
+              <div style="font-size:15px;font-weight:700;"><%= submission.productName %></div>
+            </div>
+            <div class="field">
+              <label>Category</label>
+              <div style="font-size:13.5px;"><%= submission.category || '—' %> <%= submission.subcategory ? '/ ' + submission.subcategory : '' %></div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Short Description</label>
+            <div style="font-size:13.5px;color:var(--grey);"><%= submission.shortDescription || '—' %></div>
+          </div>
+          <div class="field">
+            <label>Full Description</label>
+            <div style="font-size:13.5px;line-height:1.6;white-space:pre-wrap;"><%= submission.fullDescription %></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-head">Product / Service Details</div>
+        <div class="form-section-body">
+          <div class="field-row">
+            <div class="field">
+              <label>Price</label>
+              <div style="font-size:18px;font-weight:800;color:var(--kenya-green);"><%= submission.currency || 'KSh' %> <%= Number(submission.price).toLocaleString() %></div>
+            </div>
+            <div class="field">
+              <label>Original Price</label>
+              <div style="font-size:13.5px;color:var(--grey);text-decoration:line-through;"><%= submission.originalPrice ? (submission.currency || 'KSh') + ' ' + Number(submission.originalPrice).toLocaleString() : '—' %></div>
+            </div>
+            <div class="field">
+              <label>Discount / Offer</label>
+              <div style="font-size:13.5px;"><%= submission.discount || '—' %></div>
+            </div>
+          </div>
+          <% if (submission.images && submission.images.length) { %>
+            <div class="field">
+              <label>Images</label>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <% submission.images.forEach(function(img) { %>
+                  <img src="<%= img %>" style="max-height:160px;border-radius:8px;border:1px solid var(--line);">
+                <% }) %>
+              </div>
+            </div>
+          <% } %>
+          <div class="field-row">
+            <div class="field">
+              <label>Website / Product Link</label>
+              <div style="font-size:13.5px;"><%= submission.productLink ? '<a href="' + submission.productLink + '" target="_blank">' + submission.productLink + '</a>' : '—' %></div>
+            </div>
+            <div class="field">
+              <label>WhatsApp Link</label>
+              <div style="font-size:13.5px;"><%= submission.whatsappLink ? '<a href="' + submission.whatsappLink + '" target="_blank">' + submission.whatsappLink + '</a>' : '—' %></div>
+            </div>
+            <div class="field">
+              <label>Phone Call Link</label>
+              <div style="font-size:13.5px;"><%= submission.phoneLink ? '<a href="' + submission.phoneLink + '">' + submission.phoneLink + '</a>' : '—' %></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="form-section">
+        <div class="form-section-head">Campaign Details</div>
+        <div class="form-section-body">
+          <div class="field">
+            <label>Package</label>
+            <div style="font-size:14px;font-weight:700;"><%= submission.package || 'Basic Listing' %></div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Start Date</label>
+              <div style="font-size:13.5px;"><%= submission.startDate ? new Date(submission.startDate).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}) : '—' %></div>
+            </div>
+            <div class="field">
+              <label>End Date</label>
+              <div style="font-size:13.5px;"><%= submission.endDate ? new Date(submission.endDate).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}) : '—' %></div>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Status</label>
+              <span class="pill pill-<%= submission.status %>"><%= submission.status %></span>
+            </div>
+            <div class="field">
+              <label>Payment</label>
+              <span class="pill <%= submission.paymentStatus === 'paid' ? 'pill-active' : 'pill-draft' %>"><%= submission.paymentStatus %></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-head">Actions</div>
+        <div class="form-section-body" style="display:flex;flex-direction:column;gap:8px;">
+          <a href="/admin/ad-submissions/<%= submission.id %>/edit" class="btn btn-signal btn-block"><i class="bi bi-pencil"></i>&nbsp; Edit Submission</a>
+          <% if (submission.status === 'pending') { %>
+            <form action="/admin/ad-submissions/<%= submission.id %>/approve" method="post"><button type="submit" class="btn btn-green btn-block"><i class="bi bi-check-lg"></i>&nbsp; Approve</button></form>
+            <form action="/admin/ad-submissions/<%= submission.id %>/reject" method="post" onsubmit="return confirm('Reject this submission?')"><button type="submit" class="btn btn-ghost btn-block"><i class="bi bi-x-lg"></i>&nbsp; Reject</button></form>
+          <% } %>
+          <% if (submission.status === 'approved' && submission.paymentStatus === 'paid') { %>
+            <form action="/admin/ad-submissions/<%= submission.id %>/activate" method="post"><button type="submit" class="btn btn-green btn-block"><i class="bi bi-play-fill"></i>&nbsp; Activate</button></form>
+          <% } %>
+          <% if (submission.status === 'approved' && submission.paymentStatus !== 'paid') { %>
+            <form action="/admin/ad-submissions/<%= submission.id %>/mark-paid" method="post" onsubmit="return confirm('Mark this ad as paid?')"><button type="submit" class="btn btn-green btn-block" style="background:#084d29;"><i class="bi bi-cash-stack"></i>&nbsp; Mark as Paid</button></form>
+          <% } %>
+          <% if (submission.status === 'active') { %>
+            <form action="/admin/ad-submissions/<%= submission.id %>/pause" method="post"><button type="submit" class="btn btn-ghost btn-block"><i class="bi bi-pause-fill"></i>&nbsp; Pause</button></form>
+            <form action="/admin/ad-submissions/<%= submission.id %>/expire" method="post" onsubmit="return confirm('Expire this campaign?')"><button type="submit" class="btn btn-ghost btn-block"><i class="bi bi-calendar-x"></i>&nbsp; Expire</button></form>
+          <% } %>
+          <% if (submission.status === 'paused') { %>
+            <form action="/admin/ad-submissions/<%= submission.id %>/activate" method="post"><button type="submit" class="btn btn-green btn-block"><i class="bi bi-play-fill"></i>&nbsp; Resume</button></form>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<%- include('partials/foot') %>

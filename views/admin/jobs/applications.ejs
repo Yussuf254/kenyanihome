@@ -1,0 +1,50 @@
+<%- include('../partials/head') %>
+<%-
+  include('../partials/topbar', {
+    heading: 'Applications',
+    crumb: applications.length + ' total',
+    topbarRight: '<a href="/admin/jobs" class="btn btn-ghost btn-sm"><i class="bi bi-briefcase"></i>&nbsp; All Jobs</a>'
+  })
+%>
+
+<div class="panel-card" style="overflow-x:auto;">
+  <table class="data-table" id="applications-table">
+    <thead>
+      <tr>
+        <th>Applicant</th>
+        <th>Email</th>
+        <th>Job</th>
+        <th>Company</th>
+        <th>Status</th>
+        <th>Applied</th>
+        <th class="table-actions" style="text-align:right;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (applications.length === 0) { %>
+        <tr class="empty-row"><td colspan="7">No applications received yet.</td></tr>
+      <% } %>
+      <% applications.forEach(function(app) { %>
+        <tr>
+          <td>
+            <div class="row-title">
+              <div><div class="rt-title"><%= app.name || 'N/A' %></div><div class="rt-sub"><%= app.phone || '' %></div></div>
+            </div>
+          </td>
+          <td><%= app.email %></td>
+          <td><%= app.jobTitle || (app.job && app.job.title) || 'N/A' %></td>
+          <td><%= app.company || (app.company && app.company.companyName) || 'N/A' %></td>
+          <td><span class="pill pill-<%= app.status %>"><%= app.status.replace('_', ' ') %></span></td>
+          <td><%= formatDate(app.createdAt) %></td>
+          <td class="table-actions" style="text-align:right;">
+            <a class="icon-btn" href="/admin/applications/<%= app.id %>" title="View"><i class="bi bi-eye"></i></a>
+            <a class="icon-btn" href="/jobs/<%= app.job && app.job.slug ? app.job.slug : '#' %>" target="_blank" title="View Job"><i class="bi bi-box-arrow-up-right"></i></a>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+   </table>
+  </div>
+</main>
+
+<%- include('../partials/foot') %>

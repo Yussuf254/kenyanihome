@@ -1,0 +1,40 @@
+<%- include('partials/head') %>
+<%-
+  include('partials/topbar', {
+    heading: 'Advertising',
+    crumb: ads.length + ' total',
+    topbarRight: '<a href="/admin/ads/new" class="btn btn-signal btn-sm" style="margin-right:10px;"><i class="bi bi-plus-lg"></i>&nbsp; New Ad</a>' + '<a href="/admin/ads/export" class="btn btn-green btn-sm"><i class="bi bi-download"></i>&nbsp; Export CSV</a>'
+  })
+%>
+
+  <div class="panel-card" style="overflow-x:auto;">
+    <table class="data-table" id="ad-table">
+      <thead><tr><th>Ad</th><th>Placement</th><th>Status</th><th>Clicks</th><th style="text-align:right;">Actions</th></tr></thead>
+      <tbody>
+        <% if (!ads.length) { %>
+          <tr class="empty-row"><td colspan="5">No ads yet. Create one to start showing sponsored content on the public site.</td></tr>
+        <% } %>
+        <% ads.forEach(a => { %>
+          <tr>
+            <td>
+              <div class="row-title">
+                <% if (a.imageUrl) { %><img class="thumb" src="<%= a.imageUrl %>"><% } else { %><div class="thumb" style="display:flex;align-items:center;justify-content:center;color:var(--grey-light);"><i class="bi bi-megaphone"></i></div><% } %>
+                <div><div class="rt-title"><%= a.title %></div><div class="rt-sub"><%= a.link %></div></div>
+              </div>
+            </td>
+            <td style="text-transform:capitalize;"><%= a.placement %></td>
+            <td><span class="pill <%= a.active ? 'pill-published' : 'pill-draft' %>"><%= a.active ? 'active' : 'paused' %></span></td>
+            <td><%= a.clicks || 0 %></td>
+            <td class="table-actions">
+              <a class="icon-btn" href="/admin/ads/<%= a.id %>/edit" title="Edit"><i class="bi bi-pencil"></i></a>
+              <form action="/admin/ads/<%= a.id %>?_method=DELETE" method="post" onsubmit="return confirm('Delete this ad?');">
+                <button class="icon-btn" type="submit" title="Delete"><i class="bi bi-trash3"></i></button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+<%- include('partials/foot') %>

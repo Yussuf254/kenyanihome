@@ -1,0 +1,958 @@
+<%- include('partials/head') %>
+
+<div id="reading-progress" style="position:fixed; top:0; left:0; height:3px; background:#0F6B34; width:0%; z-index:1000; transition:width 0.1s linear;"></div>
+
+<script type="application/ld+json"><%- seoSchema %></script>
+
+<style>
+  .article-grid{
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) 320px;
+    gap:24px;
+  }
+  .main{min-width:0}
+  .kicker{
+    display:flex;
+    gap:8px;
+    margin-bottom:17px;
+  }
+  .tag{
+    display:inline-flex;
+    padding:6px 11px;
+    border-radius:5px;
+    color:white;
+    background:var(--green,#08783f);
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.5px;
+  }
+  .tag.red{background:var(--red,#e51d3e)}
+  h1.article-title{
+    font-family:"Montserrat",sans-serif;
+    font-size:clamp(28px, 5vw, 48px);
+    line-height:1.08;
+    letter-spacing:-0.025em;
+    max-width:100%;
+    margin:0 0 16px;
+    color:#172326;
+    font-weight:800;
+  }
+  .dek{
+    max-width:100%;
+    color:#626a6e;
+    font-size:clamp(15px, 2.2vw, 16px);
+    line-height:1.65;
+    margin-bottom:18px;
+  }
+.byline{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:18px;
+}
+.author{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:12px;
+}
+.avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,#ddd,#8d8d8d);
+}
+.author strong{font-weight:800}
+.meta{color:#70777b;margin-top:3px}
+.share{display:flex;gap:9px}
+.share button{
+  width:36px;height:36px;border-radius:50%;
+  border:1px solid #e2e4e2;background:white;
+  cursor:pointer;font-weight:700;
+}
+  .hero{
+    width:100%;
+    height:clamp(300, 40vw, 500px);
+    border-radius:9px;
+    overflow:hidden;
+    position:relative;
+    background:
+      linear-gradient(90deg,rgba(0,0,0,.03),rgba(0,0,0,.0)),
+      url("<%= post.coverImage || '/assets/img/post/list/1.png' %>")
+      center/cover;
+  }
+.caption{
+  border-left:3px solid var(--red,#e51d3e);
+  margin-top:10px;
+  padding:7px 12px;
+  color:#737a7d;
+  font-size:10px;
+  line-height:1.5;
+}
+.article-body{
+  max-width:100%;
+  margin:20px 0 40px;
+  font-family:"Montserrat",sans-serif;
+  font-size:18px;
+  line-height:1.82;
+  color:#303638;
+}
+.article-body p{margin:0 0 22px}
+.article-body p:first-child:first-letter{
+  float:left;
+  font-size:58px;
+  line-height:.8;
+  padding:8px 8px 0 0;
+  font-weight:700;
+  color:#101719;
+}
+.article-body h2{
+  font-family:"Montserrat",sans-serif;;
+  font-size:27px;
+  margin:38px 0 10px;
+  color:#151c1e;
+}
+.paywall-content{
+  position:relative;
+}
+.paywall-content.is-locked{
+  filter:blur(8px);
+  user-select:none;
+}
+.paywall-overlay{
+  display:none;
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.85) 25%,rgba(255,255,255,.95) 100%);
+  z-index:5;
+  align-items:flex-start;
+  justify-content:center;
+  padding-top:18vh;
+}
+.paywall-overlay.is-visible{
+  display:flex;
+}
+.paywall-card{
+  background:#fff;
+  border:1px solid #e4dfd7;
+  border-radius:14px;
+  padding:28px 24px;
+  max-width:420px;
+  width:92%;
+  text-align:center;
+  box-shadow:0 20px 50px rgba(0,0,0,.12);
+}
+.paywall-card h3{
+  font:700 20px "Montserrat",sans-serif;;
+  margin:0 0 8px;
+  color:#151c1e;
+}
+.paywall-card p{
+  font-size:13px;
+  color:#626a6e;
+  line-height:1.6;
+  margin:0 0 18px;
+}
+.paywall-card .price{
+  font-size:28px;
+  font-weight:800;
+  color:#0F6B34;
+  margin-bottom:14px;
+}
+.paywall-card .price small{
+  font-size:13px;
+  font-weight:500;
+  color:#8a9495;
+}
+.paywall-input{
+  width:100%;
+  padding:12px 14px;
+  border:1px solid #dfe2df;
+  border-radius:8px;
+  font-size:14px;
+  outline:none;
+  margin-bottom:10px;
+  transition:border-color .2s ease;
+}
+.paywall-input:focus{border-color:#0F6B34}
+.paywall-btn{
+  width:100%;
+  padding:12px;
+  border:0;
+  border-radius:8px;
+  background:#0F6B34;
+  color:#fff;
+  font-weight:800;
+  font-size:14px;
+  cursor:pointer;
+  transition:background .2s ease;
+}
+.paywall-btn:hover{background:#0a4f25}
+.paywall-btn:disabled{background:#9cb8a6;cursor:not-allowed}
+.paywall-msg{
+  margin-top:10px;
+  font-size:12px;
+  display:none;
+}
+.paywall-modal-backdrop{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.45);
+  z-index:2000;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.paywall-modal-backdrop.is-open{
+  display:flex;
+}
+.paywall-modal{
+  background:#fff;
+  border-radius:16px;
+  max-width:440px;
+  width:100%;
+  padding:28px;
+  text-align:center;
+  box-shadow:0 25px 60px rgba(0,0,0,.2);
+}
+.paywall-modal h3{
+  font:700 22px "Montserrat",sans-serif;;
+  margin:0 0 6px;
+  color:#151c1e;
+}
+.paywall-modal .sub{
+  font-size:13px;
+  color:#626a6e;
+  margin:0 0 18px;
+}
+.spinner{
+  width:28px;height:28px;
+  border:3px solid #e4dfd7;
+  border-top-color:#0F6B34;
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+  margin:14px auto;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.quote{
+  margin:35px 0;
+  padding:25px 30px;
+  border-radius:8px;
+  background:#f5f6f4;
+  font-family:"Montserrat",sans-serif;;
+  font-size:20px;
+  line-height:1.5;
+  position:relative;
+}
+.quote:before{
+  content:"\201C";
+  color:var(--red,#e51d3e);
+  font-size:55px;
+  position:absolute;
+  left:12px;top:0;
+}
+  .quote span{display:block;margin-top:12px;font:500 12px "Montserrat",sans-serif;color:#687176}
+  .checklist{font-family:"Montserrat",sans-serif;font-size:14px;line-height:2.3;list-style:none;padding:0}
+.checklist li:before{content:"\2713";color:var(--green,#08783f);font-weight:900;margin-right:10px}
+.readalso-section{
+  margin:32px 0;
+  padding:24px;
+  background:#fafaf9;
+  border-radius:12px;
+  border:1px solid #e4dfd7;
+}
+.readalso-section .readalso-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:16px;
+}
+.readalso-section .readalso-bar{
+  width:4px;
+  height:22px;
+  background:#e51d3e;
+  border-radius:2px;
+}
+.readalso-section .readalso-title{
+  font:700 18px "Montserrat",sans-serif;
+  color:#0C1210;
+  letter-spacing:-.02em;
+  margin:0;
+}
+.readalso-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:16px;
+}
+.readalso-card{
+  text-decoration:none;
+  color:inherit;
+  display:block;
+  background:#fff;
+  border-radius:10px;
+  overflow:hidden;
+  border:1px solid #e4dfd7;
+  transition:all .2s ease;
+}
+.readalso-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 10px 30px rgba(0,0,0,.09);
+}
+.readalso-card .readalso-img{
+  height:150px;
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+}
+.readalso-card .readalso-body{
+  padding:14px;
+}
+.readalso-card .readalso-tag{
+  display:inline-block;
+  padding:3px 8px;
+  border-radius:4px;
+  background:#0F6B34;
+  color:#fff;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.5px;
+  margin-bottom:8px;
+  font-family:"Montserrat",sans-serif;
+}
+.readalso-card .readalso-title{
+  font:700 14px "Montserrat",sans-serif;
+  color:#151c1e;
+  line-height:1.4;
+  margin-bottom:6px;
+}
+.readalso-card .readalso-meta{
+  font-size:11px;
+  color:#8a9495;
+  font-family:"Montserrat",sans-serif;
+}
+.readalso-card .readalso-pill{
+  display:block;
+  width:100%;
+  padding:4px 0;
+  background:#e51d3e;
+  color:#fff;
+  font:700 10px "Montserrat",sans-serif;
+  text-align:center;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+}
+.author-card{
+  margin-top:24px;
+  padding:20px;
+  background:#fafaf9;
+  border-radius:12px;
+  border:1px solid #e4dfd7;
+}
+.author-card .person{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.author-card .big-avatar{
+  width:48px;height:48px;border-radius:50%;
+  background:linear-gradient(135deg,#0F6B34,#0a4f25);
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:16px;
+}
+.author-card p{font-size:12px;line-height:1.7;color:#636b6e}
+.outline-btn{
+  width:100%;background:white;border:1px solid #dfe2df;
+  padding:10px;border-radius:5px;font-weight:700;
+  cursor:pointer;
+}
+.tags-section{
+  margin-top:32px;
+  padding-top:24px;
+  border-top:1px solid #e4dfd7;
+}
+.tags-section .tags-label{
+  font-size:12px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.1em;color:#8a9495;margin-right:8px;
+}
+.tag-pill{
+  display:inline-block;padding:5px 11px;border-radius:20px;
+  background:#f7f5f2;color:#5f6b6c;font-size:12px;
+  text-decoration:none;margin:4px 4px 0 0;transition:all .2s ease;
+}
+.tag-pill:hover{background:#0F6B34;color:#fff}
+  .sidebar{display:flex;flex-direction:column;gap:14px}
+.card{
+  border:1px solid #e7e9e7;
+  border-radius:9px;
+  padding:16px;
+  background:white;
+}
+.card h3{
+  font:700 17px "Montserrat",sans-serif;;
+  margin:0 0 18px;
+}
+.trending h3:before{
+  content:"";display:inline-block;width:17px;height:3px;
+  background:var(--red,#e51d3e);margin-right:9px;vertical-align:middle;
+}
+  .trend{
+    display:grid;
+    grid-template-columns:24px 1fr 80px;
+    gap:8px;
+    padding:10px 0;
+    border-bottom:1px solid #eee;
+    align-items:start;
+  }
+.trend:last-child{border-bottom:0}
+.number{font-size:14px;color:var(--red,#e51d3e);font-weight:800}
+.trend-title{font-size:11px;line-height:1.4;font-weight:700}
+.trend-meta{font-size:9px;color:#818789;margin-top:7px}
+.thumb{width:80px;height:60px;border-radius:6px;object-fit:cover;background:#ddd}
+.newsletter{
+  text-align:center;
+  background:#fbfbf8;
+}
+.mail-icon{
+  width:44px;height:44px;border-radius:50%;
+  background:#e7f2ed;color:var(--green,#08783f);
+  display:grid;place-items:center;margin:0 auto 14px;font-size:20px;
+}
+.newsletter h3{font-size:20px;margin-bottom:10px}
+.newsletter p{font-size:11px;color:#72797c;line-height:1.6}
+.newsletter input{
+  width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:5px;
+  margin:8px 0 8px;font-size:13px;
+}
+.newsletter button{
+  width:100%;padding:10px;border:0;border-radius:5px;
+  background:var(--green,#08783f);color:white;font-weight:800;
+}
+.newsletter small{font-size:10px;color:#888;display:block;margin-top:6px}
+.comments-section{
+  padding:32px 0;
+  background:#fafaf9;
+  border-top:1px solid #e4dfd7;
+}
+.comment-item{
+  display:flex;gap:12px;padding:10px 0;
+  border-bottom:1px solid #f2f0eb;
+  transition:background 0.15s ease;
+}
+.comment-item:hover{background:#fdfcfb}
+.comment-avatar{
+  width:30px;height:30px;border-radius:50%;
+  background:linear-gradient(135deg,#0F6B34,#0a4f25);
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:11px;flex:none;
+}
+.comment-body{flex:1;min-width:0}
+.comment-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;gap:8px}
+.comment-name{font-weight:600;font-size:12px;color:#1e2b2c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.comment-date{font-size:10px;color:#8a9495;flex:none}
+.comment-text{font-size:13px;line-height:1.55;color:#5f6b6c}
+.comment-form{
+  margin-top:20px;padding:20px;
+  background:#fdfcfb;border-radius:10px;
+  border:1px solid #f2f0eb;
+}
+.comment-form h4{font-size:14px;font-weight:700;margin:0 0 14px;color:#1e2b2c;display:flex;align-items:center;gap:8px}
+.comment-form h4::before{
+  content:"";width:6px;height:6px;border-radius:50%;
+  background:#0F6B34;display:inline-block;flex:none;
+}
+.comment-form input,.comment-form textarea{
+  width:100%;padding:10px 12px;border:1px solid #e4dfd7;
+  border-radius:6px;font-size:13px;outline:none;margin-bottom:10px;
+  transition:border-color 0.2s ease;
+}
+.comment-form input:focus,.comment-form textarea:focus{border-color:#0F6B34}
+.comment-form button{
+  padding:10px 22px;border-radius:6px;border:0;
+  background:#0F6B34;color:#fff;font-weight:700;
+  font-size:13px;cursor:pointer;transition:all 0.2s ease;
+}
+.comment-form button:hover{background:#0a4f25}
+.footer{
+  background:#0C1210;
+  padding:56px 0 0;
+}
+.footer-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:28px;
+}
+.footer h5{
+  color:#D32F2F;font-size:14px;font-weight:700;margin:0 0 16px;
+}
+.footer p,.footer li{
+  font-size:13px;line-height:1.7;
+  color:rgba(255,255,255,.6);margin:0 0 10px;
+}
+.footer a{color:rgba(255,255,255,.6);transition:color .2s}
+.footer a:hover{color:#fff}
+.footer-bottom{
+  border-top:1px solid rgba(255,255,255,.08);
+  padding:20px 0;margin-top:32px;text-align:center;
+}
+.footer-bottom a{color:rgba(255,255,255,.6);font-size:13px;margin:0 12px}
+.footer-bottom p{color:rgba(255,255,255,.4);font-size:12px;margin:10px 0 0}
+.back-to-top{
+  position:fixed;bottom:20px;right:20px;z-index:99;
+  cursor:pointer;display:none;
+}
+.back-to-top span{
+  display:flex;align-items:center;justify-content:center;
+  width:40px;height:40px;background:#0F6B34;border-radius:50%;
+  color:#fff;box-shadow:0 4px 12px rgba(15,107,52,.3);
+}
+@media(max-width:1000px){
+  .article-grid{grid-template-columns:1fr}
+  .sidebar{display:grid;grid-template-columns:1fr}
+  h1.article-title{font-size:clamp(26px, 4.5vw, 40px)}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .hero{height:clamp(220px, 30vw, 380px)}
+}
+@media(max-width:768px){
+  .article-grid{display:block}
+  .sidebar{display:flex;flex-direction:column; margin-bottom:32px}
+  h1.article-title{font-size:clamp(24px, 5vw, 34px); letter-spacing:-.8px}
+  .dek{font-size:14px}
+  .hero{height:clamp(200px, 28vw, 300px)}
+  .article-body{font-size:17px}
+  .footer-grid{grid-template-columns:1fr}
+  .comment-form .form-row{grid-template-columns:1fr}
+}
+</style>
+
+<main>
+  <div class="container">
+    <div class="breadcrumb" style="padding:14px 20px; margin-bottom:16px; background:#e51d3e; color:#fff; font-size:14px; font-weight:700; border-radius:6px;">
+      <span style="color:#ffffff;">Home</span> &nbsp;›&nbsp; <span style="color:#ffffff;"><%= post.category.charAt(0).toUpperCase() + post.category.slice(1) %></span> &nbsp;›&nbsp; <span style="color:#ffffff;"><%= post.title %></span>
+    </div>
+
+    <div class="article-grid">
+      <article class="main">
+        <div class="kicker">
+          <span class="tag"><%= post.category.toUpperCase() %></span>
+          <% if (post.breaking) { %><span class="tag red">BREAKING</span><% } %>
+        </div>
+
+        <h1 class="article-title"><%= post.title %></h1>
+
+        <div class="dek">
+          <%= post.excerpt %>
+        </div>
+
+        <div class="byline">
+          <div class="author">
+            <div class="avatar"></div>
+            <div><strong>By <%= post.author %></strong><div class="meta"><%= formatDate(post.createdAt) %> · <%= readingTime(post.content) %> min read · <span id="share-count"><%= post.shares || 0 %></span> shares</div></div>
+          </div>
+          <div class="share">
+            <button data-share="twitter" title="Share on X" style="width:36px;height:36px;border-radius:50%;border:1px solid #e2e4e2;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </button>
+            <button data-share="facebook" title="Share on Facebook" style="width:36px;height:36px;border-radius:50%;border:1px solid #e2e4e2;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </button>
+            <button data-share="whatsapp" title="Share on WhatsApp" style="width:36px;height:36px;border-radius:50%;border:1px solid #e2e4e2;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </button>
+            <button data-share="copy" title="Copy link" style="width:36px;height:36px;border-radius:50%;border:1px solid #e2e4e2;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <% if (post.coverImage) { %>
+        <div class="hero"></div>
+        <% if (post.photoCredit) { %>
+        <div class="caption"><%= post.photoCredit %> &nbsp; PHOTO | PCS</div>
+        <% } %>
+        <% } %>
+
+        <div class="article-body" id="article-body">
+          <div class="paywall-content" id="paywall-content">
+            <%- post.content %>
+          </div>
+          <% if (paywallActive) { %>
+          <div class="paywall-overlay" id="paywall-overlay">
+            <div class="paywall-card">
+              <h3>Continue reading</h3>
+              <p>You have reached your free article limit. Unlock this story to keep reading.</p>
+              <div class="price"><%= paywallCurrency %> <%= paywallPrice %> <small>one-time unlock</small></div>
+              <form id="paywall-form">
+                <input type="tel" class="paywall-input" id="paywall-phone" placeholder="M-Pesa phone number (e.g. 254712345678)" required>
+                <button type="submit" class="paywall-btn" id="paywall-btn">Unlock with M-Pesa</button>
+                <p class="paywall-msg" id="paywall-msg"></p>
+              </form>
+            </div>
+          </div>
+          <% } %>
+        </div>
+
+        <% if (post.tags && post.tags.length) { %>
+        <div class="tags-section">
+          <span class="tags-label">Tags</span>
+          <% post.tags.forEach(function(t) { %>
+            <a href="/search?q=<%= encodeURIComponent(t) %>" class="tag-pill">#<%= t %></a>
+          <% }) %>
+        </div>
+        <% } %>
+      </article>
+
+      <aside class="sidebar">
+        <% if (sidebarAd) { %>
+        <div style="background:#fff; border-radius:12px; border:1px solid #e4dfd7; overflow:hidden; padding:14px; margin-bottom:14px;">
+          <%- include('partials/ad-card', { ad: sidebarAd }) %>
+        </div>
+        <% } %>
+
+        <section class="card trending">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+            <h3 style="font:700 clamp(13px, 2.5vw, 15px) "Montserrat",sans-serif; margin:0;">Trending Now</h3>
+            <a href="/search" style="font-size:clamp(10px, 1.8vw, 11px); font-weight:600; color:#0F6B34; text-decoration:none; display:inline-flex; align-items:center; gap:3px;">View all →</a>
+          </div>
+          <% trending.slice(0, 5).forEach(function(p, i) { %>
+          <div class="trend">
+            <div class="number"><%= String(i+1).padStart(2,'0') %></div>
+            <div>
+              <div class="trend-title"><a href="/post/<%= p.slug %>" style="color:inherit;text-decoration:none;"><%= p.title %></a></div>
+              <div class="trend-meta"><%= p.category %> · <%= readingTime(p.content) %> min</div>
+            </div>
+            <img class="thumb" src="<%= p.coverImage || '/assets/img/post/list/1.png' %>">
+          </div>
+          <% }) %>
+        </section>
+
+        <div style="background:linear-gradient(160deg, #0a1a12 0%, #0f2b1c 40%, #0c2418 100%); border-radius:12px; overflow:hidden; position:relative; padding:18px;">
+          <div style="position:absolute; inset:0; background:radial-gradient(circle at 20% 20%, rgba(180,95,59,.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(15,107,52,.2) 0%, transparent 50%); pointer-events:none;"></div>
+          <div style="position:relative; z-index:1;">
+            <h4 style="color:#fff; font-weight:700; margin:0 0 6px; font-size:clamp(13px, 2.5vw, 15px);">Weekly Brief</h4>
+            <p style="color:rgba(255,255,255,.7); font-size:clamp(11px, 2vw, 12px); line-height:1.5; margin:0 0 12px;">Stay informed with curated stories delivered every Friday.</p>
+            <form id="newsletter-form">
+              <input type="email" name="email" placeholder="your@email.com" required style="width:100%; padding:10px 12px; border-radius:6px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.08); color:#fff; font-size:13px; outline:none; margin-bottom:8px;">
+              <button type="submit" style="width:100%; padding:10px; border-radius:6px; border:0; background:#0F6B34; color:#fff; font-weight:700; font-size:13px; cursor:pointer; transition:background 0.2s ease;">Subscribe</button>
+            </form>
+            <p id="newsletter-msg" style="font-size:11px; color:rgba(255,255,255,.6); margin:8px 0 0; display:none;"></p>
+            <small style="font-size:10px; color:rgba(255,255,255,.5); display:block; margin-top:6px;">No spam. Unsubscribe anytime.</small>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</main>
+
+<% if (inlineAd) { %>
+<div style="max-width:100%; margin: 0 auto; padding: 0 0 36px;">
+  <%- include('partials/ad-card', { ad: inlineAd }) %>
+</div>
+<% } %>
+
+<section class="comments-section">
+  <div class="container">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #e4dfd7;">
+      <div>
+        <span style="font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.2em; color:#0F6B34; display:block; margin-bottom:3px;">Discussion</span>
+        <h2 style="font-size:17px; font-weight:800; margin:0; letter-spacing:-0.02em; color:#0C1210;">Comments</h2>
+      </div>
+      <span style="font-size:11px; color:#8a9495; font-weight:500;" id="comment-count"><%= comments && comments.length ? comments.length + ' comments' : 'No comments yet' %></span>
+    </div>
+    <div id="comments-list">
+      <% if (comments && comments.length) { %>
+        <% comments.forEach(function(c) { %>
+        <div style="display:flex; gap:12px; padding:12px 0; border-bottom:1px solid #f2f0eb; transition:background 0.15s ease;" onmouseover="this.style.background='#fdfcfb'" onmouseout="this.style.background='transparent'">
+          <div style="width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg, #0F6B34, #0a4f25); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:11px; flex:none;"><%= c.name ? c.name.charAt(0).toUpperCase() : '?' %></div>
+          <div style="flex:1; min-width:0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; gap:8px;">
+              <div style="font-weight:600; font-size:12px; color:#1e2b2c; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><%= c.name %></div>
+              <div style="font-size:10px; color:#8a9495; flex:none;"><%= new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %></div>
+            </div>
+            <div style="font-size:13px; line-height:1.55; color:#5f6b6c;"><%= c.body %></div>
+          </div>
+        </div>
+        <% }) %>
+      <% } else { %>
+        <div style="padding:28px 0; text-align:center;">
+          <p style="color:#8a9495; font-size:13px; margin:0;">No comments yet. Be the first to share your thoughts.</p>
+        </div>
+      <% } %>
+    </div>
+    <form id="comment-form" style="margin-top:16px; padding:16px; background:#fdfcfb; border-radius:10px; border:1px solid #f2f0eb;" class="comment-form-mobile">
+      <h4 style="font-size:13px; font-weight:700; margin:0 0 10px; color:#1e2b2c; display:flex; align-items:center; gap:6px;">
+        <span style="width:5px; height:5px; border-radius:50%; background:#0F6B34; display:inline-block;"></span>
+        Leave a comment
+      </h4>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;" class="comment-name-email-row">
+        <input type="text" id="comment-name" name="name" placeholder="Your name" required style="padding:9px 10px; border:1px solid #e4dfd7; border-radius:6px; font-size:12px; outline:none; width:100%; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='#0F6B34'" onblur="this.style.borderColor='#e4dfd7'">
+        <input type="email" id="comment-email" name="email" placeholder="Your email" style="padding:9px 10px; border:1px solid #e4dfd7; border-radius:6px; font-size:12px; outline:none; width:100%; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='#0F6B34'" onblur="this.style.borderColor='#e4dfd7'">
+      </div>
+      <textarea id="comment-body" name="body" rows="3" placeholder="Write your comment..." required style="width:100%; padding:9px 10px; border:1px solid #e4dfd7; border-radius:6px; font-size:12px; outline:none; margin-bottom:8px; resize:vertical; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='#0F6B34'" onblur="this.style.borderColor='#e4dfd7'"></textarea>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+        <p style="font-size:10px; color:#8a9495; margin:0;">Your email will not be published.</p>
+        <button type="submit" style="padding:9px 18px; border-radius:6px; border:0; background:#0F6B34; color:#fff; font-weight:700; font-size:12px; cursor:pointer; transition:all 0.2s ease; white-space:nowrap;" onmouseover="this.style.background='#0a4f25'" onmouseout="this.style.background='#0F6B34'">Post Comment</button>
+      </div>
+      <p id="comment-status" style="margin-top:8px; font-size:11px; display:none;"></p>
+    </form>
+  </div>
+</section>
+
+  <%- include('partials/foot') %>
+
+<% if (paywallActive) { %>
+<div class="paywall-modal-backdrop" id="paywall-modal-backdrop">
+  <div class="paywall-modal">
+    <h3>Complete payment on your phone</h3>
+    <p class="sub">Enter your M-Pesa PIN in the STK Push prompt to unlock this article.</p>
+    <div class="spinner" id="paywall-spinner"></div>
+    <p class="paywall-msg" id="paywall-modal-msg" style="display:block;margin-top:8px;font-size:12px;"></p>
+    <button type="button" class="paywall-btn" id="paywall-modal-close" style="margin-top:14px;display:none;">Close</button>
+  </div>
+</div>
+<% } %>
+
+<div class="back-to-top" id="back-to-top">
+  <span class="back-top" style="display:flex;align-items:center;justify-content:center;width:40px;height:40px;background:#0F6B34;border-radius:50%;color:#fff;box-shadow:0 4px 12px rgba(15,107,52,.3);cursor:pointer;transition:all 0.2s ease;"><i class="fa fa-angle-up"></i></span>
+</div>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+    document.getElementById('reading-progress').style.width = scrolled + '%';
+  });
+
+  const backToTop = document.getElementById('back-to-top');
+  window.addEventListener('scroll', () => {
+    if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+      backToTop.style.display = 'block';
+    } else {
+      backToTop.style.display = 'none';
+    }
+  });
+  backToTop.addEventListener('click', () => {
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  });
+
+  document.querySelectorAll('[data-share]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      const platform = btn.dataset.share;
+      const url = window.location.href;
+      const title = <%- JSON.stringify(post.title) %>;
+      let shareUrl = '';
+      if (platform === 'twitter') shareUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(title) + '&url=' + encodeURIComponent(url);
+      else if (platform === 'facebook') shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url);
+      else if (platform === 'whatsapp') shareUrl = 'https://wa.me/?text=' + encodeURIComponent(title + ' ' + url);
+      else if (platform === 'copy') { navigator.clipboard.writeText(url); btn.textContent = '✓'; setTimeout(() => btn.textContent = '🔖', 1500); return; }
+      if (shareUrl) window.open(shareUrl, '_blank', 'width=600,height=500');
+      fetch('/post/<%= post.slug %>/share', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ platform }) }).then(r => r.json()).then(data => { if (data.ok) document.getElementById('share-count').textContent = data.shares; }).catch(() => {});
+    });
+  });
+
+  const nf = document.getElementById('newsletter-form');
+  if (nf) {
+    nf.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = nf.querySelector('button');
+      const msg = document.getElementById('newsletter-msg');
+      const email = nf.querySelector('input[name=email]').value;
+      btn.disabled = true;
+      try {
+        const res = await fetch('/newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
+          body: 'email=' + encodeURIComponent(email)
+        });
+        const data = await res.json();
+        msg.style.display = 'block';
+        msg.textContent = data.message;
+        if (data.ok) { btn.textContent = 'Subscribed ✓'; nf.querySelector('input').value = ''; }
+        else { btn.disabled = false; }
+      } catch (err) {
+        msg.style.display = 'block';
+        msg.textContent = 'Something went wrong — try again.';
+        btn.disabled = false;
+      }
+    });
+  }
+
+  const commentForm = document.getElementById('comment-form');
+  if (commentForm) {
+    commentForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const btn = commentForm.querySelector('button[type=submit]');
+      const status = document.getElementById('comment-status');
+      const countEl = document.getElementById('comment-count');
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+      const data = new FormData(commentForm);
+      fetch('/post/<%= post.slug %>/comment', { method: 'POST', headers: { 'Accept': 'application/json' }, body: data })
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok) {
+          status.style.color = '#0f7b3e';
+          status.textContent = data.message || 'Comment submitted for approval.';
+          status.style.display = 'block';
+          commentForm.reset();
+          const list = document.getElementById('comments-list');
+          const name = document.getElementById('comment-name').value.trim();
+          const body = document.getElementById('comment-body').value.trim();
+          const now = new Date();
+          const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          const item = document.createElement('div');
+          item.className = 'comment-item';
+          item.innerHTML = '<div class="comment-avatar">' + name.charAt(0).toUpperCase() + '</div>' +
+            '<div class="comment-body">' +
+            '<div class="comment-meta">' +
+            '<div class="comment-name">' + name.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>' +
+            '<div class="comment-date">' + dateStr + '</div>' +
+            '</div>' +
+            '<div class="comment-text">' + body.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>' +
+            '</div>';
+          list.appendChild(item);
+          const current = parseInt(countEl.textContent) || 0;
+          if (!isNaN(current)) { countEl.textContent = (current + 1) + ' comments'; }
+        } else {
+          status.style.color = '#ce1126';
+          status.textContent = data.message || 'Something went wrong.';
+          status.style.display = 'block';
+        }
+      })
+      .catch(() => { status.style.color = '#ce1126'; status.textContent = 'Network error — try again.'; status.style.display = 'block'; })
+      .finally(() => { btn.disabled = false; btn.textContent = 'Post Comment'; });
+    });
+  }
+</script>
+
+<% if (paywallActive) { %>
+<script>
+  (function(){
+    var PAYWALL = {
+      active: true,
+      limit: <%= freeArticleLimit %>,
+      price: <%= paywallPrice %>,
+      currency: <%- JSON.stringify(paywallCurrency) %>,
+      slug: <%- JSON.stringify(post.slug) %>
+    };
+
+    var STORAGE_KEY = 'sema_read_count';
+    var UNLOCKED_KEY = 'sema_unlocked_' + PAYWALL.slug;
+    var count = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
+    var unlocked = localStorage.getItem(UNLOCKED_KEY) === '1';
+
+    var articleBody = document.getElementById('article-body');
+    var paywallContent = document.getElementById('paywall-content');
+    var overlay = document.getElementById('paywall-overlay');
+    var modalBackdrop = document.getElementById('paywall-modal-backdrop');
+    var form = document.getElementById('paywall-form');
+    var phoneInput = document.getElementById('paywall-phone');
+    var btn = document.getElementById('paywall-btn');
+    var msg = document.getElementById('paywall-msg');
+    var modalMsg = document.getElementById('paywall-modal-msg');
+    var modalClose = document.getElementById('paywall-modal-close');
+    var spinner = document.getElementById('paywall-spinner');
+
+    function setLocked(locked) {
+      if (locked) {
+        paywallContent.classList.add('is-locked');
+        overlay.classList.add('is-visible');
+      } else {
+        paywallContent.classList.remove('is-locked');
+        overlay.classList.remove('is-visible');
+      }
+    }
+
+    if (!unlocked && count >= PAYWALL.limit) {
+      setLocked(true);
+    }
+
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var phone = phoneInput.value.trim();
+        if (!phone) return;
+        btn.disabled = true;
+        btn.textContent = 'Sending STK Push...';
+        msg.style.display = 'none';
+        modalMsg.style.display = 'none';
+        modalClose.style.display = 'none';
+        modalBackdrop.classList.add('is-open');
+        spinner.style.display = 'block';
+
+        fetch('/paywall/unlock', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ phoneNumber: phone, slug: PAYWALL.slug })
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+          if (!data.ok) {
+            throw new Error(data.message || 'Failed to initiate payment.');
+          }
+          pollStatus(data.requestId);
+        })
+        .catch(function(err){
+          btn.disabled = false;
+          btn.textContent = 'Unlock with M-Pesa';
+          msg.style.color = '#ce1126';
+          msg.textContent = err.message || 'Something went wrong.';
+          msg.style.display = 'block';
+          modalBackdrop.classList.remove('is-open');
+        });
+      });
+    }
+
+    function pollStatus(requestId) {
+      var attempts = 0;
+      var maxAttempts = 60;
+      var interval = setInterval(function(){
+        attempts++;
+        fetch('/paywall/status/' + encodeURIComponent(requestId))
+          .then(function(r){ return r.json(); })
+          .then(function(data){
+            if (data.status === 'success') {
+              clearInterval(interval);
+              localStorage.setItem(UNLOCKED_KEY, '1');
+              setLocked(false);
+              btn.disabled = true;
+              btn.textContent = 'Unlocked ✓';
+              modalMsg.style.color = '#0f7b3e';
+              modalMsg.textContent = 'Payment successful. Article unlocked.';
+              spinner.style.display = 'none';
+              modalClose.style.display = 'inline-block';
+            } else if (data.status === 'failed') {
+              clearInterval(interval);
+              btn.disabled = false;
+              btn.textContent = 'Unlock with M-Pesa';
+              msg.style.color = '#ce1126';
+              msg.textContent = 'Payment failed. Please try again.';
+              msg.style.display = 'block';
+              modalBackdrop.classList.remove('is-open');
+            }
+          })
+          .catch(function(){
+            if (attempts >= maxAttempts) {
+              clearInterval(interval);
+              btn.disabled = false;
+              btn.textContent = 'Unlock with M-Pesa';
+              msg.style.color = '#ce1126';
+              msg.textContent = 'Could not verify payment. Please try again.';
+              msg.style.display = 'block';
+              modalBackdrop.classList.remove('is-open');
+            }
+          });
+      }, 2000);
+    }
+
+    if (modalClose) {
+      modalClose.addEventListener('click', function(){
+        modalBackdrop.classList.remove('is-open');
+      });
+    }
+
+    count++;
+    localStorage.setItem(STORAGE_KEY, count);
+  })();
+  </script>
+  <% } %>
+<script src="/assets/js/vendor.js"></script>
+<script src="/assets/js/main.js"></script>
+</body>
+</html>

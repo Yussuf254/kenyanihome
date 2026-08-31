@@ -1,0 +1,41 @@
+<%- include('../partials/head') %>
+
+<style>
+  .loc-page { padding: 40px 0; max-width: 1200px; margin: 0 auto; }
+  .loc-page h1 { font-family: 'Roboto Slab', serif; font-size: 28px; margin-bottom: 8px; }
+  .loc-page .count { color: #666; margin-bottom: 24px; }
+  .jobs-list { display: grid; gap: 16px; }
+  .job-row { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: #fff; border: 1px solid #e8e5e0; border-radius: 10px; }
+  .job-row:hover { border-color: #1a4d2e; }
+  .job-row .info h3 { font-family: 'Roboto Slab', serif; font-size: 16px; margin: 0 0 6px; }
+  .job-row .info h3 a { color: #0B1913; text-decoration: none; }
+  .job-row .info .meta { font-size: 13px; color: #666; display: flex; gap: 12px; flex-wrap: wrap; }
+  .job-row .apply { padding: 8px 20px; background: #1a4d2e; color: #fff; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; }
+</style>
+
+<div class="loc-page wrap">
+  <h1>Jobs in <%= location %></h1>
+  <p class="count"><%= jobs.length %> job<%= jobs.length !== 1 ? 's' : '' %> found</p>
+
+  <% if (jobs.length === 0) { %>
+    <p style="color:#666;padding:40px 0;">No jobs found in this location. <a href="/jobs">Browse all jobs</a></p>
+  <% } else { %>
+    <div class="jobs-list">
+      <% jobs.forEach(function(job) { %>
+        <div class="job-row">
+          <div class="info">
+            <h3><a href="/jobs/<%= job.slug %>"><%= job.title %></a></h3>
+            <div class="meta">
+              <span><%= job.company || 'Company' %></span>
+              <span>💼 <%= job.employmentType || 'Full Time' %></span>
+              <% if (job.salary) { %><span style="color:#1a4d2e;font-weight:600;"><%= job.salary %></span><% } %>
+            </div>
+          </div>
+          <a href="/jobs/<%= job.slug %>" class="apply">Apply</a>
+        </div>
+      <% }); %>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/foot') %>

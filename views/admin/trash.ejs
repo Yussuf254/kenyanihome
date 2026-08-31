@@ -1,0 +1,37 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: 'Trash', crumb: posts.length + ' deleted' }) %>
+
+  <div class="panel-card" style="overflow-x:auto;">
+    <table class="data-table" id="trash-table">
+      <thead><tr><th>Story</th><th>Category</th><th>Deleted</th><th style="text-align:right;">Actions</th></tr></thead>
+      <tbody>
+        <% if (!posts.length) { %>
+          <tr class="empty-row"><td colspan="4">Trash is empty.</td></tr>
+        <% } %>
+        <% posts.forEach(p => { %>
+          <tr>
+            <td>
+              <div class="row-title">
+                <img class="thumb" src="<%= p.coverImage || 'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=200&q=50' %>">
+                <div><div class="rt-title"><%= p.title %></div><div class="rt-sub">by <%= p.author %></div></div>
+              </div>
+            </td>
+            <td><%= p.category %></td>
+            <td><%= formatDate(p.deletedAt) %></td>
+            <td class="table-actions">
+              <% if (hasPermission(currentUser, 'posts:edit')) { %>
+                <form action="/admin/posts/<%= p.id %>/restore" method="post">
+                  <button class="btn btn-signal btn-sm" type="submit"><i class="bi bi-arrow-counterclockwise"></i>&nbsp; Restore</button>
+                </form>
+                <form action="/admin/posts/<%= p.id %>/permanent?_method=DELETE" method="post" onsubmit="return confirm('Permanently delete this post? This cannot be undone.');">
+                  <button class="icon-btn" type="submit" title="Delete forever"><i class="bi bi-trash3-fill"></i></button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+<%- include('partials/foot') %>

@@ -1,0 +1,109 @@
+<%- include('../../partials/head') %>
+
+<style>
+  .dash-layout { display: flex; min-height: 100vh; }
+  .dash-sidebar { width: 260px; background: #0C1210; color: #fff; padding: 24px 0; flex-shrink: 0; }
+  .dash-sidebar .brand { padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; }
+  .dash-sidebar .brand h2 { font-family: 'Roboto Slab', serif; font-size: 18px; color: #fff; margin: 0; }
+  .dash-sidebar .brand span { font-size: 11px; color: #999; }
+  .dash-sidebar .nav a { display: block; padding: 12px 24px; color: rgba(255,255,255,.7); text-decoration: none; font-size: 14px; }
+  .dash-sidebar .nav a:hover, .dash-sidebar .nav a.active { background: rgba(255,255,255,.1); color: #fff; }
+  .dash-main { flex: 1; background: #f8f7f4; padding: 32px; }
+  .dash-header { margin-bottom: 32px; }
+  .dash-header h1 { font-family: 'Roboto Slab', serif; font-size: 24px; margin: 0; }
+  .card { background: #fff; border-radius: 12px; border: 1px solid #e8e5e0; padding: 32px; }
+  .form-group { margin-bottom: 20px; }
+  .form-group label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+  .form-group textarea { min-height: 120px; resize: vertical; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .btn { display: inline-block; padding: 12px 24px; background: #1a4d2e; color: #fff; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; border: none; cursor: pointer; }
+  .btn:hover { background: #0d2615; }
+</style>
+
+<div class="dash-layout">
+  <aside class="dash-sidebar">
+    <div class="brand">
+      <h2>Jobs Portal</h2>
+      <span>Employer Dashboard</span>
+    </div>
+    <nav class="nav">
+      <a href="/employer/dashboard">Dashboard</a>
+      <a href="/employer/jobs/create">Post a Job</a>
+      <a href="/employer/jobs" class="active">My Jobs</a>
+      <a href="/employer/profile">Company Profile</a>
+      <a href="/employer/payments">Payments</a>
+      <a href="/jobs">View Site</a>
+      <a href="/logout">Logout</a>
+    </nav>
+  </aside>
+
+  <main class="dash-main">
+    <div class="dash-header">
+      <h1>Edit Job</h1>
+    </div>
+
+    <div class="card">
+      <form action="/employer/jobs/<%= job.id %>/edit" method="POST">
+        <div class="form-group">
+          <label>Job Title *</label>
+          <input type="text" name="title" required value="<%= job.title %>">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Category *</label>
+            <select name="categoryId" required>
+              <% categories.forEach(function(c) { %>
+                <option value="<%= c.id %>" <%= job.categoryId === c.id ? 'selected' : '' %>><%= c.name %></option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Employment Type *</label>
+            <select name="employmentType" required>
+              <% ['Full Time','Part Time','Contract','Internship','Volunteer','Remote'].forEach(function(t) { %>
+                <option value="<%= t %>" <%= job.employmentType === t ? 'selected' : '' %>><%= t %></option>
+              <% }); %>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Location *</label>
+            <input type="text" name="location" required value="<%= job.location %>">
+          </div>
+          <div class="form-group">
+            <label>Salary</label>
+            <input type="text" name="salary" value="<%= job.salary || '' %>">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Application Deadline *</label>
+          <input type="date" name="deadline" required value="<%= job.deadline ? new Date(job.deadline).toISOString().split('T')[0] : '' %>">
+        </div>
+
+        <div class="form-group">
+          <label>Job Description *</label>
+          <textarea name="description" required><%= job.description %></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Requirements (one per line)</label>
+          <textarea name="requirements"><%= job.requirements || '' %></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Responsibilities (one per line)</label>
+          <textarea name="responsibilities"><%= job.responsibilities || '' %></textarea>
+        </div>
+
+        <button type="submit" class="btn">Update Job</button>
+      </form>
+    </div>
+  </main>
+</div>
+
+<%- include('../../partials/foot') %>

@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kenya ni Home — Premium News</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Slab:wght@600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* --- premium red / green / white palette --- */
+    :root {
+      --kenya-red: #B31B1B;
+      --kenya-green: #1A4D2E;
+      --kenya-white: #FCF9F2;
+      --ink: #0B1913;
+      --gold: #D4A83C;
+      --cream: #F2ECE0;
+      --paper: #FCFAF5;
+      --line: rgba(11,25,19,0.10);
+      --muted: #5B6459;
+      --shadow: 0 8px 30px rgba(0,0,0,0.06);
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Roboto', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    img, svg { display: block; max-width: 100%; }
+
+    /* typography */
+    .eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--kenya-red);
+      font-weight: 700;
+    }
+    .flag-rule {
+      display: flex; width: 56px; height: 4px; border-radius: 2px; overflow: hidden; margin: 10px 0 18px;
+    }
+    .flag-rule span { flex: 1; }
+    .flag-rule span:nth-child(1) { background: var(--kenya-red); }
+    .flag-rule span:nth-child(2) { background: var(--kenya-white); border-left:1px solid #ddd; border-right:1px solid #ddd; }
+    .flag-rule span:nth-child(3) { background: var(--kenya-green); }
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+
+    /* --- topbar premium --- */
+    .topbar {
+      background: var(--ink);
+      color: #E8E2D4;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .04em;
+      border-bottom: 2px solid var(--kenya-red);
+    }
+    .topbar .wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 24px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .topbar .date { opacity: .8; }
+    .topbar .chips { display: flex; gap: 18px; align-items: center; }
+    .topbar .chip { opacity: .85; }
+    .topbar .socials { display: flex; gap: 10px; }
+    .topbar .socials a {
+      width: 24px; height: 24px;
+      border: 1px solid rgba(232,226,212,0.25);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; transition: 0.2s;
+    }
+    .topbar .socials a:hover { background: var(--kenya-red); border-color: var(--kenya-red); }
+
+    /* --- ticker (signature) --- */
+    .ticker {
+      background: var(--kenya-red);
+      color: var(--kenya-white);
+      overflow: hidden;
+      white-space: nowrap;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+    }
+    .ticker-track {
+      display: inline-flex;
+      animation: scroll 32s linear infinite;
+    }
+    .ticker-track span {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 10px 28px;
+      border-right: 1px solid rgba(255,255,255,0.25);
+      white-space: nowrap;
+      font-weight: 500;
+    }
+    @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @media (prefers-reduced-motion: reduce) { .ticker-track { animation: none; } }
+
+    /* --- nav premium --- */
+    header.nav {
+      background: var(--kenya-white);
+      border-bottom: 1px solid var(--line);
+      position: sticky; top: 0; z-index: 40;
+      box-shadow: var(--shadow);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-mark {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--kenya-green);
+      color: var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Roboto Slab', serif; font-weight: 700; font-size: 17px;
+      border: 2px solid var(--gold);
+      flex-shrink: 0;
+    }
+    .logo-text .title {
+      font-family: 'Roboto Slab', serif;
+      font-weight: 700; font-size: 22px;
+      letter-spacing: -.01em;
+      color: var(--kenya-green);
+    }
+    .logo-text .title span { color: var(--kenya-red); }
+    .logo-text .tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px; letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    nav.links { display: flex; gap: 32px; font-size: 14px; font-weight: 600; }
+    nav.links a {
+      padding-bottom: 4px;
+      border-bottom: 2px solid transparent;
+      transition: .2s;
+    }
+    nav.links a:hover, nav.links a.active {
+      border-color: var(--kenya-red);
+      color: var(--kenya-red);
+    }
+    .nav-actions { display: flex; align-items: center; gap: 16px; }
+    .search-btn {
+      width: 38px; height: 38px; border-radius: 50%;
+      border: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; background: none;
+      font-size: 16px;
+    }
+    .menu-toggle { display: none; background: none; border: none; cursor: pointer; font-size: 24px; color: var(--kenya-green); }
+    .btn-subscribe {
+      background: var(--kenya-red);
+      color: white;
+      font-size: 13px; font-weight: 700;
+      padding: 11px 24px;
+      border-radius: 100px;
+      letter-spacing: .02em;
+      transition: 0.2s;
+      font-family: 'Roboto', sans-serif;
+    }
+    .btn-subscribe:hover { background: var(--kenya-green); }
+
+    /* --- placeholder art (premium) --- */
+    .art {
+      position: relative;
+      overflow: hidden;
+      background: var(--kenya-green);
+      color: white;
+      display: flex;
+      align-items: flex-end;
+      padding: 16px;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+    .art::before {
+      content: "";
+      position: absolute; inset: 0;
+      opacity: .18;
+      background-image: repeating-linear-gradient(115deg, rgba(212,168,60,.4) 0px, rgba(212,168,60,.4) 1px, transparent 1px, transparent 30px);
+    }
+    .art::after {
+      content: "";
+      position: absolute; right: -20px; bottom: -20px;
+      width: 140px; height: 140px; border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, var(--kenya-red), transparent 70%);
+      opacity: .4;
+    }
+    .art .icon { position: relative; z-index: 2; width: 32px; height: 32px; opacity: .9; }
+    .art.tone-red { background: var(--kenya-red); }
+    .art.tone-gold { background: #8A6A22; }
+    .art.tone-green2 { background: #1C4D2E; }
+    .art.tone-dark { background: #0F2A1B; }
+
+    /* --- hero premium --- */
+    .hero {
+      background: var(--kenya-green);
+      color: white;
+      padding: 56px 0 40px;
+      border-bottom: 4px solid var(--gold);
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 48px;
+      align-items: center;
+    }
+    .hero .art { height: 380px; border-radius: var(--radius); }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 6px 14px; border-radius: 100px;
+      font-family: 'Space Mono', monospace; font-size: 11px;
+      letter-spacing: .1em; text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    .hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+    .hero h1 {
+      font-family: 'Roboto Slab', serif;
+      font-weight: 700; font-size: 44px;
+      line-height: 1.1; margin: 0 0 18px;
+      letter-spacing: -.01em;
+    }
+    .hero p.lede {
+      font-size: 16.5px; line-height: 1.65;
+      color: #D8D2C1; max-width: 46ch;
+      margin: 0 0 26px;
+      font-weight: 400;
+    }
+    .hero-meta {
+      display: flex; gap: 22px; align-items: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 11.5px;
+      letter-spacing: .06em; color: #C9C3B2;
+    }
+    .hero-meta a.read { color: var(--gold); font-weight: 700; border-bottom: 1px solid var(--gold); padding-bottom: 2px; }
+
+    .quick-row {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 22px;
+      margin-top: 44px;
+    }
+    .quick-card .art { height: 150px; margin-bottom: 14px; border-radius: var(--radius); }
+    .quick-card .tag-pill {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px; letter-spacing: .08em;
+      text-transform: uppercase;
+      background: rgba(255,255,255,0.12);
+      padding: 4px 10px; border-radius: 100px;
+      display: inline-block;
+      color: var(--gold);
+    }
+    .quick-card h3 {
+      font-family: 'Roboto Slab', serif;
+      font-size: 16px; font-weight: 600;
+      line-height: 1.35; margin: 10px 0 0;
+      color: white;
+    }
+
+    /* --- section --- */
+    section.block { padding: 64px 0; }
+    section.block.alt { background: var(--cream); }
+    .section-head {
+      display: flex; align-items: flex-end;
+      justify-content: space-between; margin-bottom: 6px;
+    }
+    .section-head h2 {
+      font-family: 'Roboto Slab', serif;
+      font-size: 26px; font-weight: 700;
+      margin: 0;
+    }
+    .section-head .view-all {
+      font-size: 13px; font-weight: 700;
+      color: var(--kenya-red);
+    }
+
+    /* grid 3 */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1.05fr 1.1fr 0.85fr;
+      gap: 40px;
+      margin-top: 24px;
+    }
+    .col-title {
+      font-family: 'Roboto Slab', serif;
+      font-weight: 600; font-size: 17px;
+      margin: 0 0 4px;
+    }
+    .story-row {
+      display: flex; gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .story-row:last-child { border-bottom: none; }
+    .story-row .num {
+      font-family: 'Roboto Slab', serif;
+      font-size: 22px; color: var(--gold);
+      font-weight: 700; width: 26px; flex-shrink: 0;
+    }
+    .story-row .art { width: 70px; height: 56px; flex-shrink: 0; border-radius: 6px; padding: 6px; }
+    .story-row .art .icon { width: 18px; height: 18px; }
+    .story-row h4 { font-size: 14px; line-height: 1.4; margin: 0 0 4px; font-weight: 600; }
+    .story-row .meta {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px; color: var(--muted); letter-spacing: .04em;
+    }
+    .whats-new .art { height: 170px; border-radius: var(--radius); margin-bottom: 14px; }
+    .whats-new h4 {
+      font-family: 'Roboto Slab', serif;
+      font-size: 17px; font-weight: 600;
+      margin: 0 0 8px; line-height: 1.3;
+    }
+    .whats-new p { font-size: 13.5px; color: var(--muted); line-height: 1.6; margin: 0 0 14px; }
+
+    .join-box {
+      background: var(--kenya-green);
+      color: white;
+      border-radius: var(--radius);
+      padding: 26px 24px;
+      margin-top: 16px;
+      border: 1px solid var(--gold);
+    }
+    .join-box h3 { font-family: 'Roboto Slab', serif; font-size: 18px; margin: 0 0 6px; }
+    .join-box p { font-size: 13px; color: #CFC9B8; margin: 0 0 18px; line-height: 1.55; }
+    .stat-list {
+      list-style: none; margin: 0 0 18px; padding: 0;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .stat-list li {
+      display: flex; justify-content: space-between;
+      align-items: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      border-bottom: 1px dashed rgba(255,255,255,0.15);
+      padding-bottom: 10px;
+    }
+    .stat-list li span.n { color: var(--gold); font-weight: 700; }
+    .email-form {
+      display: flex; gap: 0; border-radius: 100px;
+      overflow: hidden; border: 1px solid rgba(255,255,255,0.3);
+    }
+    .email-form input {
+      flex: 1; background: transparent; border: none;
+      padding: 12px 16px; color: white; font-size: 13px;
+      font-family: 'Roboto', sans-serif;
+    }
+    .email-form input::placeholder { color: #B9B39F; }
+    .email-form button {
+      background: var(--gold); border: none;
+      padding: 0 20px; font-weight: 700; font-size: 13px;
+      cursor: pointer; color: var(--ink);
+      font-family: 'Roboto', sans-serif;
+    }
+
+    /* county grid */
+    .county-grid {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 24px;
+      margin-top: 26px;
+    }
+    .county-card .art { height: 190px; border-radius: var(--radius); margin-bottom: 14px; }
+    .county-card .tag-pill {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px; letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--kenya-red);
+      font-weight: 700;
+    }
+    .county-card h4 {
+      font-family: 'Roboto Slab', serif;
+      font-size: 16px; font-weight: 600;
+      margin: 8px 0 0; line-height: 1.35;
+    }
+    .county-card .meta {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px; color: var(--muted);
+      margin-top: 8px;
+    }
+
+    /* headline grid */
+    .headline-grid {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 24px;
+      margin-top: 26px;
+    }
+    .headline-card .art { height: 150px; border-radius: var(--radius); margin-bottom: 12px; }
+    .headline-card .tag-pill {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px; letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--kenya-red);
+      font-weight: 700;
+    }
+    .headline-card h4 {
+      font-family: 'Roboto Slab', serif;
+      font-size: 15px; font-weight: 600;
+      margin: 8px 0 0; line-height: 1.4;
+    }
+
+    /* footer premium */
+    footer {
+      background: var(--ink);
+      color: #D8D2C1;
+      padding: 64px 0 0;
+      margin-top: 20px;
+      border-top: 4px solid var(--kenya-red);
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr 1.2fr;
+      gap: 40px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid rgba(216,210,193,.12);
+    }
+    .footer-grid h5 {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px; letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 0 0 18px;
+    }
+    .footer-grid p { font-size: 13.5px; line-height: 1.7; color: #B7B09C; margin: 0 0 18px; }
+    .f-socials { display: flex; gap: 10px; }
+    .f-socials a {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 1px solid rgba(216,210,193,.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+    }
+    .tagcloud { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tagcloud a {
+      font-size: 12px; padding: 7px 14px;
+      border: 1px solid rgba(216,210,193,.22);
+      border-radius: 100px;
+    }
+    .contact-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; font-size: 13.5px; }
+    .contact-list li { display: flex; gap: 10px; align-items: flex-start; line-height: 1.5; }
+    .pop-row {
+      display: flex; gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(216,210,193,.12);
+    }
+    .pop-row:first-child { padding-top: 0; }
+    .pop-row .art { width: 56px; height: 48px; border-radius: 6px; flex-shrink: 0; padding: 0; }
+    .pop-row h6 { font-size: 13px; margin: 0; line-height: 1.4; font-weight: 600; color: #EFE7D6; font-family: 'Roboto', sans-serif; }
+    .footer-bottom {
+      display: flex; justify-content: space-between;
+      align-items: center; padding: 24px 0;
+      font-size: 12.5px; color: #8D8672;
+      flex-wrap: wrap; gap: 10px;
+    }
+    .footer-bottom ul { list-style: none; display: flex; gap: 22px; margin: 0; padding: 0; }
+
+    /* responsive */
+    @media (max-width: 980px) {
+      nav.links { display: none; }
+      .menu-toggle { display: block; }
+      .hero-grid { grid-template-columns: 1fr; }
+      .quick-row { grid-template-columns: repeat(2,1fr); }
+      .grid-3 { grid-template-columns: 1fr; }
+      .county-grid { grid-template-columns: repeat(2,1fr); }
+      .headline-grid { grid-template-columns: repeat(2,1fr); }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 560px) {
+      .hero h1 { font-size: 32px; }
+      .quick-row { grid-template-columns: 1fr; }
+      .county-grid { grid-template-columns: 1fr; }
+      .headline-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+    @media (min-width: 1600px) {
+      .wrap { max-width: 1580px; }
+    }
+    .quick-card a, .story-row a, .whats-new a, .county-card a, .headline-card a { display: block; }
+    .quick-card a:hover h3, .story-row a:hover h4, .whats-new a:hover h4, .county-card a:hover h4, .headline-card a:hover h4 { color: var(--kenya-red); }
+    .quick-card a .art, .story-row a .art, .whats-new a .art, .county-card a .art, .headline-card a .art { transition: transform 0.2s; }
+    .quick-card a:hover .art, .story-row a:hover .art, .whats-new a:hover .art, .county-card a:hover .art, .headline-card a:hover .art { transform: scale(1.03); }
+</style>
+</head>
+<body>
+
+  <!-- topbar -->
+  <div class="topbar">
+    <div class="wrap">
+      <div class="date">Wednesday · 19 August 2026</div>
+      <div class="chips">
+        <span class="chip">☀ Nairobi 22°C</span>
+        <span class="chip">USD/KES 129.40</span>
+      </div>
+      <div class="socials">
+        <a href="#">f</a><a href="#">𝕏</a><a href="#">▶</a><a href="#">◎</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ticker -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span>NAIROBI</span><span>MOMBASA</span><span>KISUMU</span><span>NAKURU</span><span>ELDORET</span><span>NYERI</span><span>KISII</span><span>MACHAKOS</span><span>KAKAMEGA</span><span>GARISSA</span>
+      <span>NAIROBI</span><span>MOMBASA</span><span>KISUMU</span><span>NAKURU</span><span>ELDORET</span><span>NYERI</span><span>KISII</span><span>MACHAKOS</span><span>KAKAMEGA</span><span>GARISSA</span>
+    </div>
+  </div>
+
+  <!-- nav -->
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="logo" href="#top">
+        <div class="logo-mark">KNH</div>
+        <div class="logo-text">
+          <div class="title">Kenya <span>ni</span> Home</div>
+          <div class="tag">News · Culture · Life</div>
+        </div>
+      </a>
+      <nav class="links">
+        <a href="#top" class="active">Home</a>
+        <a href="#trending">News</a>
+        <a href="#latest">Counties</a>
+        <a href="#grid">Culture</a>
+        <a href="#footer">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="search-btn" aria-label="Search">⌕</button>
+        <a class="btn-subscribe" href="#footer">Subscribe</a>
+        <button class="menu-toggle" aria-label="Menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- hero -->
+  <section class="hero" id="top">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <div class="hero-badge"><span class="dot"></span> Today's Edition</div>
+          <h1>New SGR from Nairobi to Naivasha begins trial runs this week.</h1>
+          <p class="lede">The Ministry of Transport says the line will cut travel time by two-thirds, opening new business opportunities for Kiambu, Kajiado and Nakuru counties.</p>
+          <div class="hero-meta">
+            <span>BY JAMES MWANGI</span>
+            <span>·</span>
+            <span>4 MIN READ</span>
+            <span>·</span>
+            <a class="read" href="#">Read More →</a>
+          </div>
+        </div>
+        <div class="art tone-red">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 17l4-8 4 5 3-4 7 7"/><circle cx="18" cy="6" r="2"/></svg>
+        </div>
+      </div>
+
+      <div class="quick-row">
+        <div class="quick-card">
+          <div class="art tone-green2"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2v20M4 8h16M6 14h12"/></svg></div>
+          <span class="tag-pill">Business</span>
+          <h3>Boda boda Saccos secure billions in loan from central bank.</h3>
+        </div>
+        <div class="quick-card">
+          <div class="art tone-gold"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg></div>
+          <span class="tag-pill">Weather</span>
+          <h3>El Niño rains expected to hit Coastal counties next week.</h3>
+        </div>
+        <div class="quick-card">
+          <div class="art tone-red"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20V10l8-6 8 6v10"/><path d="M10 20v-6h4v6"/></svg></div>
+          <span class="tag-pill">Culture</span>
+          <h3>Lamu Cultural Festival draws 40,000 visitors.</h3>
+        </div>
+        <div class="quick-card">
+          <div class="art tone-dark"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21h18M6 21V9l6-5 6 5v12M10 21v-6h4v6"/></svg></div>
+          <span class="tag-pill">Sports</span>
+          <h3>Harambee Stars win friendly match against Uganda.</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- trending / latest / whats new -->
+  <section class="block" id="trending">
+    <div class="wrap">
+      <div class="grid-3">
+        <!-- trending -->
+        <div>
+          <span class="eyebrow">Most Read</span>
+          <div class="flag-rule"><span></span><span></span><span></span></div>
+          <div class="story-row">
+            <span class="num">01</span>
+            <div class="art tone-red"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v12H4z"/><path d="M4 16l4-4 3 3 5-6 4 5"/></svg></div>
+            <div><h4>Flour prices drop for the first time this year.</h4><div class="meta">BUSINESS · 2 HRS</div></div>
+          </div>
+          <div class="story-row">
+            <span class="num">02</span>
+            <div class="art tone-green2"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></div>
+            <div><h4>Turkana County launches new solar energy project.</h4><div class="meta">ENERGY · 5 HRS</div></div>
+          </div>
+          <div class="story-row">
+            <span class="num">03</span>
+            <div class="art tone-gold"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V7l8-4 8 4v12"/></svg></div>
+            <div><h4>2026 KCSE students achieve best results in 10 years.</h4><div class="meta">EDUCATION · YESTERDAY</div></div>
+          </div>
+          <div class="story-row">
+            <span class="num">04</span>
+            <div class="art tone-red"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h18M3 6h18M3 18h18"/></svg></div>
+            <div><h4>Parliament passes new law to regulate digital assets.</h4><div class="meta">POLITICS · YESTERDAY</div></div>
+          </div>
+        </div>
+
+        <!-- latest list -->
+        <div>
+          <span class="eyebrow">Latest News</span>
+          <div class="flag-rule"><span></span><span></span><span></span></div>
+          <div class="story-row">
+            <div class="art tone-gold"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12h20M12 2v20"/><circle cx="12" cy="12" r="9"/></svg></div>
+            <div><h4>NTSA officials launch new online driver licensing system.</h4><div class="meta">ROAD SAFETY</div></div>
+          </div>
+          <div class="story-row">
+            <div class="art tone-green2"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg></div>
+            <div><h4>Kisumu artist wins international pottery award.</h4><div class="meta">ART & CULTURE</div></div>
+          </div>
+          <div class="story-row">
+            <div class="art tone-red"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 21V9l7-6 7 6v12"/><path d="M9 21v-6h6v6"/></svg></div>
+            <div><h4>Affordable housing construction in Mavoko completes first phase.</h4><div class="meta">HOUSING</div></div>
+          </div>
+          <div class="story-row">
+            <div class="art tone-gold"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16v4H4zM4 14h16v4H4z"/></svg></div>
+            <div><h4>M-Pesa launches new savings wallet feature.</h4><div class="meta">TECHNOLOGY</div></div>
+          </div>
+          <div class="story-row">
+            <div class="art tone-green2"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg></div>
+            <div><h4>Agriculture Minister launches new fertilizer subsidy for farmers.</h4><div class="meta">AGRICULTURE</div></div>
+          </div>
+        </div>
+
+        <!-- whats new + join -->
+        <div>
+          <div class="whats-new">
+            <span class="eyebrow">What's New</span>
+            <div class="flag-rule"><span></span><span></span><span></span></div>
+            <div class="art tone-green2"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2C8 6 6 10 6 14a6 6 0 0012 0c0-4-2-8-6-12z"/></svg></div>
+            <h4>Hell's Gate National Park opens new cycling trail beneath cliffs.</h4>
+            <p>The new route offers a unique perspective of the Rift Valley, winding through rock formations and providing stunning views.</p>
+          </div>
+          <div class="join-box">
+            <h3>Join the Community</h3>
+            <p>Follow news, offers and weekly events straight to your inbox.</p>
+            <ul class="stat-list">
+              <li>Facebook <span class="n">318K</span></li>
+              <li>X / Twitter <span class="n">204K</span></li>
+              <li>Instagram <span class="n">452K</span></li>
+              <li>YouTube <span class="n">96K</span></li>
+            </ul>
+            <form class="email-form" onsubmit="event.preventDefault();">
+              <input type="email" placeholder="Your email address" required>
+              <button type="submit">Send</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- county grid -->
+  <section class="block alt" id="latest">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">From Every County</span>
+          <div class="flag-rule"><span></span><span></span><span></span></div>
+          <h2>National News Map</h2>
+        </div>
+        <a class="view-all" href="#">View All Counties →</a>
+      </div>
+      <div class="county-grid">
+        <div class="county-card">
+          <div class="art tone-red"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 19h16M6 19V9l6-6 6 6v10"/></svg></div>
+          <span class="tag-pill">MOMBASA</span>
+          <h4>Mombasa Port handles 1.5 million containers this year.</h4>
+          <div class="meta">3 HRS · MARITIME ECONOMY</div>
+        </div>
+        <div class="county-card">
+          <div class="art tone-gold"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 17l5-8 4 5 4-6 5 9"/></svg></div>
+          <span class="tag-pill">NAKURU</span>
+          <h4>Lake Nakuru reports record flamingo numbers this season.</h4>
+          <div class="meta">6 HRS · TOURISM</div>
+        </div>
+        <div class="county-card">
+          <div class="art tone-green2"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l9 18H3z"/></svg></div>
+          <span class="tag-pill">NYERI</span>
+          <h4>Mount Kenya climbers increase during dry season.</h4>
+          <div class="meta">YESTERDAY · TOURISM</div>
+        </div>
+        <div class="county-card">
+          <div class="art tone-red"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="3"/><circle cx="17" cy="7" r="3"/><path d="M4 20c0-4 3-6 8-6s8 2 8 6"/></svg></div>
+          <span class="tag-pill">KISUMU</span>
+          <h4>Lake Victoria gets new sustainable fishing project.</h4>
+          <div class="meta">YESTERDAY · AGRICULTURE</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- headline grid -->
+  <section class="block" id="grid">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Today's Headlines</span>
+          <div class="flag-rule"><span></span><span></span><span></span></div>
+          <h2>More from Kenya ni Home</h2>
+        </div>
+        <a class="view-all" href="#">All News →</a>
+      </div>
+      <div class="headline-grid">
+        <div class="headline-card">
+          <div class="art tone-gold"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg></div>
+          <span class="tag-pill">HEALTH</span>
+          <h4>New NHIF (SHA) sees surge in registered members.</h4>
+        </div>
+        <div class="headline-card">
+          <div class="art tone-green2"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></div>
+          <span class="tag-pill">ECONOMY</span>
+          <h4>Kenyan shilling strengthens against dollar for third week.</h4>
+        </div>
+        <div class="headline-card">
+          <div class="art tone-red"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2v6M12 16v6M4.9 4.9l4.2 4.2M14.9 14.9l4.2 4.2M2 12h6M16 12h6M4.9 19.1l4.2-4.2M14.9 9.1l4.2-4.2"/></svg></div>
+          <span class="tag-pill">TECHNOLOGY</span>
+          <h4>Nairobi named best 'Silicon Savannah' in East Africa.</h4>
+        </div>
+        <div class="headline-card">
+          <div class="art tone-gold"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 21c4-10 12-10 16-16"/><circle cx="7" cy="18" r="2"/></svg></div>
+          <span class="tag-pill">SPORTS</span>
+          <h4>Eliud Kipchoge joins special run to inspire youth in Eldoret.</h4>
+        </div>
+        <div class="headline-card">
+          <div class="art tone-green2"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 19V9l8-6 8 6v10"/><circle cx="12" cy="13" r="2"/></svg></div>
+          <span class="tag-pill">HOUSING</span>
+          <h4>Affordable Housing project reaches second phase in Ruaka.</h4>
+        </div>
+        <div class="headline-card">
+          <div class="art tone-red"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></div>
+          <span class="tag-pill">HEALTH</span>
+          <h4>New study confirms health benefits of traditional vegetables.</h4>
+        </div>
+        <div class="headline-card">
+          <div class="art tone-gold"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21c4-4 7-7.5 7-11a7 7 0 10-14 0c0 3.5 3 7 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg></div>
+          <span class="tag-pill">TOURISM</span>
+          <h4>Maasai Mara gears up for great wildebeest migration in July.</h4>
+        </div>
+        <div class="headline-card">
+          <div class="art tone-green2"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h.01M15 9h.01M8 15c1.5 1.3 6.5 1.3 8 0"/></svg></div>
+          <span class="tag-pill">COMMUNITY</span>
+          <h4>Jua Kali artisans from Kariokor partner with European designers.</h4>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- footer -->
+  <footer id="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <h5>About Us</h5>
+          <p>Kenya ni Home is a news and culture platform connecting Kenyans everywhere — at home and abroad — with authentic stories and in-depth reporting from all 47 counties.</p>
+          <div class="f-socials">
+            <a href="#">f</a><a href="#">𝕏</a><a href="#">▶</a><a href="#">◎</a><a href="#">in</a>
+          </div>
+        </div>
+        <div>
+          <h5>Topics</h5>
+          <div class="tagcloud">
+            <a href="#">Safari</a><a href="#">Nyama Choma</a><a href="#">Jua Kali</a>
+            <a href="#">Sacco</a><a href="#">Matatu</a><a href="#">M-Pesa</a>
+            <a href="#">Boda Boda</a><a href="#">Harambee</a><a href="#">Miraa</a>
+          </div>
+        </div>
+        <div>
+          <h5>Contact</h5>
+          <ul class="contact-list">
+            <li>📍 Ngong Road, Nairobi, Kenya</li>
+            <li>📞 +254 700 000 000</li>
+            <li>✉ habari@kenyanihome.co.ke<br>matangazo@kenyanihome.co.ke</li>
+          </ul>
+        </div>
+        <div>
+          <h5>Most Read</h5>
+          <div class="pop-row">
+            <div class="art tone-gold"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="14" height="14"><circle cx="12" cy="12" r="8"/></svg></div>
+            <h6>Flour prices drop for the first time this year.</h6>
+          </div>
+          <div class="pop-row">
+            <div class="art tone-green2"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="14" height="14"><path d="M4 19V9l8-6 8 6v10"/></svg></div>
+            <h6>2026 KCSE students achieve best results in 10 years.</h6>
+          </div>
+          <div class="pop-row">
+            <div class="art tone-red"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="14" height="14"><path d="M3 17l5-8 4 5 4-6 5 9"/></svg></div>
+            <h6>Lake Nakuru records record flamingo numbers this season.</h6>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Kenya ni Home. All rights reserved.</span>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Terms</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.querySelector('.menu-toggle').addEventListener('click', function(){
+      const links = document.querySelector('nav.links');
+      const open = links.style.display === 'flex';
+      links.style.cssText = open ? '' : 'display:flex; position:absolute; top:100%; left:0; right:0; background:var(--kenya-white); flex-direction:column; padding:20px 24px; gap:16px; border-bottom:1px solid var(--line); box-shadow: var(--shadow);';
+    });
+  </script>
+</body>
+</html>

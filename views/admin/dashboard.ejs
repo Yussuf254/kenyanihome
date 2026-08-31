@@ -1,0 +1,629 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: 'Dashboard', crumb: 'Overview', topbarRight: '<span class="topbar-badge"><i class="bi bi-broadcast-pin"></i> ' + (settings.siteName || 'Kenya ni Home') + ' &middot; CMS</span>' }) %>
+
+  <div class="stat-grid">
+    <div class="stat-card featured">
+      <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+        <% if (settings.logo) { %>
+          <img src="<%= settings.logo %>" alt="<%= settings.siteName %>" style="height:48px; width:auto; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.08);">
+        <% } else { %>
+          <div style="width:48px; height:48px; border-radius:10px; background:linear-gradient(135deg, var(--signal), var(--kenya-green)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:20px; font-weight:800; font-family:var(--font-display); flex:none;"><%= (settings.siteName || 'K').charAt(0) %></div>
+        <% } %>
+        <div style="flex:1; min-width:0;">
+          <div style="font-family:var(--font-display); font-size:20px; font-weight:700; color:var(--ink); margin:0;">Welcome back, <%= currentUser ? currentUser.username : 'Admin' %></div>
+          <div style="font-size:13px; color:var(--grey); margin-top:2px;"><%= settings.siteName %> &middot; Newsroom Dashboard</div>
+        </div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="bi bi-file-earmark-text"></i></div>
+      <div class="stat-content"><div class="n"><%= stats.drafts %></div><div class="l">Drafts</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="bi bi-calendar3"></i></div>
+      <div class="stat-content"><div class="n"><%= stats.scheduled %></div><div class="l">Scheduled</div></div>
+    </div>
+    <div class="stat-card compact">
+      <div class="stat-icon"><i class="bi bi-calendar-week"></i></div>
+      <div class="stat-content"><div class="n"><%= stats.postsThisWeek %></div><div class="l">This Week</div></div>
+    </div>
+    <div class="stat-card compact">
+      <div class="stat-icon"><i class="bi bi-text-paragraph"></i></div>
+      <div class="stat-content"><div class="n"><%= stats.totalWords.toLocaleString() %></div><div class="l">Words Published</div></div>
+    </div>
+    <div class="stat-card compact">
+      <div class="stat-icon"><i class="bi bi-clock"></i></div>
+      <div class="stat-content"><div class="n"><%= stats.avgReadTime %>m</div><div class="l">Avg Read</div></div>
+    </div>
+    <div class="stat-card compact">
+      <div class="stat-icon"><i class="bi bi-image"></i></div>
+      <div class="stat-content"><div class="n"><%= stats.media %></div><div class="l">Media Files</div></div>
+    </div>
+    <div class="stat-card compact">
+      <div class="stat-icon" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);color:#1b5e20;"><i class="bi bi-eye"></i></div>
+      <div class="stat-content"><div class="n"><%= stats.totalViews.toLocaleString() %></div><div class="l">Total Visitors</div></div>
+    </div>
+    <div class="stat-card compact">
+      <div class="stat-icon"><i class="bi bi-people"></i></div>
+      <div class="stat-content"><div class="n"><%= stats.subscribers %></div><div class="l">Subscribers</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="bi bi-chat-dots"></i></div>
+      <div class="stat-content"><div class="n"><%= stats.pendingComments %></div><div class="l">Comments Pending</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="bi bi-megaphone"></i></div>
+      <div class="stat-content"><div class="n"><%= stats.activeAds %></div><div class="l">Active Ads</div></div>
+    </div>
+    <div class="stat-card compact">
+      <div class="stat-icon"><i class="bi bi-envelope"></i></div>
+      <div class="stat-content"><div class="n"><%= stats.unreadMessages %></div><div class="l">Unread Messages</div></div>
+    </div>
+    <div class="stat-card compact">
+      <div class="stat-icon"><i class="bi bi-trash3"></i></div>
+      <div class="stat-content"><div class="n"><%= stats.trashCount %></div><div class="l">In Trash</div></div>
+    </div>
+  </div>
+
+  <!-- Quick draft -->
+  <% if (hasPermission(currentUser, 'posts:write')) { %>
+  <div class="panel-card">
+    <div class="panel-card-head"><h3>Quick Draft</h3><span class="crumb" style="font-size:11px;">Jot an idea — polish it later</span></div>
+    <div class="panel-card-body">
+      <form class="quick-draft-form" action="/admin/posts/quick-draft" method="post">
+        <input type="text" name="title" placeholder="Story idea or working headline…" required>
+        <button type="submit" class="btn btn-signal btn-sm"><i class="bi bi-plus-lg"></i>&nbsp; Create Draft</button>
+      </form>
+    </div>
+  </div>
+  <% } %>
+
+   <!-- Charts -->
+   <div class="chart-row premium-chart-row">
+      <div class="chart-panel premium-chart-panel">
+        <div class="chart-panel-head"><h3><i class="bi bi-graph-up"></i> Traffic — Last 14 Days</h3><span class="chart-pill">Live</span></div>
+        <div class="chart-canvas-wrap chart-standard"><canvas id="trafficChart"></canvas></div>
+      </div>
+      <div class="chart-panel premium-chart-panel chart-side">
+        <div class="chart-panel-head"><h3><i class="bi bi-pie-chart"></i> Stories by Section</h3></div>
+       <div class="chart-canvas-wrap doughnut-card">
+         <div class="doughnut-wrap premium-doughnut">
+           <canvas id="categoryChart"></canvas>
+           <div class="doughnut-center premium-doughnut-center">
+             <div class="doughnut-number"><%= totalPublished %></div>
+             <div class="doughnut-label">Stories</div>
+           </div>
+         </div>
+         <table class="tx-list premium-tx">
+          <tbody>
+            <% 
+              var maxCount = categoryBreakdown.length > 0 ? categoryBreakdown[0].count : 0; 
+            %>
+            <% categoryBreakdown.slice(0, 5).forEach(function(c) { 
+              var pct = totalPublished ? Math.round((c.count / totalPublished) * 100) : 0;
+            %>
+              <tr style="cursor:pointer;" onclick="document.getElementById('dash-filter-category').value='<%= c.slug %>'; applyDashFilters();">
+                <td>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="dot premium-dot" style="background:var(--signal);"></span>
+                    <a href="/admin/posts?category=<%= c.slug %>" style="color:var(--ink); text-decoration:none; font-weight:500; font-size:13px;" onclick="event.stopPropagation();"><%= c.name %></a>
+                    <% if (c.count === maxCount && c.count > 0) { %><span class="premium-star">★</span><% } %>
+                  </div>
+                </td>
+                <td style="text-align:right; font-weight:700; font-size:13px; width:32px;"><%= c.count %></td>
+                <td style="padding-left:10px;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <div class="bar-track"><div class="bar-fill premium-bar-fill" style="width:<%= pct %>%;"></div></div>
+                    <span class="pct"><%= pct %>%</span>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+            <% if (categoryBreakdown.length === 0) { %>
+              <tr><td colspan="3" style="padding:10px 0; color:var(--grey); text-align:center;">No stories yet.</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-row">
+      <div class="chart-panel">
+        <div class="chart-panel-head"><h3><i class="bi bi-currency-exchange"></i> Payments — Last 14 Days</h3><span class="crumb" style="font-size:11px;"><%= paymentStats.successful %> successful &middot; KSh <%= paymentStats.revenue.toLocaleString() %> collected</span></div>
+        <div class="chart-canvas-wrap chart-standard"><canvas id="paymentChart"></canvas></div>
+      </div>
+    <div class="chart-panel chart-side">
+      <div class="chart-panel-head"><h3><i class="bi bi-heart-pulse"></i> Payment Health</h3></div>
+      <div class="chart-panel-body">
+        <div class="kpi-grid">
+          <div class="kpi-box">
+            <div class="kpi-label">Total</div>
+            <div class="kpi-value"><%= paymentStats.total %></div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">Success</div>
+            <div class="kpi-value success"><%= paymentStats.successful %></div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">Failed</div>
+            <div class="kpi-value failed"><%= paymentStats.failed %></div>
+          </div>
+        </div>
+        <table class="tx-list premium-tx">
+          <thead>
+            <tr>
+              <th style="text-align:left;">Phone</th>
+              <th style="text-align:right;">Amount</th>
+              <th style="text-align:left; padding-left:8px;">Status</th>
+              <th style="text-align:right;">Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% allPayments.slice(-5).reverse().forEach(function(p) { %>
+              <tr>
+                <td style="font-weight:500; font-size:13px;"><%= p.phoneNumber || '—' %></td>
+                <td style="text-align:right; font-weight:600;">KSh <%= Number(p.amount || 0).toLocaleString() %></td>
+                <td style="padding-left:8px;"><span class="tx-status <%= p.status || 'pending' %>"><%= p.status || 'pending' %></span></td>
+                <td style="text-align:right; color:var(--grey); font-size:12px;"><%= p.createdAt ? new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—' %></td>
+              </tr>
+            <% }) %>
+            <% if (allPayments.length === 0) { %>
+              <tr><td colspan="4" style="padding:12px 0; color:var(--grey); text-align:center;">No payments yet.</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-panel">
+    <div class="chart-panel-head"><h3><i class="bi bi-bar-chart"></i> Engagement — Top Stories</h3><span class="crumb" style="font-size:11px;">Views vs. shares vs. comments</span></div>
+    <div class="chart-canvas-wrap tall"><canvas id="engagementChart"></canvas></div>
+  </div>
+
+  <div class="dash-grid">
+    <!-- LEFT COLUMN -->
+    <div>
+      <div class="panel-card">
+        <div class="panel-card-head">
+          <h3>Recently Updated</h3>
+        </div>
+        <div class="panel-card-body">
+          <div class="premium-filter-bar">
+            <div class="premium-filter-group">
+              <label class="premium-filter-label">Status</label>
+              <select id="dash-filter-status" class="premium-filter-select">
+                <option value="">All</option>
+                <option value="published">Published</option>
+                <option value="draft">Draft</option>
+                <option value="scheduled">Scheduled</option>
+              </select>
+            </div>
+            <div class="premium-filter-group">
+              <label class="premium-filter-label">Category</label>
+              <select id="dash-filter-category" class="premium-filter-select">
+                <option value="">All</option>
+                <% categories.forEach(c => { %><option value="<%= c.slug %>"><%= c.name %></option><% }) %>
+              </select>
+            </div>
+            <div class="premium-filter-group">
+              <label class="premium-filter-label">Sort</label>
+              <select id="dash-sort" class="premium-filter-select">
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
+                <option value="views">Most Viewed</option>
+              </select>
+            </div>
+            <div class="premium-filter-group">
+              <label class="premium-filter-label">Period</label>
+              <select id="dash-range" class="premium-filter-select">
+                <option value="7d">Last 7 Days</option>
+                <option value="30d">Last 30 Days</option>
+              </select>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+          <table class="data-table" id="dash-recent-table">
+            <thead><tr><th>Story</th><th>Status</th><th>Updated</th><th style="white-space:nowrap;">Actions</th></tr></thead>
+            <tbody>
+              <% recent.forEach(p => { %>
+                <tr data-status="<%= p.status %>" data-category="<%= p.category %>" data-created="<%= p.createdAt %>" data-views="<%= p.views || 0 %>">
+                  <td>
+                    <div class="row-title">
+                      <img class="thumb" src="<%= p.coverImage || 'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=200&q=50' %>">
+                      <div><div class="rt-title"><%= p.title %></div><div class="rt-sub"><%= p.category %></div></div>
+                    </div>
+                  </td>
+                  <td><span class="pill pill-<%= p.status %>"><%= p.status %></span></td>
+                  <td><%= formatDate(p.updatedAt) %></td>
+                  <td class="table-actions"><a class="icon-btn" href="/admin/posts/<%= p.id %>/edit"><i class="bi bi-pencil"></i></a></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+          </div>
+          <div style="text-align:right; margin-top:14px;">
+            <a href="/admin/posts" class="btn btn-signal btn-sm"><i class="bi bi-arrow-right"></i>&nbsp; View all posts</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-card-head"><h3>Draft Queue</h3><span class="crumb" style="font-size:11px;">Oldest first</span></div>
+        <div class="panel-card-body">
+          <% if (!draftQueue.length) { %>
+            <p class="empty-note">No drafts waiting. Nice and tidy.</p>
+          <% } %>
+          <ul class="widget-list">
+            <% draftQueue.forEach(p => { %>
+              <li>
+                <div>
+                  <div class="wl-title"><a href="/admin/posts/<%= p.id %>/edit"><%= p.title %></a></div>
+                  <div class="wl-sub">created <%= daysAgo(p.createdAt) %> day<%= daysAgo(p.createdAt) === 1 ? '' : 's' %> ago</div>
+                </div>
+                <a href="/admin/posts/<%= p.id %>/edit" class="btn btn-signal btn-sm"><i class="bi bi-pencil"></i>&nbsp; Finish it</a>
+              </li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+
+      <% if (scheduledQueue.length) { %>
+      <div class="panel-card">
+        <div class="panel-card-head"><h3>Scheduled Stories</h3><span class="crumb" style="font-size:11px;">Soonest first</span></div>
+        <div class="panel-card-body">
+          <ul class="widget-list">
+            <% scheduledQueue.forEach(p => { %>
+              <li>
+                <div>
+                  <div class="wl-title"><a href="/admin/posts/<%= p.id %>/edit"><%= p.title %></a></div>
+                  <div class="wl-sub">goes live <%= formatDate(p.publishAt) %></div>
+                </div>
+                <span class="wl-badge">Scheduled</span>
+              </li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+      <% } %>
+
+      <div class="panel-card">
+        <div class="panel-card-head"><h3>Needs Attention</h3><span class="crumb" style="font-size:11px;">Published, but missing details</span></div>
+        <div class="panel-card-body">
+          <% if (!needsAttention.length) { %>
+            <p class="empty-note">Every published story has a cover image, excerpt and tags. Great work.</p>
+          <% } %>
+          <% needsAttention.forEach(p => { %>
+            <div class="attention-item">
+              <div class="wl-title"><a href="/admin/posts/<%= p.id %>/edit"><%= p.title %></a></div>
+              <div class="missing-tags">
+                <% p.missing.forEach(m => { %><span class="missing-tag">Missing <%= m %></span><% }) %>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div>
+      <div class="panel-card">
+        <div class="panel-card-head" style="cursor:pointer; user-select:none;" onclick="toggleCalendar()">
+          <h3><i class="bi bi-calendar3" style="margin-right:6px;"></i> Publishing Calendar</h3>
+          <span class="crumb" style="font-size:11px; cursor:pointer;" id="cal-toggle-label">Show all months <i class="bi bi-chevron-down" id="cal-toggle-icon"></i></span>
+        </div>
+        <div class="panel-card-body cal-body" id="cal-body" style="display:none;">
+          <div class="cal-year-grid" id="cal-year-grid">
+            <% calendar.months.forEach((m, mIdx) => { %>
+              <div class="cal-month-card">
+                <div class="cal-month-head"><%= m.name %> <%= calendar.year %></div>
+                <div class="cal-weekdays">
+                  <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+                </div>
+                <div class="cal-days">
+                  <% const firstDay = new Date(calendar.year, m.month - 1, 1).getDay(); const offset = firstDay === 0 ? 6 : firstDay - 1; %>
+                  <% for (let i = 0; i < offset; i++) { %><div class="cal-blank"></div><% } %>
+                  <% for (let d = 1; d <= m.daysInMonth; d++) { %>
+                    <div class="cal-dot <%= m.counts[d-1] > 0 ? 'has-post' : '' %> <%= d === calendar.today && m.month === (new Date().getMonth() + 1) ? 'today' : '' %>" title="<%= m.counts[d-1] %> post(s)"></div>
+                  <% } %>
+                </div>
+                <div class="cal-month-foot"><%= m.total %> post<%= m.total === 1 ? '' : 's' %></div>
+              </div>
+            <% }) %>
+          </div>
+          <p class="help" style="margin-top:14px;"><%= stats.postsThisMonth %> stories published in the last 30 days. Click a month to highlight days with activity.</p>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-card-head"><h3>Most Read</h3><span class="crumb" style="font-size:11px;">All-time</span></div>
+        <div class="panel-card-body">
+          <% if (!topPosts.length) { %><p class="empty-note">No reads recorded yet.</p><% } %>
+          <ul class="widget-list most-read-list">
+            <% topPosts.slice(0,5).forEach(p => { %>
+              <li>
+                <img class="thumb" src="<%= p.coverImage || 'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=200&q=50' %>" alt="">
+                <div>
+                  <div class="wl-title"><a href="/post/<%= p.slug %>" target="_blank"><%= p.title %></a></div>
+                  <div class="wl-sub"><%= p.category %></div>
+                </div>
+                <span class="wl-badge"><%= p.views || 0 %> reads</span>
+              </li>
+            <% }) %>
+          </ul>
+          <% if (topPosts.length > 5) { %>
+          <div style="text-align:right; margin-top:10px;">
+            <a href="/admin/posts?sort=views" class="btn btn-signal btn-sm"><i class="bi bi-arrow-right"></i>&nbsp; View all</a>
+          </div>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-card-head"><h3>New Messages</h3></div>
+        <div class="panel-card-body">
+          <% if (messages.length === 0) { %>
+            <p class="empty-note">No messages from the contact form yet.</p>
+          <% } %>
+          <% messages.forEach(function(m, idx) { %>
+            <div class="msg-row<%= idx < messages.length - 1 ? ' msg-row--bordered' : '' %>">
+              <div class="msg-header">
+                <div class="msg-name"><%= m.name %></div>
+                <div class="msg-email"><%= m.email %></div>
+              </div>
+              <div class="msg-body"><%= m.message.slice(0, 120) %><%= m.message.length > 120 ? '…' : '' %></div>
+            </div>
+          <% }) %>
+          <% if (hasPermission(currentUser, 'messages:read')) { %>
+            <div class="panel-footer-actions">
+              <a href="/admin/messages" class="btn btn-signal btn-sm"><i class="bi bi-envelope"></i>&nbsp; View all messages</a>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-card-head"><h3>Needs Your Attention</h3></div>
+        <div class="panel-card-body">
+          <ul class="widget-list">
+            <% if (hasPermission(currentUser, 'comments:approve')) { %>
+              <li>
+                <div><div class="wl-title">Comment Moderation</div><div class="wl-sub"><%= stats.pendingComments %> pending</div></div>
+                <a href="/admin/comments" class="btn btn-signal btn-sm"><i class="bi bi-chat-dots"></i>&nbsp; Review</a>
+              </li>
+            <% } %>
+            <% if (hasPermission(currentUser, '*')) { %>
+              <li>
+                <div><div class="wl-title">Advertising</div><div class="wl-sub"><%= stats.activeAds %> active ad<%= stats.activeAds === 1 ? '' : 's' %></div></div>
+                <a href="/admin/ads" class="btn btn-signal btn-sm"><i class="bi bi-megaphone"></i>&nbsp; Manage</a>
+              </li>
+            <% } %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+  (function () {
+    var categoryData = <%- categoryChart %>;
+    var trafficData = <%- trafficChart %>;
+    var paymentData = <%- paymentChart %>;
+    var engagementData = <%- engagementChart %>;
+
+    var ink = '#1e2b2c';
+    var signal = '#b45f3b';
+    var kenyaGreen = '#006600';
+    var grey = '#5f6b6c';
+    var line = '#e9e2da';
+    var palette = ['#b45f3b', '#006600', '#2c5c8f', '#3f8f4f', '#7a5ac8', '#c87a1e', '#8b5e3c', '#1a5c1a'];
+
+    Chart.defaults.font.family = "'Montserrat', sans-serif";
+    Chart.defaults.color = '#5f6b6c';
+    Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(30,43,44,0.95)';
+    Chart.defaults.plugins.tooltip.titleFont = { family: "'Montserrat', sans-serif", weight: '600', size: 12 };
+    Chart.defaults.plugins.tooltip.bodyFont = { family: "'Montserrat', sans-serif", size: 12 };
+    Chart.defaults.plugins.tooltip.padding = { top: 10, bottom: 10, left: 14, right: 14 };
+    Chart.defaults.plugins.tooltip.cornerRadius = 10;
+    Chart.defaults.plugins.tooltip.displayColors = true;
+    Chart.defaults.plugins.tooltip.boxPadding = 3;
+
+    var trafficCanvas = document.getElementById('trafficChart');
+    if (trafficCanvas) {
+      var ctx = trafficCanvas.getContext('2d');
+      var gradient = ctx.createLinearGradient(0, 0, 0, 280);
+      gradient.addColorStop(0, 'rgba(180,95,59,0.18)');
+      gradient.addColorStop(1, 'rgba(180,95,59,0.0)');
+      new Chart(trafficCanvas, {
+        type: 'line',
+        data: {
+          labels: trafficData.labels,
+          datasets: [{
+            label: 'Views',
+            data: trafficData.data,
+            borderColor: signal,
+            backgroundColor: gradient,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+            pointHoverRadius: 6,
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: signal,
+            pointHoverBorderWidth: 3,
+            borderWidth: 3
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          animation: { duration: 1200, easing: 'easeOutQuart' },
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, border: { display: false }, ticks: { font: { size: 10, weight: '500' } } },
+            y: { beginAtZero: true, grid: { color: line, drawBorder: false }, border: { display: false, dash: [4, 4] }, ticks: { precision: 0, font: { size: 10 } } }
+          },
+          interaction: { intersect: false, mode: 'index' }
+        }
+      });
+    }
+
+    var paymentCanvas = document.getElementById('paymentChart');
+    if (paymentCanvas) {
+      var ctx2 = paymentCanvas.getContext('2d');
+      var barGrad = ctx2.createLinearGradient(0, 0, 0, 280);
+      barGrad.addColorStop(0, 'rgba(180,95,59,0.9)');
+      barGrad.addColorStop(1, 'rgba(180,95,59,0.5)');
+      new Chart(paymentCanvas, {
+        type: 'bar',
+        data: {
+          labels: paymentData.labels,
+          datasets: [{
+            label: 'Payments',
+            data: paymentData.data,
+            backgroundColor: barGrad,
+            hoverBackgroundColor: signal,
+            borderRadius: 8,
+            barPercentage: 0.55,
+            categoryPercentage: 0.7
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          animation: { duration: 1200, easing: 'easeOutQuart' },
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, border: { display: false }, ticks: { font: { size: 10, weight: '500' } } },
+            y: { beginAtZero: true, grid: { color: line, drawBorder: false }, border: { display: false, dash: [4, 4] }, ticks: { precision: 0, font: { size: 10 } } }
+          }
+        }
+      });
+    }
+
+    var categoryCanvas = document.getElementById('categoryChart');
+    if (categoryCanvas) {
+      var categoryLabels = categoryData.labels || [];
+      var categoryValues = categoryData.data || [];
+      var categoryColors = palette.slice(0, categoryLabels.length);
+      var categoryChartInstance = new Chart(categoryCanvas, {
+        type: 'doughnut',
+        data: {
+          labels: categoryLabels,
+          datasets: [{
+            data: categoryValues,
+            backgroundColor: categoryColors,
+            hoverBackgroundColor: categoryColors.map(function(c){ return c; }),
+            borderColor: '#ffffff',
+            borderWidth: 3,
+            hoverBorderColor: '#ffffff',
+            hoverBorderWidth: 4,
+            hoverOffset: 8
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          cutout: '68%',
+          animation: { animateRotate: true, duration: 1400, easing: 'easeOutQuart' },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function (ctx) {
+                  var total = categoryChartInstance.data.datasets[0].data.reduce(function(a,b){return a+b;},0);
+                  var pct = total ? Math.round((ctx.parsed / total) * 100) : 0;
+                  return ctx.label + ': ' + ctx.parsed + ' (' + pct + '%)';
+                }
+              }
+            }
+          },
+          onClick: function (event, elements) {
+            if (elements.length > 0) {
+              var index = elements[0].index;
+              var slug = categoryData.slugs[index] || categoryLabels[index];
+              var catSelect = document.getElementById('dash-filter-category');
+              if (catSelect) {
+                catSelect.value = slug;
+                applyDashFilters();
+              }
+            }
+          }
+        }
+      });
+    }
+
+    var engagementCanvas = document.getElementById('engagementChart');
+    if (engagementCanvas) {
+      new Chart(engagementCanvas, {
+        type: 'bar',
+        data: {
+          labels: engagementData.labels,
+          datasets: [
+            { label: 'Views', data: engagementData.views, backgroundColor: 'rgba(180,95,59,0.85)', hoverBackgroundColor: signal, borderRadius: 6, barPercentage: 0.6 },
+            { label: 'Shares', data: engagementData.shares, backgroundColor: 'rgba(0,102,0,0.85)', hoverBackgroundColor: kenyaGreen, borderRadius: 6, barPercentage: 0.6 },
+            { label: 'Comments', data: engagementData.comments, backgroundColor: 'rgba(44,92,143,0.85)', hoverBackgroundColor: '#2c5c8f', borderRadius: 6, barPercentage: 0.6 }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          animation: { duration: 1200, easing: 'easeOutQuart' },
+          plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 10, padding: 16, font: { size: 11, weight: '500' }, usePointStyle: true, pointStyle: 'rectRounded' } } },
+          scales: {
+            x: { grid: { display: false }, border: { display: false }, ticks: { autoSkip: false, maxRotation: 20, minRotation: 0, font: { size: 10, weight: '500' } } },
+            y: { beginAtZero: true, grid: { color: line, drawBorder: false }, border: { display: false, dash: [4, 4] }, ticks: { precision: 0, font: { size: 10 } } }
+          }
+        }
+      });
+    }
+  })();
+
+  // ---- dashboard table filters ----
+  var statusSel = document.getElementById('dash-filter-status');
+  var catSel = document.getElementById('dash-filter-category');
+  var sortSel = document.getElementById('dash-sort');
+  var rangeSel = document.getElementById('dash-range');
+  var table = document.getElementById('dash-recent-table');
+  function applyDashFilters() {
+    if (!table) return;
+    var rows = Array.from(table.tBodies[0].rows);
+    var status = statusSel ? statusSel.value : '';
+    var cat = catSel ? catSel.value : '';
+    var sort = sortSel ? sortSel.value : 'newest';
+    var range = rangeSel ? rangeSel.value : '7d';
+    var now = new Date();
+    var ms = range === '30d' ? 30 * 86400000 : 7 * 86400000;
+    var cutoff = new Date(now.getTime() - ms).toISOString();
+    rows.forEach(function(row) {
+      var rs = row.getAttribute('data-status') || '';
+      var rc = row.getAttribute('data-category') || '';
+      var rd = row.getAttribute('data-created') || '';
+      var rv = parseInt(row.getAttribute('data-views') || '0', 10);
+      var matchStatus = !status || rs === status;
+      var matchCat = !cat || rc === cat;
+      var matchRange = rd >= cutoff;
+      row.style.display = (matchStatus && matchCat && matchRange) ? '' : 'none';
+    });
+    var visible = rows.filter(function(r) { return r.style.display !== 'none'; });
+    if (sort === 'oldest') visible.sort(function(a, b) { return (a.getAttribute('data-created') || '').localeCompare(b.getAttribute('data-created') || ''); });
+    else if (sort === 'views') visible.sort(function(a, b) { return (parseInt(b.getAttribute('data-views') || '0', 10)) - (parseInt(a.getAttribute('data-views') || '0', 10)); });
+    else visible.sort(function(a, b) { return (b.getAttribute('data-created') || '').localeCompare(a.getAttribute('data-created') || ''); });
+    var tbody = table.tBodies[0];
+    visible.forEach(function(r) { tbody.appendChild(r); });
+  }
+  if (statusSel) statusSel.addEventListener('change', applyDashFilters);
+  if (catSel) catSel.addEventListener('change', applyDashFilters);
+  if (sortSel) sortSel.addEventListener('change', applyDashFilters);
+  if (rangeSel) rangeSel.addEventListener('change', applyDashFilters);
+
+  function toggleCalendar() {
+    var body = document.getElementById('cal-body');
+    var icon = document.getElementById('cal-toggle-icon');
+    var label = document.getElementById('cal-toggle-label');
+    if (!body) return;
+    var isHidden = body.style.display === 'none';
+    body.style.display = isHidden ? 'block' : 'none';
+    if (icon) icon.className = isHidden ? 'bi bi-chevron-up' : 'bi bi-chevron-down';
+    if (label) label.childNodes[0].nodeValue = isHidden ? 'Hide all months ' : 'Show all months ';
+  }
+</script>
+
+<%- include('partials/foot') %>

@@ -1,0 +1,127 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: 'Breaking News', crumb: breakingPosts.length + ' active' }) %>
+
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
+    <h3 style="font-family: var(--font-display); font-size: 17px; margin:0; font-weight:600;">Manage Breaking Ticker</h3>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <a href="/admin/posts" class="btn btn-ghost btn-sm"><i class="bi bi-newspaper"></i>&nbsp; All Posts</a>
+    </div>
+  </div>
+
+  <div class="panel-card" style="overflow-x:auto;">
+    <table class="data-table" id="breaking-table">
+      <thead>
+        <tr>
+          <th style="width:3px;"></th>
+          <th>Story</th>
+          <th>Category</th>
+          <th>Expires</th>
+          <th style="text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="breaking-list">
+        <% if (breakingPosts.length === 0) { %>
+          <tr class="empty-row"><td colspan="5">No breaking news active. Mark posts as breaking in the post editor.</td></tr>
+        <% } %>
+        <% breakingPosts.forEach((p, i) => { %>
+          <tr data-id="<%= p.id %>">
+            <td style="text-align:center; color:var(--grey); cursor:grab;"><i class="bi bi-grip-vertical"></i></td>
+            <td>
+              <div class="row-title">
+                <img class="thumb" src="<%= p.coverImage || 'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=200&q=50' %>">
+                <div><div class="rt-title"><%= p.title %></div><div class="rt-sub">by <%= p.author %></div></div>
+              </div>
+            </td>
+            <td><%= p.category %></td>
+            <td><%= p.breakingExpiry ? formatDate(p.breakingExpiry) : '<span style="color:var(--grey);">No expiry</span>' %></td>
+            <td class="table-actions">
+              <a class="icon-btn" href="/admin/posts/<%= p.id %>/edit" title="Edit"><i class="bi bi-pencil"></i></a>
+              <button class="icon-btn" onclick="unsetBreaking(<%= p.id %>)" title="Remove from breaking"><i class="bi bi-x-circle"></i></button>
+              <% if (i > 0) { %><button class="icon-btn" onclick="moveBreaking(<%= p.id %>, -1)" title="Move up"><i class="bi bi-arrow-up"></i></button><% } %>
+              <% if (i < breakingPosts.length - 1) { %><button class="icon-btn" onclick="moveBreaking(<%= p.id %>, 1)" title="Move down"><i class="bi bi-arrow-down"></i></button><% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="panel-card" style="margin-top:24px;">
+    <h3 style="font-family: var(--font-display); font-size: 17px; margin:0 0 18px; font-weight:600;">Quick Add Breaking News</h3>
+    <form action="/admin/breaking/add" method="post" style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;">
+      <div class="field" style="flex:1; min-width:280px;">
+        <label>Select Post</label>
+        <select name="postId" required>
+          <option value="">Choose a post...</option>
+          <% availablePosts.forEach(ap => { %>
+            <option value="<%= ap.id %>"><%= ap.title %> (<%= ap.category %>)</option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="field" style="min-width:200px;">
+        <label>Expiry (optional)</label>
+        <input type="datetime-local" name="breakingExpiry">
+      </div>
+      <button type="submit" class="btn btn-signal btn-sm"><i class="bi bi-plus-lg"></i>&nbsp; Add to Breaking</button>
+    </form>
+  </div>
+
+<%- include('partials/foot') %>
+
+<script>
+function unsetBreaking(id) {
+  if (!confirm('Remove this post from breaking news?')) return;
+  fetch('/admin/breaking/' + id, { method: 'DELETE' }).then(r => { if (r.ok) location.reload(); });
+}
+function moveBreaking(id, direction) {
+  fetch('/admin/breaking/' + id + '/move', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ direction })
+  }).then(r => { if (r.ok) location.reload(); });
+}
+
+const list = document.getElementById('breaking-list');
+let draggedRow = null;
+list.addEventListener('dragstart', (e) => {
+  const row = e.target.closest('tr');
+  if (!row) return;
+  draggedRow = row;
+  e.dataTransfer.effectAllowed = 'move';
+});
+list.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  const row = e.target.closest('tr');
+  if (!row || row === draggedRow) return;
+  const rect = row.getBoundingClientRect();
+  const mid = rect.top + rect.height / 2;
+  if (e.clientY < mid) row.style.borderTop = '2px solid var(--signal)';
+  else row.style.borderBottom = '2px solid var(--signal)';
+});
+list.addEventListener('dragleave', (e) => {
+  const row = e.target.closest('tr');
+  if (row) { row.style.borderTop = ''; row.style.borderBottom = ''; }
+});
+list.addEventListener('drop', (e) => {
+  e.preventDefault();
+  const row = e.target.closest('tr');
+  if (!row || row === draggedRow) return;
+  row.style.borderTop = ''; row.style.borderBottom = '';
+  const rect = row.getBoundingClientRect();
+  const mid = rect.top + rect.height / 2;
+  const allRows = [...list.querySelectorAll('tr')];
+  const fromIdx = allRows.indexOf(draggedRow);
+  let toIdx = allRows.indexOf(row);
+  if (e.clientY >= mid) toIdx++;
+  if (fromIdx < toIdx) toIdx--;
+  if (fromIdx === toIdx) return;
+  const ids = allRows.filter(r => r.dataset.id).map(r => Number(r.dataset.id));
+  const [moved] = ids.splice(fromIdx, 1);
+  ids.splice(toIdx, 0, moved);
+  fetch('/admin/breaking/reorder', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids })
+  }).then(r => { if (r.ok) location.reload(); });
+});
+</script>

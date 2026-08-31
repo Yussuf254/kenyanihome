@@ -1,0 +1,37 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: 'Ad Subcategories', crumb: subcategories.length + ' total' }) %>
+
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
+    <h3 style="font-family: var(--font-display); font-size: 17px; margin:0; font-weight:600;">All Ad Subcategories</h3>
+    <a href="/admin/ad-subcategories/new" class="btn btn-signal btn-sm"><i class="bi bi-plus-lg"></i>&nbsp; New Ad Subcategory</a>
+  </div>
+
+  <div class="panel-card" style="overflow-x:auto;">
+    <table class="data-table" id="ad-subcategory-table">
+      <thead>
+        <tr>
+          <th>Parent Category</th>
+          <th>Name</th>
+          <th>Slug</th>
+          <th style="text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="ad-subcategory-list">
+        <% subcategories.forEach(function(sub) { %>
+          <tr id="ad-sub-row-<%= sub.id %>" data-id="<%= sub.id %>">
+            <td><%= catMap[sub.categoryId] ? catMap[sub.categoryId].name : 'Unknown' %></td>
+            <td class="rt-title"><%= sub.name %></td>
+            <td><span class="rt-sub"><%= sub.slug %></span></td>
+            <td class="table-actions">
+              <a href="/admin/ad-subcategories/<%= sub.id %>/edit" class="icon-btn" aria-label="Edit"><i class="bi bi-pencil"></i></a>
+              <form action="/admin/ad-subcategories/<%= sub.id %>?_method=DELETE" method="post" onsubmit="return confirm('Delete this subcategory?');">
+                <button class="icon-btn" type="submit" aria-label="Delete"><i class="bi bi-trash3"></i></button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+<%- include('partials/foot') %>

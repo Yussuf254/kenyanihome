@@ -1,0 +1,392 @@
+<%- include('../partials/head') %>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+:root {
+  --green: #0B6B3A;
+  --green-dark: #084d29;
+  --green-light: #e8f5e9;
+  --text: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --border: #e5e7eb;
+  --bg: #f8f9fa;
+  --white: #ffffff;
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,.08);
+  --shadow-hover: 0 4px 12px rgba(0,0,0,.1);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+a { text-decoration: none; color: inherit; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+
+/* ===== JOBS HEADER ===== */
+.jobs-header { background: var(--white); border-bottom: 1px solid var(--border); padding: 16px 0; position: sticky; top: 0; z-index: 100; }
+.jobs-header-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.jobs-logo { font-size: 22px; font-weight: 800; color: var(--green); }
+.jobs-logo span { color: var(--text); }
+.jobs-nav { display: flex; align-items: center; gap: 24px; }
+.jobs-nav a { font-size: 14px; font-weight: 500; color: var(--text-secondary); transition: color .2s; }
+.jobs-nav a:hover { color: var(--green); }
+.jobs-nav .btn-post { background: var(--green); color: var(--white); padding: 10px 20px; border-radius: var(--radius); font-weight: 600; }
+.jobs-nav .btn-post:hover { background: var(--green-dark); color: var(--white); }
+
+/* ===== SEARCH HERO ===== */
+.search-hero { background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%); padding: 48px 0; }
+.search-hero h1 { font-size: 28px; font-weight: 700; color: var(--white); text-align: center; margin-bottom: 24px; }
+.search-form { background: var(--white); border-radius: var(--radius); padding: 8px; display: flex; gap: 8px; box-shadow: 0 4px 20px rgba(0,0,0,.15); }
+.search-form .field { flex: 1; display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid var(--border); border-radius: 6px; }
+.search-form .field i { color: var(--text-muted); font-size: 16px; }
+.search-form .field input { flex: 1; border: none; outline: none; font-size: 14px; font-family: 'Montserrat', sans-serif; color: var(--text); }
+.search-form .field input::placeholder { color: var(--text-muted); }
+.search-form button { background: var(--green); color: var(--white); border: none; padding: 12px 32px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; font-family: 'Montserrat', sans-serif; transition: background .2s; white-space: nowrap; }
+.search-form button:hover { background: var(--green-dark); }
+
+/* ===== MAIN LAYOUT ===== */
+.jobs-main { display: grid; grid-template-columns: 280px 1fr; gap: 32px; padding: 32px 0; }
+
+/* ===== SIDEBAR FILTERS ===== */
+.filters-sidebar { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); padding: 20px; height: fit-content; position: sticky; top: 100px; }
+.filters-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.filter-group { margin-bottom: 20px; }
+.filter-group h4 { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 10px; text-transform: uppercase; letter-spacing: .5px; }
+.filter-option { display: flex; align-items: center; gap: 10px; padding: 8px 0; cursor: pointer; }
+.filter-option input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--green); }
+.filter-option label { font-size: 14px; color: var(--text); cursor: pointer; flex: 1; }
+.filter-option span { font-size: 12px; color: var(--text-muted); }
+
+/* ===== JOBS LISTING ===== */
+.jobs-listing { flex: 1; }
+.jobs-listing-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.jobs-count { font-size: 14px; color: var(--text-secondary); }
+.jobs-count strong { color: var(--text); }
+.jobs-sort { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-secondary); }
+.jobs-sort select { padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; font-family: 'Montserrat', sans-serif; outline: none; }
+
+/* ===== JOB CARD ===== */
+.job-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 16px; transition: box-shadow .2s, border-color .2s; }
+.job-card:hover { box-shadow: var(--shadow-hover); border-color: var(--green); }
+.job-card-header { display: flex; gap: 16px; margin-bottom: 12px; }
+.job-company-logo { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; background: var(--bg); flex-shrink: 0; }
+.job-company-logo-placeholder { width: 56px; height: 56px; border-radius: 8px; background: var(--green-light); display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--green); flex-shrink: 0; }
+.job-card-title { font-size: 18px; font-weight: 600; color: var(--green); margin-bottom: 4px; }
+.job-card-title a:hover { text-decoration: underline; }
+.job-card-company { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+.job-card-location { font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; }
+.job-card-details { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.job-badge { font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 4px; background: var(--bg); color: var(--text-secondary); }
+.job-badge.salary { background: var(--green-light); color: var(--green); }
+.job-badge.type { background: #e3f2fd; color: #1565c0; }
+.job-badge.urgent { background: #ffebee; color: #c62828; }
+.job-card-description { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.job-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); }
+.job-card-meta { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+.job-card-actions { display: flex; gap: 8px; }
+.job-card-actions a { font-size: 13px; font-weight: 500; padding: 6px 14px; border-radius: 4px; transition: all .2s; }
+.job-card-actions .btn-view { background: var(--green); color: var(--white); }
+.job-card-actions .btn-view:hover { background: var(--green-dark); }
+.job-card-actions .btn-save { background: var(--bg); color: var(--text-secondary); }
+.job-card-actions .btn-save:hover { background: var(--border); }
+
+/* ===== CATEGORIES SECTION ===== */
+.categories-section { padding: 32px 0; background: var(--white); border-top: 1px solid var(--border); }
+.categories-section h2 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+.categories-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.category-card { display: flex; flex-direction: column; justify-content: space-between; padding: 16px; background: var(--white); transition: background .2s; }
+.category-card:hover { background: var(--green-light); }
+.category-card h3 { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.category-card span { font-size: 12px; color: var(--text-muted); }
+
+/* ===== CTA SECTION ===== */
+.jobs-cta { background: var(--green); padding: 48px 0; text-align: center; }
+.jobs-cta h2 { font-size: 24px; font-weight: 700; color: var(--white); margin-bottom: 12px; }
+.jobs-cta p { font-size: 15px; color: rgba(255,255,255,.8); margin-bottom: 24px; }
+.jobs-cta .btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; border-radius: var(--radius); font-weight: 600; font-size: 14px; transition: all .2s; }
+.jobs-cta .btn-primary { background: var(--white); color: var(--green); }
+.jobs-cta .btn-primary:hover { background: var(--green-light); }
+
+/* ===== FOOTER ===== */
+.jobs-footer { background: #1a1a1a; padding: 32px 0; text-align: center; }
+.jobs-footer p { font-size: 13px; color: rgba(255,255,255,.6); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .jobs-header { padding: 12px 0; }
+  .jobs-header-inner { flex-wrap: wrap; }
+  .jobs-nav { display: none; }
+  .search-hero { padding: 24px 0; }
+  .search-hero h1 { font-size: 20px; margin-bottom: 16px; }
+  .search-form { flex-direction: column; padding: 6px; gap: 6px; }
+  .search-form .field { padding: 10px 12px; }
+  .search-form button { padding: 12px; }
+  .jobs-main { grid-template-columns: 1fr; gap: 16px; padding: 16px 0; }
+  .filters-sidebar { position: static; padding: 16px; }
+  .filter-group { margin-bottom: 16px; }
+  .jobs-listing-header { flex-direction: column; gap: 8px; align-items: flex-start; }
+  .job-card { padding: 16px; margin-bottom: 12px; }
+  .job-card-header { gap: 12px; }
+  .job-company-logo, .job-company-logo-placeholder { width: 48px; height: 48px; }
+  .job-card-title { font-size: 16px; }
+  .job-card-description { font-size: 13px; }
+  .job-card-footer { flex-direction: column; gap: 10px; align-items: flex-start; }
+  .job-card-actions { width: 100%; }
+  .job-card-actions a { flex: 1; text-align: center; }
+  .categories-section { padding: 20px 0; }
+  .categories-section h2 { font-size: 16px; margin-bottom: 12px; }
+  .categories-grid { grid-template-columns: repeat(2, 1fr); }
+  .category-card { padding: 12px; }
+  .category-card h3 { font-size: 13px; }
+  .jobs-cta { padding: 32px 16px; text-align: center; }
+  .jobs-cta h2 { font-size: 20px; }
+  .jobs-cta p { font-size: 14px; text-align: center; }
+}
+@media (max-width: 480px) {
+  .categories-grid { grid-template-columns: 1fr; }
+  .jobs-logo { font-size: 18px; }
+  .search-hero h1 { font-size: 18px; }
+  .job-card-header { flex-direction: column; gap: 8px; }
+  .job-company-logo, .job-company-logo-placeholder { width: 40px; height: 40px; }
+}
+</style>
+
+<!-- ===== JOBS HEADER ===== -->
+<header class="jobs-header">
+  <div class="container">
+    <div class="jobs-header-inner">
+      <a href="/jobs" class="jobs-logo">Kenya ni Home <span>Jobs</span></a>
+      <nav class="jobs-nav">
+        <a href="/jobs">Find Jobs</a>
+        <a href="/jobs/search">Browse Companies</a>
+        <a href="/jobs/login">Sign In</a>
+        <a href="/employer/login" class="btn-post">Post a Job</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<!-- ===== SEARCH HERO ===== -->
+<section class="search-hero">
+  <div class="container">
+    <h1>Find Your Next Opportunity</h1>
+    <form class="search-form" action="/jobs/search" method="get">
+      <div class="field">
+        <i class="fas fa-search"></i>
+        <input type="text" name="q" placeholder="Job title, keywords, or company">
+      </div>
+      <div class="field">
+        <i class="fas fa-map-marker-alt"></i>
+        <input type="text" name="location" placeholder="City or county">
+      </div>
+      <button type="submit"><i class="fas fa-search"></i> Find Jobs</button>
+    </form>
+  </div>
+</section>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="jobs-main container">
+  <!-- Filters Sidebar -->
+  <aside class="filters-sidebar">
+    <h3 class="filters-title">Filters</h3>
+    <form id="filterForm" action="/jobs/search" method="get">
+      <input type="hidden" name="q" value="">
+      <div class="filter-group">
+        <h4>Job Type</h4>
+        <label class="filter-option">
+          <input type="checkbox" name="type" value="full-time">
+          <span>Full-time</span>
+        </label>
+        <label class="filter-option">
+          <input type="checkbox" name="type" value="part-time">
+          <span>Part-time</span>
+        </label>
+        <label class="filter-option">
+          <input type="checkbox" name="type" value="contract">
+          <span>Contract</span>
+        </label>
+        <label class="filter-option">
+          <input type="checkbox" name="type" value="remote">
+          <span>Remote</span>
+        </label>
+      </div>
+      <div class="filter-group">
+        <h4>Experience Level</h4>
+        <label class="filter-option">
+          <input type="checkbox" name="experience" value="entry">
+          <span>Entry Level</span>
+        </label>
+        <label class="filter-option">
+          <input type="checkbox" name="experience" value="mid">
+          <span>Mid Level</span>
+        </label>
+        <label class="filter-option">
+          <input type="checkbox" name="experience" value="senior">
+          <span>Senior Level</span>
+        </label>
+      </div>
+      <div class="filter-group">
+        <h4>Salary Range</h4>
+        <label class="filter-option">
+          <input type="checkbox" name="salary" value="0-50000">
+          <span>KSh 0 - 50K</span>
+        </label>
+        <label class="filter-option">
+          <input type="checkbox" name="salary" value="50000-100000">
+          <span>KSh 50K - 100K</span>
+        </label>
+        <label class="filter-option">
+          <input type="checkbox" name="salary" value="100000-200000">
+          <span>KSh 100K - 200K</span>
+        </label>
+        <label class="filter-option">
+          <input type="checkbox" name="salary" value="200000+">
+          <span>KSh 200K+</span>
+        </label>
+      </div>
+    </form>
+  </aside>
+
+  <!-- Jobs Listing -->
+  <div class="jobs-listing">
+    <div class="jobs-listing-header">
+      <p class="jobs-count"><strong><%= totalJobs %></strong> jobs found</p>
+      <div class="jobs-sort">
+        <span>Sort by:</span>
+        <select>
+          <option>Most relevant</option>
+          <option>Newest</option>
+                  <option>Salary: High to Low</option>
+        </select>
+      </div>
+    </div>
+
+    <% if (jobs && jobs.length) { %>
+      <% jobs.forEach(function(job) { %>
+        <div class="job-card">
+          <div class="job-card-header">
+            <% if (job.companyLogo) { %>
+              <img src="<%= job.companyLogo %>" alt="<%= job.company %>" class="job-company-logo">
+            <% } else { %>
+              <div class="job-company-logo-placeholder">
+                <i class="fas fa-building"></i>
+              </div>
+            <% } %>
+            <div style="flex:1;">
+              <h3 class="job-card-title"><a href="/jobs/<%= job.slug %>"><%= job.title %></a></h3>
+              <p class="job-card-company"><%= job.company || 'N/A' %></p>
+              <p class="job-card-location"><i class="fas fa-map-marker-alt"></i> <%= job.location || 'Nairobi' %></p>
+            </div>
+          </div>
+          <div class="job-card-details">
+            <span class="job-badge"><%= job.categoryName || job.category || 'General' %></span>
+            <span class="job-badge type"><%= job.employmentType || 'Full-time' %></span>
+            <% if (job.salaryMin && job.salaryMax) { %>
+              <span class="job-badge salary"><%= job.salaryCurrency || 'KSh' %> <%= job.salaryMin?.toLocaleString() || '' %> - <%= job.salaryMax?.toLocaleString() || '' %></span>
+            <% } %>
+            <% if (job.featured) { %>
+              <span class="job-badge urgent"><i class="fas fa-star"></i> Featured</span>
+            <% } %>
+          </div>
+          <p class="job-card-description"><%= (job.description || '').replace(/<[^>]*>/g, '').substring(0, 150) %>...</p>
+          <div class="job-card-footer">
+            <span class="job-card-meta"><i class="far fa-clock"></i> <%= timeAgo(job.createdAt) %></span>
+            <div class="job-card-actions">
+              <a href="/jobs/<%= job.slug %>" class="btn-view">View Job</a>
+              <a href="/jobs/<%= job.slug %>/apply" class="btn-save">Apply Now</a>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    <% } else { %>
+      <div style="text-align:center;padding:60px 20px;background:var(--white);border-radius:var(--radius);">
+        <i class="fas fa-briefcase" style="font-size:48px;color:var(--text-muted);margin-bottom:16px;"></i>
+        <h3 style="font-size:18px;margin-bottom:8px;">No jobs found</h3>
+        <p style="color:var(--text-muted);">Try adjusting your search or filters</p>
+      </div>
+    <% } %>
+  </div>
+</main>
+
+<!-- ===== CATEGORIES SECTION ===== -->
+<section class="categories-section">
+  <div class="container">
+    <h2>Browse by Category</h2>
+    <div class="categories-grid">
+      <% if (categories && categories.length) { %>
+        <% categories.forEach(function(cat) { %>
+          <a href="/jobs/category/<%= cat.slug %>" class="category-card">
+            <h3><%= cat.name %></h3>
+            <span><%= Math.floor(Math.random() * 50) + 5 %> jobs</span>
+          </a>
+        <% }); %>
+      <% } else { %>
+        <a href="/jobs/category/ict-technology" class="category-card">
+          <h3>ICT & Technology</h3><span>22 jobs</span>
+        </a>
+        <a href="/jobs/category/finance-accounting" class="category-card">
+          <h3>Finance & Accounting</h3><span>24 jobs</span>
+        </a>
+        <a href="/jobs/category/sales-marketing" class="category-card">
+          <h3>Sales & Marketing</h3><span>53 jobs</span>
+        </a>
+        <a href="/jobs/category/engineering" class="category-card">
+          <h3>Engineering</h3><span>29 jobs</span>
+        </a>
+        <a href="/jobs/category/healthcare" class="category-card">
+          <h3>Healthcare</h3><span>23 jobs</span>
+        </a>
+        <a href="/jobs/category/education" class="category-card">
+          <h3>Education</h3><span>35 jobs</span>
+        </a>
+        <a href="/jobs/category/government" class="category-card">
+          <h3>Government</h3><span>51 jobs</span>
+        </a>
+        <a href="/jobs/category/ngo-development" class="category-card">
+          <h3>NGO & Development</h3><span>20 jobs</span>
+        </a>
+        <a href="/jobs/category/hospitality" class="category-card">
+          <h3>Hospitality</h3><span>43 jobs</span>
+        </a>
+        <a href="/jobs/category/security" class="category-card">
+          <h3>Security</h3><span>46 jobs</span>
+        </a>
+        <a href="/jobs/category/transport-logistics" class="category-card">
+          <h3>Transport & Logistics</h3><span>22 jobs</span>
+        </a>
+        <a href="/jobs/category/construction" class="category-card">
+          <h3>Construction</h3><span>6 jobs</span>
+        </a>
+        <a href="/jobs/category/remote-jobs" class="category-card">
+          <h3>Remote Jobs</h3><span>41 jobs</span>
+        </a>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA SECTION ===== -->
+<section class="jobs-cta">
+  <div class="container">
+    <h2>Ready to Hire Top Talent?</h2>
+    <p>Post your job openings and reach thousands of qualified candidates across Kenya.</p>
+    <a href="/employer/login" class="btn btn-primary"><i class="fas fa-plus"></i> Post a Job</a>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="jobs-footer">
+  <div class="container">
+    <p>&copy; 2026 Kenya Ni Home Jobs &bull; Connecting Kenya's Talent with Opportunity</p>
+  </div>
+</footer>
+
+<script>
+// Auto-submit filter form when checkboxes change
+document.querySelectorAll('#filterForm input[type="checkbox"]').forEach(function(cb) {
+  cb.addEventListener('change', function() {
+    document.getElementById('filterForm').submit();
+  });
+});
+</script>

@@ -1,0 +1,162 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: 'Categories', crumb: categories.length + ' total' }) %>
+
+
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px; margin-top:32px;">
+    <h3 style="font-family: var(--font-display); font-size: 17px; margin:0; font-weight:600;">All Categories</h3>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <% if (hasPermission(currentUser, 'categories:write')) { %>
+        <a href="/admin/categories/new" class="btn btn-signal btn-sm"><i class="bi bi-plus-lg"></i>&nbsp; New Category</a>
+      <% } %>
+      <% if (hasPermission(currentUser, '*')) { %>
+        <a href="/admin/header-items" class="btn btn-ghost btn-sm"><i class="bi bi-layout-wtf"></i>&nbsp; Navigation</a>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="panel-card" style="overflow-x:auto;">
+    <table class="data-table sortable" id="category-table">
+      <thead>
+        <tr>
+          <th style="width:36px; text-align:center;">&nbsp;</th>
+          <th>Name</th>
+          <th>Slug</th>
+          <th style="width:80px; text-align:center; white-space:nowrap;">Stories</th>
+          <th style="width:50px; text-align:center; white-space:nowrap;">Nav</th>
+          <th style="width:70px; text-align:center; white-space:nowrap;">Status</th>
+          <th style="text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="category-list">
+        <% const headerMap = {}; headerItems.forEach(hi => { headerMap[hi.id] = hi; }); %>
+        <% categories.forEach(c => { %>
+          <tr id="cat-row-<%= c.id %>" data-id="<%= c.id %>" data-header-item-id="<%= c.headerItemId || '' %>">
+            <td class="drag-handle" title="Drag to reorder"><i class="bi bi-gripper"></i></td>
+            <td class="rt-title" id="cat-name-<%= c.id %>">
+              <%= c.name %>
+              <% if (c.headerItemId && headerMap[c.headerItemId]) { %>
+                <span class="parent-badge"><%= headerMap[c.headerItemId].name %></span>
+              <% } %>
+            </td>
+            <td><span class="rt-sub">/category/<%= c.slug %></span></td>
+            <td style="text-align:center;"><%= counts[c.slug] || 0 %></td>
+            <td style="text-align:center;">
+              <% if (c.showInNavigation) { %>
+                <i class="bi bi-eye icon-indicator icon-visible" title="Visible in navigation"></i>
+              <% } else { %>
+                <i class="bi bi-eye-slash icon-indicator icon-hidden" title="Hidden from navigation"></i>
+              <% } %>
+            </td>
+            <td style="text-align:center;">
+              <% if (c.status === 'published') { %>
+                <span class="status-dot status-published" title="Published"></span>
+              <% } else { %>
+                <span class="status-dot status-draft" title="<%= c.status %>"></span>
+              <% } %>
+            </td>
+            <td class="table-actions">
+              <% if (hasPermission(currentUser, 'categories:write')) { %>
+                <a href="/admin/categories/<%= c.id %>/edit" class="icon-btn" aria-label="Edit"><i class="bi bi-pencil"></i></a>
+                <form action="/admin/categories/<%= c.id %>?_method=DELETE" method="post" onsubmit="return confirm('Delete this category? Existing posts will keep the old category value.');">
+                  <button class="icon-btn" type="submit" aria-label="Delete"><i class="bi bi-trash3"></i></button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if (hasPermission(currentUser, 'categories:write')) { %>
+  <div style="margin-top:16px; text-align:right;">
+    <button type="button" id="save-order" class="btn btn-signal btn-sm"><i class="bi bi-save"></i>&nbsp; Save Order</button>
+  </div>
+  <% } %>
+
+
+  <script>
+    // ---- drag-and-drop reordering ----
+    (function() {
+      var tbody = document.getElementById('category-list');
+      if (!tbody) return;
+      var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr[data-id]'));
+      var dragSrc = null;
+      var dragSrcIndex = -1;
+
+      rows.forEach(function(row, i) {
+        var handle = row.querySelector('.drag-handle');
+        if (!handle) return;
+        handle.style.cursor = 'grab';
+        handle.addEventListener('mousedown', function(e) {
+          e.preventDefault();
+          dragSrc = row;
+          dragSrcIndex = i;
+          dragSrc.style.opacity = '0.5';
+          document.body.style.userSelect = 'none';
+        });
+      });
+
+      function handleDragOver(e) {
+        e.preventDefault();
+        if (!dragSrc) return;
+        var afterElement = getDragAfter(tbody, e.clientY);
+        if (afterElement == null) {
+          tbody.appendChild(dragSrc);
+        } else {
+          tbody.insertBefore(dragSrc, afterElement);
+        }
+      }
+
+      function handleDragDrop(e) {
+        e.preventDefault();
+        if (!dragSrc) return;
+        dragSrc.style.opacity = '';
+        document.body.style.userSelect = '';
+        dragSrc = null;
+      }
+
+      function getDragAfter(container, y) {
+        var draggableElements = container.querySelectorAll('tr[data-id]:not(.dragging)');
+        var closest = null;
+        var closestOffset = -100;
+        draggableElements.forEach(function(child, i) {
+          var rect = child.getBoundingClientRect();
+          var offset = y - rect.top - rect.height / 2;
+          if (offset < 0 && offset > closestOffset) {
+            closestOffset = offset;
+            closest = child;
+          }
+        });
+        return closest;
+      }
+
+      tbody.addEventListener('dragover', handleDragOver);
+      tbody.addEventListener('drop', handleDragDrop);
+
+      document.getElementById('save-order').addEventListener('click', function() {
+        var rows = tbody.querySelectorAll('tr[data-id]');
+        var order = [];
+        rows.forEach(function(row, i) {
+          order.push({
+            id: Number(row.getAttribute('data-id')),
+            headerItemId: row.getAttribute('data-header-item-id') || null,
+            order: i
+          });
+        });
+        fetch('/admin/categories/reorder', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ order: order })
+        }).then(function(r) { return r.json(); }).then(function(data) {
+          if (data.ok) {
+            location.reload();
+          }
+        }).catch(function() {
+          alert('Failed to save order.');
+        });
+      });
+    })();
+  </script>
+
+<%- include('partials/foot') %>

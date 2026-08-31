@@ -1,0 +1,668 @@
+<%- include('partials/head') %>
+
+<style>
+.all-stories-page {
+  background: #f8f9f8;
+  min-height: 100vh;
+}
+
+.all-stories-header {
+  background: #0C1210;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 0;
+  position: sticky;
+  top: 64px;
+  z-index: 50;
+}
+.all-stories-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 20px 0;
+}
+.all-stories-title-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.all-stories-title-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(211, 47, 47, 0.12);
+  color: #D32F2F;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+.all-stories-title-icon svg {
+  width: 20px;
+  height: 20px;
+}
+.all-stories-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: #fff;
+  line-height: 1.2;
+}
+.all-stories-subtitle {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  margin: 2px 0 0;
+  font-weight: 500;
+}
+.all-stories-meta-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.all-stories-count {
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  font-weight: 600;
+  background: rgba(255,255,255,0.06);
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.all-stories-count strong {
+  color: #0F6B34;
+  font-weight: 700;
+}
+.all-stories-sort select {
+  appearance: none;
+  padding: 9px 40px 9px 16px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.06);
+  font-size: 13px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.6)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  min-width: 180px;
+}
+.all-stories-sort select:hover {
+  border-color: #0F6B34;
+  background: rgba(255,255,255,0.1);
+}
+.all-stories-sort select:focus {
+  border-color: #0F6B34;
+  box-shadow: 0 0 0 3px rgba(15, 107, 52, 0.15);
+}
+.all-stories-sort select option {
+  background: #0C1210;
+  color: #fff;
+}
+
+.all-stories-layout {
+  padding: 32px 0 48px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+.story-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+.story-card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #e4dfd7;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+.story-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 48px rgba(0,0,0,0.08);
+  border-color: #d4d8d6;
+}
+.story-card .pic {
+  position: relative;
+  aspect-ratio: 16/10;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+.story-card .pic::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(12,18,16,0.2) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.story-card:hover .pic::after {
+  opacity: 1;
+}
+.story-card .tag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+  z-index: 2;
+}
+.story-card .tag.pol { background: rgba(226, 29, 63, 0.9); }
+.story-card .tag.biz { background: rgba(8, 120, 63, 0.9); }
+.story-card .tag.edu { background: rgba(26, 107, 60, 0.9); }
+.story-card .tag.cult { background: rgba(139, 94, 60, 0.9); }
+.story-card .tag.sport { background: rgba(199, 91, 57, 0.9); }
+.story-card .tag.tech { background: rgba(15, 76, 129, 0.9); }
+.story-card .tag.health { background: rgba(46, 125, 91, 0.9); }
+.story-card .tag.world { background: rgba(92, 61, 138, 0.9); }
+.story-card .tag.county { background: rgba(107, 91, 60, 0.9); }
+.story-card .tag.breaking { 
+  background: rgba(211, 47, 47, 0.95); 
+  animation: pulse-breaking 2s ease-in-out infinite;
+}
+@keyframes pulse-breaking {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(211, 47, 47, 0); }
+}
+.story-card .body {
+  padding: 20px 22px 22px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.story-card .body h2 {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.45;
+  margin: 0 0 10px;
+  color: #0C1210;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.story-card .body h2 a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.story-card .body h2 a:hover {
+  color: #0F6B34;
+}
+.story-card .meta {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #8a9495;
+  padding-top: 14px;
+  border-top: 1px solid #f2f0eb;
+}
+.story-card .bookmark {
+  font-size: 14px;
+  opacity: 0.4;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.story-card .bookmark:hover {
+  opacity: 1;
+  color: #0F6B34;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+}
+.empty-state h3 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0C1210;
+  margin: 0 0 8px;
+}
+.empty-state p {
+  font-size: 14px;
+  color: #8a9495;
+  margin: 0;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 48px 0;
+  flex-wrap: wrap;
+}
+.pagination button {
+  min-width: 40px;
+  height: 40px;
+  border: 1px solid #e4dfd7;
+  border-radius: 10px;
+  background: #fff;
+  color: #1e2b2c;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0 14px;
+}
+.pagination button:hover:not(:disabled):not(.on) {
+  border-color: #0F6B34;
+  color: #0F6B34;
+  background: rgba(15, 107, 52, 0.04);
+}
+.pagination button.on {
+  background: #0F6B34;
+  color: #fff;
+  border-color: #0F6B34;
+}
+.pagination button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.newsletter-bar {
+  background: #fff;
+  border-top: 1px solid #e4dfd7;
+  border-bottom: 1px solid #e4dfd7;
+  padding: 48px 0;
+}
+.newsletter-bar .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.newsletter-bar .mail-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: #edf7f1;
+  color: #0F6B34;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  flex: none;
+}
+.newsletter-bar h3 {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0 0 6px;
+  color: #0C1210;
+  letter-spacing: -0.01em;
+}
+.newsletter-bar p {
+  font-size: 13px;
+  color: #5f6b6c;
+  margin: 0;
+  max-width: 400px;
+}
+.newsletter-bar form {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.newsletter-bar input {
+  padding: 12px 18px;
+  border: 1px solid #e4dfd7;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  min-width: 260px;
+  background: #fff;
+  transition: all 0.2s ease;
+}
+.newsletter-bar input:focus {
+  border-color: #0F6B34;
+  box-shadow: 0 0 0 3px rgba(15, 107, 52, 0.08);
+}
+.newsletter-bar button {
+  padding: 12px 28px;
+  border: 0;
+  border-radius: 10px;
+  background: #0F6B34;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.newsletter-bar button:hover {
+  background: #0a4f25;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 107, 52, 0.2);
+}
+
+@media (max-width: 991px) {
+  .all-stories-layout {
+    padding: 24px 0;
+  }
+  .story-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+}
+@media (max-width: 767px) {
+  .all-stories-header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 0;
+  }
+  .all-stories-meta-bar {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .all-stories-title {
+    font-size: 20px;
+  }
+  .story-grid {
+    grid-template-columns: 1fr;
+  }
+  .newsletter-bar .container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .newsletter-bar form {
+    width: 100%;
+  }
+  .newsletter-bar input {
+    min-width: 0;
+    width: 100%;
+    flex: 1;
+  }
+}
+</style>
+
+<% 
+  var allPostsData = (posts || []).map(function(post) {
+    return {
+      id: post.id,
+      title: post.title,
+      slug: post.slug,
+      category: post.category || 'General',
+      createdAt: post.createdAt || '',
+      author: post.author || '',
+      coverImage: post.coverImage || 'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=800&q=70',
+      excerpt: post.excerpt || '',
+      content: post.content || '',
+      views: post.views || 0,
+      breaking: post.breaking ? true : false,
+      trending: (trending && trending.find(function(t) { return t.id === post.id; })) ? true : false
+    };
+  });
+%>
+
+<main class="all-stories-page">
+  <div class="all-stories-header">
+    <div class="container">
+      <div class="all-stories-header-inner">
+        <div class="all-stories-title-group">
+          <div class="all-stories-title-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M20 7H6.5A2.5 2.5 0 0 0 4 9.5v0A2.5 2.5 0 0 0 6.5 12H20"/><path d="M20 7v10"/><path d="M4 9.5v0A2.5 2.5 0 0 0 6.5 12H20"/></svg>
+          </div>
+          <div>
+            <h1 class="all-stories-title">
+              <% if (featuredSection) { %><%= featuredSection.charAt(0).toUpperCase() + featuredSection.slice(1) %><% } else { %>All Stories<% } %>
+            </h1>
+            <p class="all-stories-subtitle">
+              <% if (featuredSection) { %>Browse all <%= featuredSection %> stories.<% } else { %>Explore all our latest stories and in-depth reporting from Kenya, Africa and the world.<% } %>
+            </p>
+          </div>
+        </div>
+        <div class="all-stories-meta-bar">
+          <div class="all-stories-count"><strong id="result-count"><%= posts.length %></strong> stories</div>
+          <div class="all-stories-sort">
+            <select id="sort-select">
+              <option value="newest">Latest First</option>
+              <option value="trending">Trending</option>
+              <option value="popular">Most Read</option>
+              <option value="breaking">Breaking</option>
+              <option value="culture">Culture</option>
+              <option value="sports">Sports</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container all-stories-layout">
+    <section>
+      <div class="story-grid" id="story-grid">
+        <% posts.forEach(function(post) { %>
+         <article class="story-card" data-id="<%= post.id %>" data-category="<%= post.category %>" data-date="<%= post.createdAt %>" data-author="<%= post.author %>" data-trending="<%= (trending && trending.find(function(t) { return t.id === post.id; })) ? 'true' : 'false' %>" data-breaking="<%= post.breaking ? 'true' : 'false' %>" data-views="<%= post.views || 0 %>" data-slug="<%= post.slug %>">
+             <a href="/post/<%= post.slug %>" class="pic" style="background-image:url('<%= post.coverImage || 'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=800&q=70' %>')">
+               <span class="tag <%= post.breaking ? 'breaking' : post.category === 'politics' ? 'pol' : post.category === 'business' ? 'biz' : post.category === 'education' ? 'edu' : post.category === 'culture' ? 'cult' : post.category === 'sports' ? 'sport' : post.category === 'technology' ? 'tech' : post.category === 'health' ? 'health' : post.category === 'world' ? 'world' : post.category === 'counties' ? 'county' : 'pol' %>"><%= post.breaking ? 'BREAKING' : post.category.toUpperCase() %></span>
+             </a>
+             <div class="body">
+               <h2><a href="/post/<%= post.slug %>"><%= post.title %></a></h2>
+              <div class="meta">
+                <span><%= formatDate(post.createdAt) %> · <%= readingTime(post.content) %> min read</span>
+                <span class="bookmark">&#9838;</span>
+              </div>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+      <div class="pagination" id="pagination">
+        <button disabled>&#8249; Previous</button>
+        <button class="on">1</button>
+        <button>2</button>
+        <button>3</button>
+        <button>4</button>
+        <button>&#8230;</button>
+        <button>30</button>
+        <button>Next &#8250;</button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<section class="newsletter-bar">
+  <div class="container">
+    <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+      <div class="mail-icon">&#9993;</div>
+      <div>
+        <h3>Get the best of Kenya ni Home in your inbox</h3>
+        <p>Breaking stories, in-depth analysis and exclusive insights, delivered daily.</p>
+      </div>
+    </div>
+    <form id="newsletter-form" style="margin-left:auto;">
+      <input type="email" name="email" placeholder="Enter your email address" required>
+      <button type="submit">Subscribe</button>
+    </form>
+    <p id="newsletter-msg" style="font-size:12px; color:#5f6b6c; margin:8px 0 0; display:none;"></p>
+  </div>
+</section>
+
+<%- include('partials/foot') %>
+
+<script>
+  (function() {
+    try {
+      const storyGrid = document.getElementById('story-grid');
+      const resultCount = document.getElementById('result-count');
+      const sortSelect = document.getElementById('sort-select');
+      const paginationEl = document.getElementById('pagination');
+      
+      if (!storyGrid || !resultCount || !sortSelect) return;
+
+      const POSTS_PER_PAGE = 12;
+      const allStories = <%- JSON.stringify(allPostsData) %>;
+      const trendingIds = allStories.filter(p => p.trending).map(p => p.id);
+
+      function formatDate(iso) {
+        const d = new Date(iso);
+        if (isNaN(d.getTime())) return '';
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+      }
+
+      function readingTime(text) {
+        const words = (text || '').split(/\s+/).length;
+        return Math.max(1, Math.round(words / 200));
+      }
+
+      function getCategoryClass(category) {
+        const map = {
+          politics: 'pol', business: 'biz', education: 'edu', culture: 'cult',
+          sports: 'sport', technology: 'tech', health: 'health', world: 'world', counties: 'county'
+        };
+        return map[category] || 'pol';
+      }
+
+      function buildCardHTML(post) {
+        const catClass = getCategoryClass(post.category);
+        const tagText = post.breaking ? 'BREAKING' : (post.category || 'General').toUpperCase();
+        const tagClass = post.breaking ? 'breaking' : catClass;
+        const safeTitle = (post.title || '').replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+        const safeImage = (post.coverImage || 'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=800&q=70').replace(/'/g, "&#39;");
+        const safeSlug = (post.slug || '').replace(/'/g, "&#39;");
+        return '<article class="story-card" data-id="' + post.id + '" data-category="' + post.category + '" data-date="' + post.createdAt + '" data-author="' + post.author + '" data-trending="' + (post.trending ? 'true' : 'false') + '" data-breaking="' + (post.breaking ? 'true' : 'false') + '" data-views="' + (post.views || 0) + '" data-slug="' + safeSlug + '">' +
+          '<a href="/post/' + safeSlug + '" class="pic" style="background-image:url(\'' + safeImage + '\')">' +
+          '<span class="tag ' + tagClass + '">' + tagText + '</span>' +
+          '</a>' +
+          '<div class="body">' +
+          '<h2><a href="/post/' + safeSlug + '">' + safeTitle + '</a></h2>' +
+          '<div class="meta">' +
+          '<span>' + formatDate(post.createdAt) + ' &middot; ' + readingTime(post.excerpt || '') + ' min read</span>' +
+          '<span class="bookmark">&#9838;</span>' +
+          '</div>' +
+          '</div>' +
+          '</article>';
+      }
+
+      function getSortedPosts(sortType) {
+        let posts = allStories.slice();
+        if (sortType === 'newest') {
+          posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        } else if (sortType === 'trending') {
+          posts = posts.filter(p => p.trending);
+          posts.sort((a, b) => {
+            const aIndex = trendingIds.indexOf(a.id);
+            const bIndex = trendingIds.indexOf(b.id);
+            return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex);
+          });
+        } else if (sortType === 'popular') {
+          posts.sort((a, b) => (b.views || 0) - (a.views || 0));
+        } else if (sortType === 'breaking') {
+          posts = posts.filter(p => p.breaking);
+          posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        } else if (sortType === 'culture') {
+          posts = posts.filter(p => p.category === 'culture');
+          posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        } else if (sortType === 'sports') {
+          posts = posts.filter(p => p.category === 'sports');
+          posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        }
+        return posts;
+      }
+
+      function renderPagination(totalPosts, currentPageNum) {
+        const totalPages = Math.max(1, Math.ceil(totalPosts / POSTS_PER_PAGE));
+        let html = '<button ' + (currentPageNum <= 1 ? 'disabled' : '') + '>&#8249; Previous</button>';
+        
+        for (let i = 1; i <= totalPages; i++) {
+          if (i === 1 || i === totalPages || (i >= currentPageNum - 2 && i <= currentPageNum + 2)) {
+            html += '<button class="' + (i === currentPageNum ? 'on' : '') + '">' + i + '</button>';
+          } else if (i === currentPageNum - 3 && i > 1) {
+            html += '<button disabled>&#8230;</button>';
+          } else if (i === currentPageNum + 3 && i < totalPages) {
+            html += '<button disabled>&#8230;</button>';
+          }
+        }
+        
+        html += '<button ' + (currentPageNum >= totalPages ? 'disabled' : '') + '>Next &#8250;</button>';
+        paginationEl.innerHTML = html;
+        
+        const buttons = paginationEl.querySelectorAll('button');
+        buttons.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            if (btn.disabled) return;
+            let page = 1;
+            const text = btn.textContent.trim();
+            if (text === '‹ Previous') {
+              page = currentPage - 1;
+            } else if (text === 'Next ›') {
+              page = currentPage + 1;
+            } else {
+              page = parseInt(text, 10);
+            }
+            if (page < 1 || page > totalPages) return;
+            goToPage(page);
+          });
+        });
+      }
+
+      function goToPage(page) {
+        currentPage = page;
+        const start = (page - 1) * POSTS_PER_PAGE;
+        const end = start + POSTS_PER_PAGE;
+        const pagePosts = currentSortedPosts.slice(start, end);
+        storyGrid.innerHTML = pagePosts.map(buildCardHTML).join('');
+        resultCount.textContent = currentSortedPosts.length;
+        renderPagination(currentSortedPosts.length, currentPage);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      let currentSort = 'newest';
+      let currentPage = 1;
+      let currentSortedPosts = getSortedPosts(currentSort);
+
+      renderPagination(currentSortedPosts.length, currentPage);
+
+      sortSelect.addEventListener('change', function() {
+        currentSort = this.value;
+        currentSortedPosts = getSortedPosts(currentSort);
+        currentPage = 1;
+        goToPage(1);
+      });
+
+      const nf = document.getElementById('newsletter-form');
+      if (nf) {
+        nf.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const btn = nf.querySelector('button');
+          const msg = document.getElementById('newsletter-msg');
+          const email = nf.querySelector('input[name=email]').value;
+          btn.disabled = true;
+          try {
+            const res = await fetch('/newsletter', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
+              body: 'email=' + encodeURIComponent(email)
+            });
+            const data = await res.json();
+            msg.style.display = 'block';
+            msg.textContent = data.message;
+            if (data.ok) { btn.textContent = 'Subscribed ✓'; btn.style.background='#0a4f25'; nf.querySelector('input').value = ''; }
+            else { btn.disabled = false; }
+          } catch (err) {
+            msg.style.display = 'block';
+            msg.textContent = 'Something went wrong — try again.';
+            btn.disabled = false;
+          }
+        });
+      }
+    } catch (err) {
+      console.error('All stories page error:', err);
+    }
+  })();
+</script>

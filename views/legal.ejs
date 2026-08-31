@@ -1,0 +1,63 @@
+<%- include('partials/head') %>
+<link rel="stylesheet" href="/assets/css/contact.css">
+
+<style>
+.legal-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 64px 24px;
+}
+.legal-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 48px;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+.legal-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 48px;
+  right: 48px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--kenya-green), #1a7a42);
+  border-radius: 0 0 2px 2px;
+}
+.legal-body {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--grey);
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.legal-body p {
+  margin: 0 0 18px;
+}
+.legal-body p:last-child {
+  margin-bottom: 0;
+}
+</style>
+
+<main class="main">
+  <div class="page-title">
+    <div class="wrap">
+      <div>
+        <span class="kicker">Legal</span>
+        <h1><%= heading %></h1>
+        <p class="page-subtitle">Please review our policies and terms carefully.</p>
+      </div>
+    </div>
+  </div>
+
+  <section class="legal-content">
+    <div class="legal-card">
+      <div class="legal-body"><%= body %></div>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/foot') %>

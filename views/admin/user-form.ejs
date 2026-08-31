@@ -1,0 +1,57 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: user ? 'Edit User' : 'New User', crumb: 'Users' }) %>
+
+  <form action="<%= user ? `/admin/users/${user.id}?_method=PUT` : '/admin/users' %>" method="post" id="user-form">
+    <div class="admin-split">
+      <div>
+        <div class="form-section">
+          <div class="form-section-head">Account</div>
+          <div class="form-section-body">
+            <div class="field">
+              <label>Username</label>
+              <input type="text" name="username" required value="<%= user ? user.username : '' %>" placeholder="e.g. jdoe">
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <input type="email" name="email" required value="<%= user ? user.email : '' %>" placeholder="e.g. jdoe@kenyanihome.co.ke">
+            </div>
+            <div class="field">
+              <label><%= user ? 'New Password (leave blank to keep current)' : 'Password' %></label>
+              <input type="password" name="password" <%= user ? '' : 'required' %> placeholder="Min 8 characters">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="form-section">
+          <div class="form-section-head">Role & Access</div>
+          <div class="form-section-body">
+            <div class="field">
+              <label>Role</label>
+              <select name="role">
+                <option value="admin" <%= user && user.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                <option value="editor" <%= user && user.role === 'editor' ? 'selected' : '' %>>Editor</option>
+                <option value="author" <%= user && user.role === 'author' ? 'selected' : '' %>>Author</option>
+                <option value="viewer" <%= user && user.role === 'viewer' ? 'selected' : '' %>>Viewer</option>
+              </select>
+              <p class="help">Admin = full access. Editor = posts, media, comments. Author = posts, media. Viewer = read-only.</p>
+            </div>
+            <div class="field">
+              <label>Status</label>
+              <select name="status">
+                <option value="active" <%= !user || user.status === 'active' ? 'selected' : '' %>>Active</option>
+                <option value="pending" <%= user && user.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                <option value="inactive" <%= user && user.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+              </select>
+            </div>
+            <div class="form-actions" style="border:none; padding-top:10px;">
+              <a href="/admin/users" class="btn btn-ghost btn-sm">Cancel</a>
+              <button type="submit" class="btn btn-signal"><i class="bi bi-person-plus"></i>&nbsp; <%= user ? 'Save Changes' : 'Create User' %></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+<%- include('partials/foot') %>

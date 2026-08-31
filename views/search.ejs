@@ -1,0 +1,322 @@
+<%- include('partials/head') %>
+
+<style>
+  .search-premium-page {
+    background: #fafaf9;
+    min-height: 100vh;
+  }
+
+  .search-header {
+    background: #fff;
+    border-bottom: 1px solid #e4dfd7;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .search-header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 24px;
+  }
+  .search-title {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 4px;
+    color: #0C1210;
+  }
+  .search-subtitle {
+    font-size: 12px;
+    color: #5f6b6c;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .search-body {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px 48px;
+  }
+  .search-form-premium {
+    display: flex;
+    background: #fff;
+    border: 1px solid #e4dfd7;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 32px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .search-form-premium:focus-within {
+    border-color: #0F6B34;
+    box-shadow: 0 0 0 3px rgba(15, 107, 52, 0.08);
+  }
+  .search-form-premium input {
+    flex: 1;
+    padding: 14px 18px;
+    border: 0;
+    background: transparent;
+    color: #1e2b2c;
+    font-size: 15px;
+    outline: none;
+    font-weight: 500;
+    min-width: 0;
+    font-family: inherit;
+  }
+  .search-form-premium input::placeholder {
+    color: #8a9495;
+  }
+  .search-form-premium button {
+    padding: 14px 24px;
+    border: 0;
+    background: #0F6B34;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .search-form-premium button:hover {
+    background: #0a4f25;
+  }
+
+  .results-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e4dfd7;
+  }
+  .results-meta-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .results-kicker {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: #0F6B34;
+  }
+  .results-count {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.02em;
+    color: #0C1210;
+  }
+  .results-hint {
+    font-size: 13px;
+    color: #5f6b6c;
+    margin: 0;
+  }
+
+  .story-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+  }
+  .story-card {
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid #e4dfd7;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+  }
+  .story-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 48px rgba(0,0,0,0.08);
+    border-color: #d4d8d6;
+  }
+  .story-card .pic {
+    position: relative;
+    aspect-ratio: 16/10;
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+    display: block;
+  }
+  .story-card .pic::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(12,18,16,0.2) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .story-card:hover .pic::after {
+    opacity: 1;
+  }
+  .story-card .tag {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    backdrop-filter: blur(8px);
+    z-index: 2;
+    background: rgba(15, 76, 129, 0.9);
+  }
+  .story-card .tag.pol { background: rgba(226, 29, 63, 0.9); }
+  .story-card .tag.biz { background: rgba(8, 120, 63, 0.9); }
+  .story-card .tag.edu { background: rgba(26, 107, 60, 0.9); }
+  .story-card .tag.cult { background: rgba(139, 94, 60, 0.9); }
+  .story-card .tag.sport { background: rgba(199, 91, 57, 0.9); }
+  .story-card .tag.tech { background: rgba(15, 76, 129, 0.9); }
+  .story-card .tag.health { background: rgba(46, 125, 91, 0.9); }
+  .story-card .tag.world { background: rgba(92, 61, 138, 0.9); }
+  .story-card .tag.county { background: rgba(107, 91, 60, 0.9); }
+  .story-card .tag.breaking {
+    background: rgba(211, 47, 47, 0.95);
+    animation: pulse-breaking 2s ease-in-out infinite;
+  }
+  @keyframes pulse-breaking {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(211, 47, 47, 0); }
+  }
+  .story-card .body {
+    padding: 20px 22px 22px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .story-card .body h2 {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.45;
+    margin: 0 0 10px;
+    color: #0C1210;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-line-orient: vertical;
+    overflow: hidden;
+  }
+  .story-card .body h2 a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .story-card .body h2 a:hover {
+    color: #0F6B34;
+  }
+  .story-card .meta {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #8a9495;
+    padding-top: 14px;
+    border-top: 1px solid #f2f0eb;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+  }
+  .empty-state h3 {
+    font-size: 20px;
+    font-weight: 800;
+    color: #0C1210;
+    margin: 0 0 8px;
+  }
+  .empty-state p {
+    font-size: 14px;
+    color: #8a9495;
+    margin: 0;
+  }
+
+  @media (max-width: 991px) {
+    .story-grid {
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+  }
+  @media (max-width: 767px) {
+    .search-header-inner {
+      padding: 16px;
+    }
+    .search-body {
+      padding: 24px 16px 48px;
+    }
+    .search-title {
+      font-size: 20px;
+    }
+    .story-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<main class="search-premium-page">
+  <div class="search-header">
+    <div class="search-header-inner">
+      <h1 class="search-title">Search</h1>
+      <p class="search-subtitle">Discover stories across politics, culture, business and more.</p>
+    </div>
+  </div>
+
+  <div class="search-body">
+    <form class="search-form-premium" action="/search" method="get">
+      <input type="search" name="q" value="<%= q %>" placeholder="Search headlines, tags, topics…" autofocus>
+      <button type="submit" aria-label="Search"><i class="bi bi-search"></i>&nbsp;Search</button>
+    </form>
+
+    <% if (posts.length) { %>
+      <div class="results-meta">
+        <div class="results-meta-left">
+          <span class="results-kicker">Search results</span>
+          <h2 class="results-count"><%= posts.length %> result<%= posts.length === 1 ? '' : 's' %> found<%= q ? ` for "${q}"` : '' %></h2>
+        </div>
+        <p class="results-hint">Stories matching your query.</p>
+      </div>
+      <div class="story-grid">
+        <% posts.forEach(function(post) { %>
+          <a href="/post/<%= post.slug %>" class="story-card">
+            <div class="pic" style="background-image:url('<%= post.coverImage || 'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=800&q=70' %>')">
+              <span class="tag <%= post.breaking ? 'breaking' : post.category === 'politics' ? 'pol' : post.category === 'business' ? 'biz' : post.category === 'education' ? 'edu' : post.category === 'culture' ? 'cult' : post.category === 'sports' ? 'sport' : post.category === 'technology' ? 'tech' : post.category === 'health' ? 'health' : post.category === 'world' ? 'world' : post.category === 'counties' ? 'county' : 'pol' %>">
+                <%= post.breaking ? 'BREAKING' : (post.category || 'GENERAL').toUpperCase() %>
+              </span>
+            </div>
+            <div class="body">
+              <h2><%= post.title %></h2>
+              <div class="meta">
+                <span><%= formatDate(post.createdAt) %> · <%= readingTime(post.content) %> min read</span>
+              </div>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="results-meta">
+        <div class="results-meta-left">
+          <span class="results-kicker">Search results</span>
+          <h2 class="results-count">No stories found<%= q ? ` for "${q}"` : '' %></h2>
+        </div>
+        <p class="results-hint">Try different keywords or browse by category.</p>
+      </div>
+      <div class="empty-state">
+        <h3>Try a different search</h3>
+        <p>No results match your query. Try different keywords or browse by category.</p>
+      </div>
+    <% } %>
+  </div>
+</main>
+
+<%- include('partials/foot') %>

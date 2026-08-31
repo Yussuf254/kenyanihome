@@ -1,0 +1,47 @@
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="crumb"><%= crumb || 'Kenya ni Home CMS' %></span>
+    <h1><%= heading %></h1>
+  </div>
+  <div class="topbar-right">
+    <button class="icon-btn" onclick="location.reload()" title="Refresh"><i class="bi bi-arrow-clockwise"></i></button>
+    <a href="/admin/notifications" class="notif-bell <%= unreadNotifications > 0 ? 'has-unread' : '' %>" title="Notifications">
+      <i class="bi <%= unreadNotifications > 0 ? 'bi-bell-fill' : 'bi-bell' %>"></i>
+      <% if (unreadNotifications > 0) { %><span class="notif-badge"><%= unreadNotifications > 99 ? '99+' : unreadNotifications %></span><% } %>
+    </a>
+    <%- typeof topbarRight !== 'undefined' ? topbarRight : '' %>
+  </div>
+</div>
+
+<% if (typeof currentUser !== 'undefined' && currentUser) { %>
+<script>
+  (function(){
+    async function refreshUnread(){
+      try {
+        var r = await fetch('/admin/notifications/unread-count');
+        var j = await r.json();
+        var bell = document.querySelector('.notif-bell');
+        if (!bell) return;
+        if (j.count > 0) {
+          bell.classList.add('has-unread');
+        } else {
+          bell.classList.remove('has-unread');
+        }
+        var existing = bell.querySelector('.notif-badge');
+        if (existing) existing.remove();
+        if (j.count > 0) {
+          var badge = document.createElement('span');
+          badge.className = 'notif-badge';
+          badge.textContent = j.count > 99 ? '99+' : j.count;
+          bell.appendChild(badge);
+        }
+      } catch (e) {}
+    }
+    refreshUnread();
+    setInterval(refreshUnread, 30000);
+  })();
+</script>
+<% } %>
+<div class="panel-body">
+  <% if (success && success.length) { %><div class="flash flash-success"><%= success[0] %></div><% } %>
+  <% if (error && error.length) { %><div class="flash flash-error"><%= error[0] %></div><% } %>

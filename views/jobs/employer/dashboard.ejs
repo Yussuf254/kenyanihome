@@ -1,0 +1,202 @@
+<%- include('../../partials/head') %>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+:root {
+  --green: #0B6B3A;
+  --green-dark: #084d29;
+  --green-light: #e8f5e9;
+  --text: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --border: #e5e7eb;
+  --bg: #f8f9fa;
+  --white: #ffffff;
+  --radius: 12px;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+a { text-decoration: none; color: inherit; }
+
+.portal-layout { display: flex; min-height: 100vh; }
+.portal-sidebar { width: 260px; background: #0C1210; color: #fff; padding: 24px 0; flex-shrink: 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.portal-sidebar .brand { padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; }
+.portal-sidebar .brand h2 { font-size: 18px; font-weight: 700; color: #fff; margin: 0; }
+.portal-sidebar .brand h2 span { color: #4ade80; }
+.portal-sidebar .brand small { font-size: 11px; color: #999; }
+.portal-sidebar .nav { display: flex; flex-direction: column; gap: 2px; }
+.portal-sidebar .nav a { display: flex; align-items: center; gap: 10px; padding: 12px 24px; color: rgba(255,255,255,.7); font-size: 14px; transition: all .2s; border-left: 3px solid transparent; }
+.portal-sidebar .nav a:hover, .portal-sidebar .nav a.active { background: rgba(255,255,255,.1); color: #fff; border-left-color: #4ade80; }
+.portal-main { flex: 1; background: #f8f9fa; }
+.portal-header { background: #fff; border-bottom: 1px solid var(--border); padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; }
+.portal-header h1 { font-size: 20px; font-weight: 700; margin: 0; }
+.portal-content { padding: 32px; max-width: 1200px; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 32px; }
+.stat-card { background: #fff; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border); }
+.stat-card .stat-value { font-size: 32px; font-weight: 700; color: var(--green); margin-bottom: 4px; }
+.stat-card .stat-label { font-size: 13px; color: var(--text-muted); }
+
+.card { background: #fff; border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; margin-bottom: 24px; }
+.card-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.card-header h3 { font-size: 16px; font-weight: 600; margin: 0; }
+.card-body { padding: 24px; }
+
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--green); color: #fff; border-radius: 8px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; font-family: 'Montserrat', sans-serif; transition: all .2s; }
+.btn:hover { background: var(--green-dark); }
+.btn-outline { background: transparent; border: 1px solid var(--green); color: var(--green); }
+.btn-outline:hover { background: var(--green-light); }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.btn-ghost:hover { background: var(--bg); }
+.btn-sm { padding: 6px 14px; font-size: 13px; }
+
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+.table th { background: #f9fafb; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.table td { font-size: 14px; }
+
+.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; }
+.badge-published { background: #d1fae5; color: #059669; }
+.badge-pending { background: #fef3c7; color: #d97706; }
+.badge-rejected { background: #fee2e2; color: #dc2626; }
+
+@media (max-width: 768px) {
+  .portal-layout { flex-direction: column; }
+  .portal-sidebar { width: 100%; height: auto; position: static; }
+  .portal-sidebar .nav { flex-direction: row; overflow-x: auto; padding: 0 16px; }
+  .portal-sidebar .nav a { white-space: nowrap; padding: 10px 16px; }
+  .portal-content { padding: 20px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+
+<div class="portal-layout">
+  <aside class="portal-sidebar">
+    <div class="brand">
+      <h2>Kenya ni Home <span>Jobs</span></h2>
+      <small>Employer Portal</small>
+    </div>
+    <nav class="nav">
+      <a href="/employer/dashboard" class="<%= currentPath === '/employer/dashboard' ? 'active' : '' %>"><i class="fas fa-home"></i> Dashboard</a>
+      <a href="/employer/jobs/create" class="<%= currentPath === '/employer/jobs/create' ? 'active' : '' %>"><i class="fas fa-plus"></i> Post a Job</a>
+      <a href="/employer/jobs"><i class="fas fa-briefcase"></i> My Jobs</a>
+      <a href="/employer/profile" class="<%= currentPath === '/employer/profile' ? 'active' : '' %>"><i class="fas fa-building"></i> Company Profile</a>
+      <a href="/employer/payments"><i class="fas fa-credit-card"></i> Billing</a>
+      <a href="/employer/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+  </aside>
+
+  <main class="portal-main">
+    <header class="portal-header">
+      <h1>Welcome, <%= user.username %>!</h1>
+      <a href="/employer/jobs/create" class="btn btn-sm">Post a Job</a>
+    </header>
+
+    <div class="portal-content">
+      <% if (success && success.length > 0) { %>
+        <div style="background:#d1fae5;color:#059669;padding:16px 20px;border-radius:8px;margin-bottom:24px;font-size:14px;">
+          <%= success %>
+        </div>
+      <% } %>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value"><%= stats.totalJobs %></div>
+          <div class="stat-label">Total Jobs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value"><%= stats.activeJobs %></div>
+          <div class="stat-label">Active Jobs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value"><%= stats.pendingJobs %></div>
+          <div class="stat-label">Pending Approval</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value"><%= stats.totalApplications %></div>
+          <div class="stat-label">Total Applications</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value"><%= stats.views %></div>
+          <div class="stat-label">Total Views</div>
+        </div>
+      </div>
+
+      <!-- Company Info -->
+      <% if (company) { %>
+        <div class="card">
+          <div class="card-header">
+            <h3>Company Overview</h3>
+            <a href="/employer/profile" class="btn btn-ghost btn-sm">Edit Profile</a>
+          </div>
+          <div class="card-body">
+            <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+              <% if (company.logo) { %>
+                <img src="<%= company.logo %>" alt="Logo" style="width:64px;height:64px;border-radius:12px;object-fit:cover;">
+              <% } else { %>
+                <div style="width:64px;height:64px;border-radius:12px;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:700;">
+                  <%= company.companyName ? company.companyName.charAt(0) : 'C' %>
+                </div>
+              <% } %>
+              <div style="flex:1;min-width:200px;">
+                <div style="font-size:18px;font-weight:700;margin-bottom:4px;"><%= company.companyName %></div>
+                <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;"><%= company.description ? company.description.substring(0, 100) + '...' : 'No description yet' %></div>
+                <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--text-muted);">
+                  <% if (company.location) { %><span><i class="fas fa-map-marker-alt"></i> <%= company.location %></span><% } %>
+                  <% if (company.website) { %><a href="<%= company.website %>" target="_blank" style="color:var(--green);"><i class="fas fa-globe"></i> Website</a><% } %>
+                  <% if (company.verified) { %><span style="color:var(--green);"><i class="fas fa-check-circle"></i> Verified</span><% } %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% } %>
+
+      <!-- Recent Jobs -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Recent Jobs</h3>
+          <a href="/employer/jobs" class="btn btn-ghost btn-sm">View All</a>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <% if (jobs.length === 0) { %>
+            <div style="padding:40px;text-align:center;color:var(--text-muted);">
+              <div style="margin-bottom:12px;">No jobs posted yet</div>
+              <a href="/employer/jobs/create" class="btn btn-sm">Post Your First Job</a>
+            </div>
+          <% } else { %>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Job Title</th>
+                  <th>Status</th>
+                  <th>Views</th>
+                  <th>Posted</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% jobs.slice(0, 5).forEach(function(job) { %>
+                  <tr>
+                    <td><strong><%= job.title %></strong></td>
+                    <td><span class="badge badge-<%= job.status %>"><%= job.status %></span></td>
+                    <td><%= job.views || 0 %></td>
+                    <td style="color:var(--text-muted);"><%= formatDate(job.createdAt) %></td>
+                    <td>
+                      <a href="/employer/jobs/<%= job.id %>/applicants" class="btn btn-ghost btn-sm">Applicants</a>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<%- include('../../partials/foot') %>

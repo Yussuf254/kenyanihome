@@ -1,0 +1,72 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: 'Ad Submissions', crumb: total + ' total', topbarRight: '<a href="/admin/ads" class="btn btn-ghost btn-sm" style="margin-right:10px;"><i class="bi bi-megaphone"></i>&nbsp; Banner Ads</a>' + '<a href="/admin/ad-submissions/export" class="btn btn-green btn-sm"><i class="bi bi-download"></i>&nbsp; Export CSV</a>' }) %>
+
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+    <a href="/admin/ad-submissions" class="btn btn-sm <%= !statusFilter ? 'btn-signal' : 'btn-ghost' %>">All</a>
+    <a href="/admin/ad-submissions?status=pending" class="btn btn-sm <%= statusFilter === 'pending' ? 'btn-signal' : 'btn-ghost' %>">Pending <span class="nav-badge" style="margin-left:4px;"><%= pending %></span></a>
+    <a href="/admin/ad-submissions?status=approved" class="btn btn-sm <%= statusFilter === 'approved' ? 'btn-signal' : 'btn-ghost' %>">Approved</a>
+    <a href="/admin/ad-submissions?status=active" class="btn btn-sm <%= statusFilter === 'active' ? 'btn-signal' : 'btn-ghost' %>">Active</a>
+    <a href="/admin/ad-submissions?status=paused" class="btn btn-sm <%= statusFilter === 'paused' ? 'btn-signal' : 'btn-ghost' %>">Paused</a>
+    <a href="/admin/ad-submissions?status=expired" class="btn btn-sm <%= statusFilter === 'expired' ? 'btn-signal' : 'btn-ghost' %>">Expired</a>
+  </div>
+
+  <div class="panel-card" style="overflow-x:auto;">
+    <table class="data-table" id="ad-submission-table">
+      <thead>
+        <tr>
+          <th>Business</th>
+          <th>Product</th>
+          <th>Category</th>
+          <th>Package</th>
+          <th>Status</th>
+          <th>Payment</th>
+          <th>Dates</th>
+          <th style="text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (!submissions.length) { %>
+          <tr class="empty-row"><td colspan="8">No ad submissions found.</td></tr>
+        <% } %>
+        <% submissions.forEach(function(s) { %>
+          <tr>
+            <td>
+              <div class="row-title">
+                <% if (s.logo) { %><img class="thumb" src="<%= s.logo %>"><% } else { %><div class="thumb" style="display:flex;align-items:center;justify-content:center;color:var(--grey-light);background:var(--paper);"><i class="bi bi-shop"></i></div><% } %>
+                <div><div class="rt-title"><%= s.businessName %></div><div class="rt-sub"><%= s.contactPerson %> · <%= s.email %></div></div>
+              </div>
+            </td>
+            <td><%= s.productName %></td>
+            <td><%= s.category || '—' %></td>
+            <td><%= s.package || 'Basic' %></td>
+            <td><span class="pill pill-<%= s.status %>"><%= s.status %></span></td>
+            <td><span class="pill <%= s.paymentStatus === 'paid' ? 'pill-active' : 'pill-draft' %>"><%= s.paymentStatus %></span></td>
+            <td style="font-size:12px;color:var(--grey);"><%= s.startDate ? new Date(s.startDate).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '—' %> — <%= s.endDate ? new Date(s.endDate).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '—' %></td>
+            <td class="table-actions">
+              <a class="icon-btn" href="/admin/ad-submissions/<%= s.id %>" title="Preview"><i class="bi bi-eye"></i></a>
+              <a class="icon-btn" href="/admin/ad-submissions/<%= s.id %>/edit" title="Edit"><i class="bi bi-pencil"></i></a>
+              <% if (s.status === 'pending') { %>
+                <form action="/admin/ad-submissions/<%= s.id %>/approve" method="post"><button class="icon-btn" type="submit" title="Approve"><i class="bi bi-check-lg"></i></button></form>
+                <form action="/admin/ad-submissions/<%= s.id %>/reject" method="post" onsubmit="return confirm('Reject this submission?')"><button class="icon-btn" type="submit" title="Reject"><i class="bi bi-x-lg"></i></button></form>
+              <% } %>
+              <% if (s.status === 'approved' && s.paymentStatus === 'paid') { %>
+                <form action="/admin/ad-submissions/<%= s.id %>/activate" method="post"><button class="icon-btn" type="submit" title="Activate"><i class="bi bi-play-fill"></i></button></form>
+              <% } %>
+              <% if (s.status === 'approved' && s.paymentStatus !== 'paid') { %>
+                <form action="/admin/ad-submissions/<%= s.id %>/mark-paid" method="post" onsubmit="return confirm('Mark this ad as paid?')"><button class="icon-btn" type="submit" title="Mark as Paid" style="color:#0B6B3A;"><i class="bi bi-cash-stack"></i></button></form>
+              <% } %>
+              <% if (s.status === 'active') { %>
+                <form action="/admin/ad-submissions/<%= s.id %>/pause" method="post"><button class="icon-btn" type="submit" title="Pause"><i class="bi bi-pause-fill"></i></button></form>
+                <form action="/admin/ad-submissions/<%= s.id %>/expire" method="post" onsubmit="return confirm('Expire this campaign?')"><button class="icon-btn" type="submit" title="Expire"><i class="bi bi-calendar-x"></i></button></form>
+              <% } %>
+              <% if (s.status === 'paused') { %>
+                <form action="/admin/ad-submissions/<%= s.id %>/activate" method="post"><button class="icon-btn" type="submit" title="Resume"><i class="bi bi-play-fill"></i></button></form>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+<%- include('partials/foot') %>

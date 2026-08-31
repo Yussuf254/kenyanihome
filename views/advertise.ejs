@@ -1,0 +1,338 @@
+<%- include('partials/head') %>
+<link rel="stylesheet" href="/assets/css/advertise.css">
+<style>
+  body { font-family: 'Montserrat', sans-serif !important; }
+</style>
+
+<section class="adv-hero">
+  <div class="in">
+    <div style="text-align:center; display:flex; flex-direction:column; align-items:center;">
+      <h1><%= (advertising && advertising.heroTitle) ? advertising.heroTitle : 'Advertise With Us' %></h1>
+      <p><%= (advertising && advertising.heroSubtitle) ? advertising.heroSubtitle : 'Promote your products or services to thousands of engaged Kenyans.' %></p>
+      <div class="adv-benefits">
+        <% (advertising && advertising.benefits && Array.isArray(advertising.benefits) ? advertising.benefits : []).forEach(function(b) { %>
+          <div class="adv-benefit">
+            <div class="adv-ico"><i class="fa-solid fa-circle-check"></i></div>
+            <div><b><%= b.title %></b><small><%= b.body %></small></div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main class="main">
+  <section>
+    <% if (success && success.length) { %><div class="flash flash-success" style="margin-bottom:16px;padding:12px 16px;border-radius:8px;background:#eef7ee;color:#1a5c1a;border:1px solid #c8e6c8;font-size:13.5px;"><%= success[0] %></div><% } %>
+    <% if (error && error.length) { %><div class="flash flash-error" style="margin-bottom:16px;padding:12px 16px;border-radius:8px;background:#fdf1f1;color:#8a1c1c;border:1px solid #f5c6c6;font-size:13.5px;"><%= error[0] %></div><% } %>
+
+    <div class="steps">
+      <div class="step active"><span class="num">1</span> Business Info</div>
+      <div class="line"></div>
+      <div class="step"><span class="num">2</span> Promotion Details</div>
+      <div class="line"></div>
+      <div class="step"><span class="num">3</span> Package & Duration</div>
+      <div class="line"></div>
+      <div class="step"><span class="num">4</span> Review & Submit</div>
+    </div>
+
+    <form action="/advertise" method="post" enctype="multipart/form-data" id="advertiseForm">
+      <div class="card">
+        <div class="ct"><span class="round"><i class="fa-solid fa-building"></i></span> Business Information</div>
+        <div class="cb">
+          <div class="g2">
+            <div class="field">
+              <label>Business / Brand Name <span>*</span></label>
+              <input type="text" name="businessName" required placeholder="Enter business or brand name">
+            </div>
+            <div class="field">
+              <label>Contact Person <span>*</span></label>
+              <input type="text" name="contactPerson" required placeholder="Enter full name">
+            </div>
+          </div>
+          <div class="g3">
+            <div class="field">
+              <label>Phone Number <span>*</span></label>
+              <input type="tel" name="phone" required placeholder="+254 712 345 678">
+            </div>
+            <div class="field">
+              <label>WhatsApp Number</label>
+              <input type="tel" name="whatsapp" placeholder="+254 712 345 678">
+            </div>
+            <div class="field">
+              <label>Email Address <span>*</span></label>
+              <input type="email" name="email" required placeholder="youremail@example.com">
+            </div>
+          </div>
+          <div class="g2">
+            <div class="field">
+              <label>Business Location <span>*</span></label>
+              <select name="location" required>
+                <option value="">Select city or town</option>
+                <option>Nairobi</option>
+                <option>Mombasa</option>
+                <option>Kisumu</option>
+                <option>Nakuru</option>
+                <option>Eldoret</option>
+                <option>Nyeri</option>
+                <option>Machakos</option>
+                <option>Thika</option>
+                <option>Malindi</option>
+                <option>Kitale</option>
+                <option>Garissa</option>
+                <option>Kakamega</option>
+                <option>Kericho</option>
+                <option>Mumias</option>
+                <option>Bungoma</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Website (Optional)</label>
+              <input type="url" name="website" placeholder="https://yourwebsite.com">
+            </div>
+          </div>
+          <div class="field">
+            <label>Business Logo (Optional)</label>
+            <div class="upload" onclick="document.getElementById('logoFile').click()">
+              <div class="ico"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+              <div><b>Upload logo</b><small>PNG, JPG up to 2MB</small></div>
+            </div>
+            <input type="file" name="logoFile" id="logoFile" accept="image/*" style="display:none" onchange="var small=this.parentElement.querySelector('.upload small');if(small){small.textContent=this.files[0]?this.files[0].name:'PNG, JPG up to 2MB';}">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ct"><span class="round"><i class="fa-solid fa-bullhorn"></i></span> Promotion Information</div>
+        <div class="cb">
+          <div class="field">
+            <label>What are you promoting? <span>*</span></label>
+            <div class="radios">
+              <label class="radio"><input type="radio" name="promotionType" value="Product" checked><span class="radio-dot"></span> Product</label>
+              <label class="radio"><input type="radio" name="promotionType" value="Service"><span class="radio-dot"></span> Service</label>
+              <label class="radio"><input type="radio" name="promotionType" value="Brand"><span class="radio-dot"></span> Brand / Business</label>
+              <label class="radio"><input type="radio" name="promotionType" value="Event"><span class="radio-dot"></span> Event</label>
+              <label class="radio"><input type="radio" name="promotionType" value="Offer"><span class="radio-dot"></span> Special Offer</label>
+            </div>
+          </div>
+          <div class="g3">
+            <div class="field">
+              <label>Product / Service Name <span>*</span></label>
+              <input type="text" name="productName" required placeholder="Enter product or service name" value="<%= prefilledAd ? prefilledAd.title : '' %>">
+            </div>
+            <div class="field">
+              <label>Category <span>*</span></label>
+              <select name="category" id="advCategory" required>
+                <option value="">Select category</option>
+                <% adCategories.forEach(function(c) { %>
+                  <option value="<%= c.id %>" data-icon="<%= c.icon || '' %>"><%= c.name %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div class="field">
+              <label>Subcategory</label>
+              <select name="subcategory" id="advSubcategory">
+                <option value="">Select subcategory</option>
+              </select>
+            </div>
+          </div>
+          <div class="g2">
+            <div class="field">
+              <label>Short Description <span>*</span></label>
+              <textarea name="shortDescription" maxlength="150" placeholder="Brief description (max 150 characters)"><%= prefilledAd ? prefilledAd.description.slice(0, 150) : '' %></textarea>
+            </div>
+            <div class="field">
+              <label>Full Description <span>*</span></label>
+              <textarea name="fullDescription" rows="4" placeholder="Describe your product or service in detail..."><%= prefilledAd ? prefilledAd.description : '' %></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ct"><span class="round">◇</span> Product / Service Details</div>
+        <div class="cb">
+          <div class="prices">
+            <div class="field">
+              <label>Price (KSh) <span>*</span></label>
+              <input type="number" name="price" required placeholder="e.g. 1500">
+            </div>
+            <div class="field">
+              <label>Original Price</label>
+              <input type="number" name="originalPrice" placeholder="e.g. 2000">
+            </div>
+            <div class="field">
+              <label>Discount / Offer</label>
+              <input type="text" name="discount" placeholder="e.g. 10% OFF">
+            </div>
+            <div class="field">
+              <label>Currency</label>
+              <select name="currency">
+                <option>KSh</option>
+                <option>USD</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Product Images <span>*</span></label>
+            <div class="gallery">
+                <div class="upload" onclick="document.getElementById('imageFiles').click()">
+                  <div class="ico"><i class="fa-solid fa-images"></i></div>
+                <div><b>Upload Images</b><small>Up to 5 images</small></div>
+              </div>
+              <div class="upload" style="opacity:.5;pointer-events:none"><div class="ico"><i class="fa-solid fa-plus"></i></div></div>
+              <div class="upload" style="opacity:.5;pointer-events:none"><div class="ico"><i class="fa-solid fa-plus"></i></div></div>
+              <div class="upload" style="opacity:.5;pointer-events:none"><div class="ico"><i class="fa-solid fa-plus"></i></div></div>
+              <div class="upload" style="opacity:.5;pointer-events:none"><div class="ico"><i class="fa-solid fa-plus"></i></div></div>
+              <div class="upload" style="opacity:.5;pointer-events:none"><div class="ico"><i class="fa-solid fa-plus"></i></div></div>
+            </div>
+            <input type="file" name="imageFiles" id="imageFiles" accept="image/*" multiple style="display:none" onchange="var f=this.files;var up=this.parentElement.querySelectorAll('.upload');for(var i=1;i<Math.min(f.length+1,6);i++){up[i].style.opacity='1';up[i].style.pointerEvents='auto';up[i].querySelector('.ico').textContent='✓';up[i].querySelector('b').textContent=f[i-1].name;}">
+          </div>
+          <div class="g3">
+            <div class="field">
+              <label>Website / Product Link</label>
+              <input type="url" name="productLink" placeholder="https://example.com/product" value="<%= prefilledAd ? prefilledAd.link : '' %>">
+            </div>
+            <div class="field">
+              <label>WhatsApp Link</label>
+              <input type="url" name="whatsappLink" placeholder="https://wa.me/254...">
+            </div>
+            <div class="field">
+              <label>Phone Call Link</label>
+              <input type="tel" name="phoneLink" placeholder="tel:+254...">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ct"><span class="round"><i class="fa-solid fa-calendar"></i></span> Campaign Duration</div>
+        <div class="cb">
+          <div class="g2">
+            <div class="field">
+              <label>Start Date <span>*</span></label>
+              <input type="date" name="startDate" required value="<%= new Date().toISOString().slice(0,10) %>">
+            </div>
+            <div class="field">
+              <label>End Date <span>*</span></label>
+              <input type="date" name="endDate" required value="<%= new Date(Date.now()+30*86400000).toISOString().slice(0,10) %>">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn" onclick="history.back()">Cancel</button>
+        <button type="submit" class="btn primary">Submit for Review</button>
+      </div>
+    </form>
+  </section>
+
+  <aside class="side">
+    <div class="box">
+      <h3><i class="fa-solid fa-box"></i> Choose Your Package</h3>
+      <% packages.forEach(function(pkg, idx) { %>
+        <div class="pack <%= idx === 0 ? 'sel' : '' %>" data-package="<%= pkg.name %>" data-price="<%= pkg.price %>" data-currency="<%= pkg.currency || 'KSh' %>" data-duration="<%= pkg.duration || '' %>">
+          <div class="pack-row">
+            <span class="pack-radio"><span class="pack-dot"></span></span>
+            <span class="pack-name"><%= pkg.name %></span>
+            <span class="pack-price"><%= pkg.currency || 'KSh' %> <%= Number(pkg.price).toLocaleString() %></span>
+          </div>
+          <ul class="pack-features">
+            <% (pkg.features || []).forEach(function(f) { %>
+              <li><%= f %></li>
+            <% }) %>
+          </ul>
+        </div>
+      <% }) %>
+    </div>
+
+    <div class="box">
+      <h3><i class="fa-solid fa-receipt"></i> Order Summary</h3>
+      <div class="summary">
+        <div class="sum"><span>Package</span><b id="sumPackage"><%= packages.length ? packages[0].name : 'Basic Listing' %></b></div>
+        <div class="sum"><span>Duration</span><b id="sumDuration"><%= packages.length ? packages[0].duration : '30 days' %></b></div>
+        <div class="sum total"><span>Total Amount</span><strong id="sumTotal"><%= packages.length ? (packages[0].currency || 'KSh') + ' ' + Number(packages[0].price).toLocaleString() : 'KSh 2,500' %></strong></div>
+      </div>
+    </div>
+
+    <div class="box">
+      <h3><i class="fa-solid fa-shield-halved"></i> Why Advertise With Us?</h3>
+      <div class="why">
+        <% (advertising && advertising.whyAdvertise && Array.isArray(advertising.whyAdvertise) ? advertising.whyAdvertise : []).forEach(function(w) { %>
+          <div class="whyitem">
+            <div class="w"><%
+              var adIconSvg = '';
+              if (w.icon) {
+                if (w.icon.indexOf('<svg') === 0) adIconSvg = w.icon;
+                else if (w.icon.length === 1) adIconSvg = w.icon;
+                else adIconSvg = w.icon;
+              }
+            %><%- adIconSvg %></div>
+            <div><b><%= w.title %></b><p><%= w.body %></p></div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <div class="box">
+      <h3><i class="fa-solid fa-headset"></i> Need Help?</h3>
+      <div class="help">
+        <p>Our team is ready to help you.</p>
+        <p><i class="fa-solid fa-phone"></i> <strong><%= (advertising && advertising.contactPhone) ? advertising.contactPhone : '+254 700 123 456' %></strong></p>
+        <p><i class="fa-solid fa-envelope"></i> <strong><%= (advertising && advertising.contactEmail) ? advertising.contactEmail : 'ads@kenyanihome.com' %></strong></p>
+        <p><i class="fa-solid fa-clock"></i> <%= (advertising && advertising.supportHours) ? advertising.supportHours : 'Mon - Fri: 8:00 AM - 5:00 PM' %></p>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<script>
+  (function(){
+    var packs = document.querySelectorAll('.pack');
+    var packageInput = document.createElement('input');
+    packageInput.type = 'hidden';
+    packageInput.name = 'adPackage';
+    packageInput.value = '<%= packages.length ? packages[0].name : "Basic Listing" %>';
+    document.getElementById('advertiseForm').appendChild(packageInput);
+
+    var sumPackage = document.getElementById('sumPackage');
+    var sumDuration = document.getElementById('sumDuration');
+    var sumTotal = document.getElementById('sumTotal');
+
+    packs.forEach(function(p){
+      p.addEventListener('click', function(){
+        packs.forEach(function(x){ x.classList.remove('sel'); });
+        p.classList.add('sel');
+        packageInput.value = p.dataset.package;
+        sumPackage.textContent = p.dataset.package;
+        sumDuration.textContent = p.dataset.duration || '';
+        sumTotal.textContent = (p.dataset.currency || 'KSh') + ' ' + Number(p.dataset.price || 0).toLocaleString();
+      });
+    });
+
+    var catSelect = document.getElementById('advCategory');
+    var subSelect = document.getElementById('advSubcategory');
+    catSelect.addEventListener('change', function(){
+      var catId = this.value;
+      subSelect.innerHTML = '<option value="">Select subcategory</option>';
+      if (!catId) return;
+      fetch('/api/ad-subcategories?categoryId=' + catId)
+        .then(function(r){ return r.json(); })
+        .then(function(subs){
+          subs.forEach(function(s){
+            var opt = document.createElement('option');
+            opt.value = s.name;
+            opt.textContent = s.name;
+            subSelect.appendChild(opt);
+          });
+        })
+        .catch(function(){
+          subSelect.innerHTML = '<option value="">Select subcategory</option>';
+        });
+    });
+  })();
+</script>
+
+<%- include('partials/foot') %>

@@ -1,0 +1,25 @@
+{
+  "name": "kenya-ni-home",
+  "version": "1.0.0",
+  "description": "Kenya ni Home — a premium news blog with a built-in CMS",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "axios": "^1.19.0",
+    "bcryptjs": "^2.4.3",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "lowdb": "1.0.0",
+    "method-override": "^3.0.0",
+    "multer": "^2.0.0",
+    "nodemailer": "^9.0.5",
+    "slugify": "^1.6.6"
+  }
+}

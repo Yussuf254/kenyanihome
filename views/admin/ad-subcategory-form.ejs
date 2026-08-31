@@ -1,0 +1,47 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: subcategory ? 'Edit Ad Subcategory' : 'New Ad Subcategory', crumb: 'Ad subcategory details' }) %>
+
+  <div class="admin-split-2">
+    <form action="<%= subcategory ? '/admin/ad-subcategories/' + subcategory.id + '?_method=PUT' : '/admin/ad-subcategories' %>" method="post">
+      <div class="form-section">
+        <div class="form-section-head">Subcategory Details</div>
+        <div class="form-section-body">
+          <div class="field">
+            <label>Parent Category</label>
+            <select name="categoryId" required>
+              <option value="">Select category</option>
+              <% categories.forEach(function(c) { %>
+                <option value="<%= c.id %>" <%= subcategory && subcategory.categoryId === c.id ? 'selected' : '' %>><%= c.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="field">
+            <label>Name</label>
+            <input type="text" name="name" value="<%= subcategory ? subcategory.name : '' %>" required placeholder="e.g. Smartphones">
+          </div>
+          <div class="field">
+            <label>Slug</label>
+            <input type="text" name="slug" value="<%= subcategory ? subcategory.slug : '' %>" placeholder="auto-generated from name if left blank">
+            <p class="help">URL-friendly identifier (lowercase, hyphens only).</p>
+          </div>
+          <div class="field">
+            <label>Order</label>
+            <input type="number" name="order" value="<%= subcategory ? subcategory.order : 0 %>" min="0">
+            <p class="help">Lower numbers appear first within the parent category.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a href="/admin/ad-subcategories" class="btn btn-ghost btn-sm">Cancel</a>
+        <button type="submit" class="btn btn-signal"><i class="bi bi-tags"></i>&nbsp; <%= subcategory ? 'Save Changes' : 'Create Subcategory' %></button>
+        <% if (subcategory) { %>
+          <form action="/admin/ad-subcategories/<%= subcategory.id %>?_method=DELETE" method="post" style="display:inline;" onsubmit="return confirm('Delete this subcategory?');">
+            <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash3"></i>&nbsp; Delete</button>
+          </form>
+        <% } %>
+      </div>
+    </form>
+  </div>
+
+<%- include('partials/foot') %>

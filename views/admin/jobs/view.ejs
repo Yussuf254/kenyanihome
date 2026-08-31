@@ -1,0 +1,189 @@
+<%- include('../partials/head') %>
+<%-
+  include('../partials/topbar', {
+    heading: 'Job Details',
+    crumb: job.title
+  })
+%>
+
+<div class="panel-card">
+  <div class="panel-card-head">
+    <h3>Quick Actions</h3>
+  </div>
+  <div class="panel-card-body" style="display:flex; gap:12px; flex-wrap:wrap;">
+    <% if (job.status === 'pending') { %>
+      <button class="btn btn-green btn-sm" onclick="approveJob(<%= job.id %>)"><i class="bi bi-check"></i> Approve & Publish</button>
+      <button class="btn btn-sm" style="background:#e51d3e;color:#fff;" onclick="rejectJob(<%= job.id %>)"><i class="bi bi-x"></i> Reject</button>
+    <% } else if (job.status === 'published') { %>
+      <button class="btn btn-ghost btn-sm" onclick="toggleFeatured(<%= job.id %>)"><i class="bi bi-star"></i> Toggle Featured</button>
+      <button class="btn btn-ghost btn-sm" onclick="unpublishJob(<%= job.id %>)"><i class="bi bi-arrow-bar-down"></i> Unpublish</button>
+    <% } else if (job.status === 'draft') { %>
+      <button class="btn btn-green btn-sm" onclick="publishJob(<%= job.id %>)"><i class="bi bi-upload"></i> Publish</button>
+    <% } %>
+    <a href="/jobs/<%= job.slug %>" class="btn btn-ghost btn-sm" target="_blank"><i class="bi bi-box-arrow-up-right"></i> Preview</a>
+    <a href="/admin/jobs" class="btn btn-ghost btn-sm"><i class="bi bi-arrow-left"></i> Back to Jobs</a>
+  </div>
+</div>
+
+<div class="panel-card">
+  <div class="panel-card-head">
+    <h3>Job Information</h3>
+  </div>
+  <table class="data-table">
+    <tbody>
+      <tr>
+        <th style="width: 200px;">Job Title</th>
+        <td><strong><%= job.title %></strong></td>
+      </tr>
+      <tr>
+        <th>Company</th>
+        <td>
+          <%= job.company || 'N/A' %>
+          <% if (company && company.logo) { %><img src="<%= company.logo %>" alt="<%= company.companyName || company.name %>" style="width:40px;height:40px;border-radius:8px;margin-left:8px;vertical-align:middle;"><% } %>
+        </td>
+      </tr>
+      <tr>
+        <th>Category</th>
+        <td><%= job.categoryName || job.category || 'N/A' %></td>
+      </tr>
+      <tr>
+        <th>Employment Type</th>
+        <td><%= job.employmentType || 'Not specified' %></td>
+      </tr>
+      <tr>
+        <th>Location</th>
+        <td><%= job.location || 'N/A' %></td>
+      </tr>
+      <tr>
+        <th>Salary</th>
+        <td>
+          <% if (job.salaryMin && job.salaryMax) { %>
+            <%= job.salaryCurrency || 'KSh' %> <%= job.salaryMin.toLocaleString() %> - <%= job.salaryMax.toLocaleString() %>/<%= job.salaryPeriod || 'month' %>
+          <% } else if (job.salary) { %>
+            <%= job.salary %>
+          <% } else { %>
+            Not specified
+          <% } %>
+        </td>
+      </tr>
+      <tr>
+        <th>Application Deadline</th>
+        <td><%= formatDate(job.deadline) || 'Not specified' %></td>
+      </tr>
+      <tr>
+        <th>Status</th>
+        <td><span class="pill pill-<%= job.status %>"><%= job.status %></span></td>
+      </tr>
+      <tr>
+        <th>Featured</th>
+        <td><%= job.featured ? '<span class="pill" style="background:#fff8e1;color:#ff8f00;">Yes</span>' : '<span style="color:var(--grey);">No</span>' %></td>
+      </tr>
+      <tr>
+        <th>Views</th>
+        <td><%= job.views || 0 %></td>
+      </tr>
+      <tr>
+        <th>Posted</th>
+        <td><%= formatDate(job.createdAt) %></td>
+      </tr>
+      <% if (job.rejectionReason && job.status === 'rejected') { %>
+      <tr>
+        <th>Rejection Reason</th>
+        <td style="color:#e51d3e;"><%= job.rejectionReason %></td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<% if (job.description) { %>
+<div class="panel-card">
+  <div class="panel-card-head">
+    <h3>Description</h3>
+  </div>
+  <div class="panel-card-body" style="padding: 0;">
+    <div style="padding: 16px 24px;" dangerouslySetInnerHTML="<%- job.description %>"></div>
+  </div>
+</div>
+<% } %>
+
+<% if (applicationCount > 0) { %>
+<div class="panel-card">
+  <div class="panel-card-head">
+    <h3>Applications (<%= applicationCount %>)</h3>
+  </div>
+  <div class="panel-card-body" style="padding: 0;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Applicant</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th>Applied</th>
+          <th style="text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% applications.forEach(function(app) { %>
+          <tr>
+            <td><strong><%= app.name || 'N/A' %></strong></td>
+            <td><%= app.email %></td>
+            <td><span class="pill pill-<%= app.status %>"><%= app.status.replace('_', ' ') %></span></td>
+            <td><%= formatDate(app.createdAt) %></td>
+            <td style="text-align:right;">
+              <a class="icon-btn" href="/admin/applications/<%= app.id %>" title="View"><i class="bi bi-eye"></i></a>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<% } %>
+
+<style>
+.pill { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.pill-published { background: #e6f4ea; color: var(--kenya-green); }
+.pill-pending { background: #fff3e0; color: #e65100; }
+.pill-draft { background: #f5f5f5; color: var(--grey); }
+.pill-rejected { background: #ffebee; color: #e51d3e; }
+</style>
+
+<script>
+function approveJob(id) {
+  if (confirm('Approve and publish this job?')) {
+    fetch('/admin/jobs/' + id + '/approve', { method: 'POST' })
+      .then(r => r.json())
+      .then(() => location.reload());
+  }
+}
+function rejectJob(id) {
+  const reason = prompt('Reason for rejection:');
+  if (reason) {
+    fetch('/admin/jobs/' + id + '/reject', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason })
+    }).then(() => location.reload());
+  }
+}
+function unpublishJob(id) {
+  if (confirm('Unpublish this job?')) {
+    fetch('/admin/jobs/' + id + '/unpublish', { method: 'POST' })
+      .then(() => location.reload());
+  }
+}
+function publishJob(id) {
+  if (confirm('Publish this job?')) {
+    fetch('/admin/jobs/' + id + '/approve', { method: 'POST' })
+      .then(() => location.reload());
+  }
+}
+function toggleFeatured(id) {
+  fetch('/admin/jobs/' + id + '/featured', { method: 'POST' })
+    .then(r => r.json())
+    .then(() => location.reload());
+}
+</script>
+
+<%- include('../partials/foot') %>

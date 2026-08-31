@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <% const m = typeof meta === 'object' && meta ? meta : {}; %>
+  <meta name="description" content="<%= m.description || settings.tagline %>">
+  <link rel="canonical" href="<%= m.url || 'https://kenyanihome.com' + (m.urlPath || '') %>">
+  <meta property="og:title" content="<%= m.title || title %>">
+  <meta property="og:description" content="<%= m.description || settings.tagline %>">
+  <meta property="og:type" content="<%= m.type || 'website' %>">
+  <meta property="og:site_name" content="<%= settings.siteName %>">
+  <% if (m.url) { %><meta property="og:url" content="<%= m.url %>"><% } %>
+  <% const ogImage = m.image || settings.ogImage || settings.logo || 'https://kenyanihome.com/public/uploads/1786754686567-lakers.jpg'; %>
+  <% if (ogImage) { %><meta property="og:image" content="<%= ogImage.startsWith('http') ? ogImage : 'https://kenyanihome.com' + ogImage %>"><% } %>
+  <% if (m.imageAlt) { %><meta property="og:image:alt" content="<%= m.imageAlt %>"><% } %>
+  <% if (m.imageWidth) { %><meta property="og:image:width" content="<%= m.imageWidth %>"><% } %>
+  <% if (m.imageHeight) { %><meta property="og:image:height" content="<%= m.imageHeight %>"><% } %>
+  <meta name="twitter:card" content="<%= ogImage ? 'summary_large_image' : 'summary' %>">
+  <meta name="twitter:title" content="<%= m.title || title %>">
+  <meta name="twitter:description" content="<%= m.description || settings.tagline %>">
+  <% if (ogImage) { %><meta name="twitter:image" content="<%= ogImage.startsWith('http') ? ogImage : 'https://kenyanihome.com' + ogImage %>"><% } %>
+  <% if (m.url) { %><meta name="twitter:url" content="<%= m.url %>"><% } %>
+  <meta name="google-adsense-account" content="ca-pub-8005999231713611">
+  <link rel="alternate" type="application/rss+xml" title="<%= settings.siteName %> RSS Feed" href="/rss.xml">
+  <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+  <% if (settings.logo) { %><link rel="icon" href="<%= settings.logo %>" type="image/png"><% } else { %><link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><circle cx=%2220%22 cy=%2220%22 r=%2218%22 fill=%22none%22 stroke=%22%230F6B34%22 stroke-width=%223%22/><circle cx=%2220%22 cy=%2220%22 r=%226%22 fill=%22%23D32F2F%22/></svg>"><% } %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+  <link href="/assets/css/vendor.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <link href="/assets/css/style.css" rel="stylesheet">
+  <link href="/assets/css/responsive.css" rel="stylesheet">
+  <link href="/assets/css/nav.css" rel="stylesheet">
+  <link href="/public/css/mobile.css?v=2" rel="stylesheet">
+  <style>
+    @media (max-width: 991.98px) {
+      section { padding-left: 0 !important; padding-right: 0 !important; }
+      [style*="padding: 64px 0"],[style*="padding: 56px 0"],[style*="padding: 48px 0"],[style*="padding: 32px 0"],[style*="padding: 28px 0"],[style*="padding: 24px 0"] {
+        padding-left: 12px !important; padding-right: 12px !important;
+      }
+      [style*="padding: 64px"],[style*="padding: 56px"],[style*="padding: 48px"],[style*="padding: 32px"],[style*="padding: 28px"],[style*="padding: 24px"] {
+        padding-left: 12px !important; padding-right: 12px !important;
+      }
+      [style*="margin-bottom: 28px"],[style*="margin-bottom: 24px"],[style*="margin-bottom: 20px"],[style*="margin-bottom: 16px"] {
+        margin-bottom: 10px !important;
+      }
+      [style*="margin-bottom: 48px"],[style*="margin-bottom: 40px"],[style*="margin-bottom: 36px"] {
+        margin-bottom: 16px !important;
+      }
+      [style*="margin-top: 32px"],[style*="margin-top: 24px"],[style*="margin-top: 20px"] {
+        margin-top: 12px !important;
+      }
+      [style*="padding: 22px"],[style*="padding: 20px"],[style*="padding: 18px"] {
+        padding: 12px !important;
+      }
+      [style*="padding: 22px 20px"],[style*="padding: 20px 20px"] {
+        padding: 12px !important;
+      }
+      [style*="border-radius: 16px"],[style*="border-radius: 14px"],[style*="border-radius: 12px"] {
+        border-radius: 10px !important;
+      }
+      [style*="font-size: 32px"],[style*="font-size: 28px"],[style*="font-size: 26px"] {
+        font-size: clamp(20px, 4vw, 24px) !important;
+      }
+      [style*="font-size: 20px"],[style*="font-size: 18px"] {
+        font-size: clamp(16px, 3.5vw, 18px) !important;
+      }
+      [style*="font-size: 17px"],[style*="font-size: 16px"] {
+        font-size: 15px !important;
+      }
+      [style*="font-size: 14px"],[style*="font-size: 13px"] {
+        font-size: 12px !important;
+      }
+      [style*="grid-template-columns: 1fr 1fr"],[style*="grid-template-columns:1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+      }
+      [style*="grid-template-columns: repeat(4, 1fr)"],[style*="grid-template-columns:repeat(4, 1fr)"] {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+      [style*="grid-template-columns: repeat(3, 1fr)"],[style*="grid-template-columns:repeat(3, 1fr)"] {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+      [style*="aspect-ratio: 4/3"],[style*="aspect-ratio:4/3"] {
+        aspect-ratio: 16/9 !important;
+      }
+      .row { margin-left: 0 !important; margin-right: 0 !important; }
+      .row > [class*="col-"] { padding-left: 8px !important; padding-right: 8px !important; }
+    }
+    @media (max-width: 575.98px) {
+      section { padding-left: 0 !important; padding-right: 0 !important; }
+      [style*="padding: 64px 0"],[style*="padding: 56px 0"],[style*="padding: 48px 0"],[style*="padding: 32px 0"],[style*="padding: 28px 0"],[style*="padding: 24px 0"] {
+        padding-left: 10px !important; padding-right: 10px !important;
+      }
+      [style*="margin-bottom: 28px"],[style*="margin-bottom: 24px"],[style*="margin-bottom: 20px"],[style*="margin-bottom: 16px"] {
+        margin-bottom: 8px !important;
+      }
+      [style*="margin-bottom: 48px"],[style*="margin-bottom: 40px"],[style*="margin-bottom: 36px"] {
+        margin-bottom: 12px !important;
+      }
+      [style*="margin-top: 32px"],[style*="margin-top: 24px"] {
+        margin-top: 10px !important;
+      }
+      [style*="padding: 22px"],[style*="padding: 20px"],[style*="padding: 18px"] {
+        padding: 10px !important;
+      }
+      [style*="border-radius: 16px"],[style*="border-radius: 14px"],[style*="border-radius: 12px"],[style*="border-radius: 10px"] {
+        border-radius: 8px !important;
+      }
+      [style*="font-size: 32px"],[style*="font-size: 28px"],[style*="font-size: 26px"] {
+        font-size: clamp(18px, 4.5vw, 22px) !important;
+      }
+      [style*="font-size: 20px"],[style*="font-size: 18px"] {
+        font-size: 16px !important;
+      }
+      [style*="font-size: 17px"],[style*="font-size: 16px"] {
+        font-size: 14px !important;
+      }
+      [style*="font-size: 14px"],[style*="font-size: 13px"] {
+        font-size: 11px !important;
+      }
+      [style*="grid-template-columns: repeat(2, 1fr)"],[style*="grid-template-columns:repeat(2, 1fr)"] {
+        grid-template-columns: 1fr !important;
+      }
+      .row { margin-left: 0 !important; margin-right: 0 !important; }
+      .row > [class*="col-"] { padding-left: 6px !important; padding-right: 6px !important; }
+    }
+   </style>
+
+   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8005999231713611" crossorigin="anonymous"></script>
+</head>
+  <body>
+    <div class="body-overlay" id="body-overlay"></div>
+
+  <header class="premium-nav">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <a href="/">
+          <% if (settings.logo) { %>
+            <img src="<%= settings.logo %>" alt="<%= settings.siteName %>">
+          <% } else { %>
+            <span class="brand-text">
+              Kenya <span>ni</span> <span>Home</span>
+            </span>
+          <% } %>
+        </a>
+      </div>
+
+      <nav class="nav-desktop">
+        <ul class="nav-list">
+          <% navigation.forEach(function(hi) { %>
+            <li class="nav-item">
+              <% if (hi.hasChildren) { %>
+                <a href="<%= hi.url %>" class="nav-link nav-link--parent">
+                  <%= hi.name %> <span class="caret">&#9662;</span>
+                </a>
+                <ul class="dropdown-menu-custom">
+                  <% hi.children.forEach(function(child) { %>
+                    <li class="dropdown-item"><a href="/category/<%= child.slug %>" class="dropdown-link"><%= child.name %></a></li>
+                  <% }) %>
+                </ul>
+              <% } else { %>
+                <a href="<%= hi.url %>" class="nav-link"><%= hi.name %></a>
+              <% } %>
+            </li>
+          <% }) %>
+        </ul>
+      </nav>
+
+      <div class="nav-search-desktop">
+        <button class="nav-search-trigger" aria-label="Search" id="nav-search-trigger">
+          <i class="bi bi-search"></i>
+        </button>
+        <div class="nav-search-dropdown" id="nav-search-dropdown">
+          <form action="/search" method="get" class="nav-search-premium">
+            <input type="text" name="q" placeholder="Search stories, topics...">
+            <button type="submit" aria-label="Search"><i class="bi bi-search"></i></button>
+          </form>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button class="nav-hamburger" aria-label="Menu" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-overlay" id="nav-overlay"></div>
+
+    <div class="nav-mobile-panel" id="nav-mobile-panel">
+      <div class="mobile-search">
+        <form action="/search" method="get">
+          <input type="text" id="mobile-search-input" name="q" placeholder="Search stories, topics...">
+          <button type="submit"><i class="bi bi-search"></i></button>
+        </form>
+      </div>
+      <ul class="nav-mobile-list">
+        <% navigation.forEach(function(hi) { %>
+          <li>
+            <% if (hi.hasChildren) { %>
+              <button type="button" class="mobile-parent-toggle" aria-expanded="false">
+                <span><%= hi.name %></span>
+                <span class="mobile-caret">&#9654;</span>
+              </button>
+              <ul class="mobile-submenu">
+                <% hi.children.forEach(function(child) { %>
+                  <li><a href="/category/<%= child.slug %>"><%= child.name %></a></li>
+                <% }) %>
+              </ul>
+            <% } else { %>
+              <a href="<%= hi.url %>"><%= hi.name %></a>
+            <% } %>
+          </li>
+        <% }) %>
+      </ul>
+      <div class="mobile-footer">
+        <ul class="mobile-footer-nav">
+          <li><a href="/about">About</a></li>
+          <li><a href="/terms">Terms &amp; Conditions</a></li>
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+        <p class="mobile-footer-copy">&copy; <%= new Date().getFullYear() %> <a href="/"><%= settings.siteName %></a>. All rights reserved.</p>
+      </div>
+    </div>
+  </header>
+
+  <script>
+    (function() {
+      var hamburger = document.querySelector('.nav-hamburger');
+      var panel = document.getElementById('nav-mobile-panel');
+      var overlay = document.getElementById('nav-overlay');
+      function openMenu() {
+        panel.classList.add('open');
+        overlay.classList.add('open');
+        hamburger.classList.add('active');
+        hamburger.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeMenu() {
+        panel.classList.remove('open');
+        overlay.classList.remove('open');
+        hamburger.classList.remove('active');
+        hamburger.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+      }
+      if (hamburger) {
+        hamburger.addEventListener('click', function() {
+          if (panel.classList.contains('open')) {
+            closeMenu();
+          } else {
+            openMenu();
+          }
+        });
+      }
+      if (overlay) {
+        overlay.addEventListener('click', closeMenu);
+      }
+      var toggles = document.querySelectorAll('.mobile-parent-toggle');
+      toggles.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var submenu = btn.nextElementSibling;
+          var caret = btn.querySelector('.mobile-caret');
+          var isOpen = submenu.classList.contains('open');
+          if (isOpen) {
+            submenu.classList.remove('open');
+            caret.style.transform = 'rotate(0deg)';
+            btn.setAttribute('aria-expanded', 'false');
+          } else {
+            submenu.classList.add('open');
+            caret.style.transform = 'rotate(90deg)';
+            btn.setAttribute('aria-expanded', 'true');
+          }
+        });
+      });
+      var mobileLinks = panel ? panel.querySelectorAll('a') : [];
+      mobileLinks.forEach(function(link) {
+        link.addEventListener('click', function() {
+          setTimeout(closeMenu, 150);
+        });
+      });
+    })();
+   </script>
+
+  <script>
+    (function() {
+      var trigger = document.getElementById('nav-search-trigger');
+      var dropdown = document.getElementById('nav-search-dropdown');
+      if (trigger && dropdown) {
+        trigger.addEventListener('click', function(e) {
+          e.stopPropagation();
+          dropdown.classList.toggle('open');
+        });
+        document.addEventListener('click', function(e) {
+          if (!dropdown.contains(e.target) && e.target !== trigger) {
+            dropdown.classList.remove('open');
+          }
+        });
+      }
+    })();
+  </script>

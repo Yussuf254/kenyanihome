@@ -1,0 +1,48 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: category ? 'Edit Ad Category' : 'New Ad Category', crumb: 'Ad category details' }) %>
+
+  <div class="admin-split-2">
+    <form action="<%= category ? '/admin/ad-categories/' + category.id + '?_method=PUT' : '/admin/ad-categories' %>" method="post">
+      <div class="form-section">
+        <div class="form-section-head">Category Details</div>
+        <div class="form-section-body">
+          <div class="field">
+            <label>Name</label>
+            <input type="text" name="name" value="<%= category ? category.name : '' %>" required placeholder="e.g. Electronics">
+          </div>
+          <div class="field">
+            <label>Slug</label>
+            <input type="text" name="slug" value="<%= category ? category.slug : '' %>" placeholder="auto-generated from name if left blank">
+            <p class="help">URL-friendly identifier (lowercase, hyphens only).</p>
+          </div>
+          <div class="field">
+            <label>Icon (Emoji)</label>
+            <input type="text" name="icon" value="<%= category ? category.icon : '' %>" placeholder="e.g. 📱" maxlength="2">
+            <p class="help">Single emoji used in the public form.</p>
+          </div>
+          <div class="field">
+            <label>Order</label>
+            <input type="number" name="order" value="<%= category ? category.order : 0 %>" min="0">
+            <p class="help">Lower numbers appear first in the dropdown.</p>
+          </div>
+          <div class="checkbox-field field">
+            <input type="checkbox" name="active" id="adCatActive" <%= !category || category.active ? 'checked' : '' %>>
+            <label for="adCatActive" style="margin:0;">Active</label>
+            <p class="help">Inactive categories are hidden from the public form.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a href="/admin/ad-categories" class="btn btn-ghost btn-sm">Cancel</a>
+        <button type="submit" class="btn btn-signal"><i class="bi bi-tags"></i>&nbsp; <%= category ? 'Save Changes' : 'Create Category' %></button>
+        <% if (category) { %>
+          <form action="/admin/ad-categories/<%= category.id %>?_method=DELETE" method="post" style="display:inline;" onsubmit="return confirm('Delete this ad category and all its subcategories?');">
+            <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash3"></i>&nbsp; Delete</button>
+          </form>
+        <% } %>
+      </div>
+    </form>
+  </div>
+
+<%- include('partials/foot') %>

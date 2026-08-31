@@ -1,0 +1,96 @@
+<%- include('../../partials/head') %>
+
+<style>
+  .dash-layout { display: flex; min-height: 100vh; }
+  .dash-sidebar { width: 260px; background: #0C1210; color: #fff; padding: 24px 0; flex-shrink: 0; }
+  .dash-sidebar .brand { padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; }
+  .dash-sidebar .brand h2 { font-family: 'Roboto Slab', serif; font-size: 18px; color: #fff; margin: 0; }
+  .dash-sidebar .brand span { font-size: 11px; color: #999; }
+  .dash-sidebar .nav a { display: block; padding: 12px 24px; color: rgba(255,255,255,.7); text-decoration: none; font-size: 14px; }
+  .dash-sidebar .nav a:hover, .dash-sidebar .nav a.active { background: rgba(255,255,255,.1); color: #fff; }
+  .dash-main { flex: 1; background: #f8f7f4; padding: 32px; }
+  .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .dash-header h1 { font-family: 'Roboto Slab', serif; font-size: 24px; margin: 0; }
+  .card { background: #fff; border-radius: 12px; border: 1px solid #e8e5e0; overflow: hidden; }
+  .table { width: 100%; border-collapse: collapse; }
+  .table th, .table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
+  .table th { background: #f8f7f4; font-weight: 600; }
+  .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge-published { background: #e6f4ea; color: #1a4d2e; }
+  .badge-pending { background: #fff3e0; color: #e65100; }
+  .badge-draft { background: #f5f5f5; color: #666; }
+  .badge-expired { background: #ffebee; color: #c62828; }
+  .badge-rejected { background: #ffebee; color: #c62828; }
+  .btn { display: inline-block; padding: 8px 16px; background: #1a4d2e; color: #fff; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; border: none; cursor: pointer; }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn-outline { background: transparent; border: 1px solid #1a4d2e; color: #1a4d2e; }
+</style>
+
+<div class="dash-layout">
+  <aside class="dash-sidebar">
+    <div class="brand">
+      <h2>Jobs Portal</h2>
+      <span>Employer Dashboard</span>
+    </div>
+    <nav class="nav">
+      <a href="/employer/dashboard">Dashboard</a>
+      <a href="/employer/jobs/create">Post a Job</a>
+      <a href="/employer/jobs" class="active">My Jobs</a>
+      <a href="/employer/profile">Company Profile</a>
+      <a href="/employer/payments">Payments</a>
+      <a href="/jobs">View Site</a>
+      <a href="/logout">Logout</a>
+    </nav>
+  </aside>
+
+  <main class="dash-main">
+    <div class="dash-header">
+      <h1>My Jobs</h1>
+      <a href="/employer/jobs/create" class="btn">+ Post a Job</a>
+    </div>
+
+    <div class="card">
+      <% if (jobs.length === 0) { %>
+        <p style="padding: 40px; text-align: center; color: #666;">No jobs posted yet. <a href="/employer/jobs/create">Post your first job</a></p>
+      <% } else { %>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Job Title</th>
+              <th>Status</th>
+              <th>Views</th>
+              <th>Posted</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% jobs.forEach(function(job) { %>
+              <tr>
+                <td>
+                  <strong><%= job.title %></strong>
+                  <br><span style="font-size:12px;color:#666;"><%= job.location %></span>
+                </td>
+                <td>
+                  <% const isExp = job.deadline && new Date(job.deadline) < new Date(); %>
+                  <% if (isExp && job.status === 'published') { %>
+                    <span class="badge badge-expired">Expired</span>
+                  <% } else { %>
+                    <span class="badge badge-<%= job.status %>"><%= job.status %></span>
+                  <% } %>
+                </td>
+                <td><%= job.views || 0 %></td>
+                <td><%= formatDate(job.createdAt) %></td>
+                <td>
+                  <a href="/employer/jobs/<%= job.id %>/edit" class="btn btn-sm btn-outline">Edit</a>
+                  <a href="/employer/jobs/<%= job.id %>/applicants" class="btn btn-sm">Applicants</a>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </main>
+</div>
+
+<%- include('../../partials/foot') %>

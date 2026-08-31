@@ -1,0 +1,43 @@
+<%- include('partials/head') %>
+<%-
+  include('partials/topbar', {
+    heading: 'Posts',
+    crumb: posts.length + ' total',
+    topbarRight: (hasPermission(currentUser, 'posts:edit') ? '<a href="/admin/trash" class="btn btn-signal btn-sm" style="margin-right:10px;"><i class="bi bi-trash3"></i>&nbsp; Trash</a>' : '') + (hasPermission(currentUser, 'posts:write') ? '<a href="/admin/posts/new" class="btn btn-signal btn-sm" style="margin-right:10px;"><i class="bi bi-plus-lg"></i>&nbsp; New Post</a>' : '') + '<a href="/admin/posts/export" class="btn btn-green btn-sm"><i class="bi bi-download"></i>&nbsp; Export CSV</a>'
+  })
+%>
+
+  <div class="panel-card" style="overflow-x:auto;">
+    <table class="data-table" id="post-table">
+      <thead><tr><th>Story</th><th>Category</th><th>Status</th><th>Updated</th><th style="text-align:right;">Actions</th></tr></thead>
+      <tbody>
+        <% if (posts.length === 0) { %>
+          <tr class="empty-row"><td colspan="5">No posts yet. <a href="/admin/posts/new" style="color:var(--signal)">Create your first story →</a></td></tr>
+        <% } %>
+        <% posts.forEach(p => { %>
+          <tr>
+            <td>
+              <div class="row-title">
+                <img class="thumb" src="<%= p.coverImage || 'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=200&q=50' %>">
+                <div><div class="rt-title"><%= p.title %><%= p.featured ? ' ⭐' : '' %><%= p.breaking ? ' 🔴' : '' %></div><div class="rt-sub">by <%= p.author %></div></div>
+              </div>
+            </td>
+            <td><%= p.category %></td>
+            <td><span class="pill pill-<%= p.status %>"><%= p.status %></span></td>
+            <td><%= formatDate(p.updatedAt) %></td>
+            <td class="table-actions">
+              <% if (hasPermission(currentUser, 'posts:edit')) { %>
+                <a class="icon-btn" href="/post/<%= p.slug %>" target="_blank" title="View"><i class="bi bi-eye"></i></a>
+                <a class="icon-btn" href="/admin/posts/<%= p.id %>/edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                <form action="/admin/posts/<%= p.id %>?_method=DELETE" method="post" onsubmit="return confirm('Delete this post permanently?');">
+                  <button class="icon-btn" type="submit" title="Delete"><i class="bi bi-trash3"></i></button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+<%- include('partials/foot') %>

@@ -1,0 +1,225 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: submission ? 'Edit Ad Submission' : 'New Ad Submission', crumb: 'Ad Submissions' }) %>
+
+  <form action="<%= submission ? `/admin/ad-submissions/${submission.id}` : '/admin/ad-submissions' %>" method="post" enctype="multipart/form-data">
+    <div class="admin-split">
+      <div>
+        <div class="form-section">
+          <div class="form-section-head">Business Information</div>
+          <div class="form-section-body">
+            <div class="field-row">
+              <div class="field">
+                <label>Business / Brand Name <span style="color:var(--signal)">*</span></label>
+                <input type="text" name="businessName" required value="<%= submission ? submission.businessName : '' %>" placeholder="Enter business or brand name">
+              </div>
+              <div class="field">
+                <label>Contact Person <span style="color:var(--signal)">*</span></label>
+                <input type="text" name="contactPerson" required value="<%= submission ? submission.contactPerson : '' %>" placeholder="Enter full name">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label>Phone Number <span style="color:var(--signal)">*</span></label>
+                <input type="tel" name="phone" required value="<%= submission ? submission.phone : '' %>" placeholder="+254 712 345 678">
+              </div>
+              <div class="field">
+                <label>WhatsApp Number</label>
+                <input type="tel" name="whatsapp" value="<%= submission ? submission.whatsapp : '' %>" placeholder="+254 712 345 678">
+              </div>
+              <div class="field">
+                <label>Email Address <span style="color:var(--signal)">*</span></label>
+                <input type="email" name="email" required value="<%= submission ? submission.email : '' %>" placeholder="youremail@example.com">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label>Business Location</label>
+                <input type="text" name="location" value="<%= submission ? submission.location : '' %>" placeholder="City or town">
+              </div>
+              <div class="field">
+                <label>Website</label>
+                <input type="url" name="website" value="<%= submission ? submission.website : '' %>" placeholder="https://yourwebsite.com">
+              </div>
+            </div>
+            <div class="field">
+              <label>Business Logo</label>
+              <div class="cover-picker">
+                <% if (submission && submission.logo) { %>
+                  <img class="cover-preview" id="logo-preview" src="<%= submission.logo %>">
+                <% } else { %>
+                  <div class="cover-preview-empty" id="logo-preview-empty"><i class="bi bi-image"></i></div>
+                  <img class="cover-preview" id="logo-preview" style="display:none;">
+                <% } %>
+                <input type="hidden" name="logoUrl" id="logoUrl" value="<%= submission ? submission.logo : '' %>">
+                <input type="file" name="logoFile" id="logoFile" accept="image/*" style="width:100%; font-size:12px;">
+                <p class="help">Upload a new logo to replace the existing one.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-head">Promotion Information</div>
+          <div class="form-section-body">
+            <div class="field">
+              <label>Promotion Type</label>
+              <select name="promotionType">
+                <option value="Product" <%= submission && submission.promotionType === 'Product' ? 'selected' : '' %>>Product</option>
+                <option value="Service" <%= submission && submission.promotionType === 'Service' ? 'selected' : '' %>>Service</option>
+                <option value="Brand" <%= submission && submission.promotionType === 'Brand' ? 'selected' : '' %>>Brand / Business</option>
+                <option value="Event" <%= submission && submission.promotionType === 'Event' ? 'selected' : '' %>>Event</option>
+                <option value="Offer" <%= submission && submission.promotionType === 'Offer' ? 'selected' : '' %>>Special Offer</option>
+              </select>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label>Product / Service Name <span style="color:var(--signal)">*</span></label>
+                <input type="text" name="productName" required value="<%= submission ? submission.productName : '' %>" placeholder="Enter product or service name">
+              </div>
+              <div class="field">
+                <label>Category <span style="color:var(--signal)">*</span></label>
+                <select name="category" required>
+                  <option value="">Select category</option>
+                  <% (typeof categories !== 'undefined' ? categories : []).forEach(function(c) { %>
+                    <option value="<%= c.slug %>" <%= submission && submission.category === c.slug ? 'selected' : '' %>><%= c.name %></option>
+                  <% }) %>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label>Subcategory</label>
+              <input type="text" name="subcategory" value="<%= submission ? submission.subcategory : '' %>" placeholder="Optional subcategory">
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label>Short Description</label>
+                <textarea name="shortDescription" rows="2" maxlength="150" placeholder="Brief description (max 150 characters)"><%= submission ? submission.shortDescription : '' %></textarea>
+              </div>
+              <div class="field">
+                <label>Full Description <span style="color:var(--signal)">*</span></label>
+                <textarea name="fullDescription" rows="4" placeholder="Describe your product or service in detail..."><%= submission ? submission.fullDescription : '' %></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="form-section">
+          <div class="form-section-head">Pricing</div>
+          <div class="form-section-body">
+            <div class="field-row">
+              <div class="field">
+                <label>Price <span style="color:var(--signal)">*</span></label>
+                <input type="number" name="price" required value="<%= submission ? submission.price : '' %>" placeholder="e.g. 1500">
+              </div>
+              <div class="field">
+                <label>Original Price</label>
+                <input type="number" name="originalPrice" value="<%= submission ? submission.originalPrice : '' %>" placeholder="e.g. 2000">
+              </div>
+            </div>
+            <div class="field">
+              <label>Discount / Offer</label>
+              <input type="text" name="discount" value="<%= submission ? submission.discount : '' %>" placeholder="e.g. 10% OFF">
+            </div>
+            <div class="field">
+              <label>Currency</label>
+              <select name="currency">
+                <option>KSh</option>
+                <option>USD</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-head">Links</div>
+          <div class="form-section-body">
+            <div class="field">
+              <label>Website / Product Link</label>
+              <input type="url" name="productLink" value="<%= submission ? submission.productLink : '' %>" placeholder="https://example.com/product">
+            </div>
+            <div class="field">
+              <label>WhatsApp Link</label>
+              <input type="url" name="whatsAppLink" value="<%= submission ? submission.whatsappLink : '' %>" placeholder="https://wa.me/254...">
+            </div>
+            <div class="field">
+              <label>Phone Call Link</label>
+              <input type="tel" name="phoneLink" value="<%= submission ? submission.phoneLink : '' %>" placeholder="tel:+254...">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-head">Campaign</div>
+          <div class="form-section-body">
+            <div class="field-row">
+              <div class="field">
+                <label>Package</label>
+                <select name="adPackage">
+                  <option value="Basic Listing" <%= submission && submission.package === 'Basic Listing' ? 'selected' : '' %>>Basic Listing — KSh 2,500</option>
+                  <option value="Featured Listing" <%= submission && submission.package === 'Featured Listing' ? 'selected' : '' %>>Featured Listing — KSh 5,000</option>
+                  <option value="Premium Listing" <%= submission && submission.package === 'Premium Listing' ? 'selected' : '' %>>Premium Listing — KSh 10,000</option>
+                </select>
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label>Start Date</label>
+                <input type="date" name="startDate" value="<%= submission ? (submission.startDate ? new Date(submission.startDate).toISOString().slice(0,10) : '') : '' %>">
+              </div>
+              <div class="field">
+                <label>End Date</label>
+                <input type="date" name="endDate" value="<%= submission ? (submission.endDate ? new Date(submission.endDate).toISOString().slice(0,10) : '') : '' %>">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label>Status</label>
+                <select name="status">
+                  <option value="pending" <%= submission && submission.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                  <option value="approved" <%= submission && submission.status === 'approved' ? 'selected' : '' %>>Approved</option>
+                  <option value="active" <%= submission && submission.status === 'active' ? 'selected' : '' %>>Active</option>
+                  <option value="paused" <%= submission && submission.status === 'paused' ? 'selected' : '' %>>Paused</option>
+                  <option value="expired" <%= submission && submission.status === 'expired' ? 'selected' : '' %>>Expired</option>
+                  <option value="rejected" <%= submission && submission.status === 'rejected' ? 'selected' : '' %>>Rejected</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Payment Status</label>
+                <select name="paymentStatus">
+                  <option value="unpaid" <%= submission && submission.paymentStatus === 'unpaid' ? 'selected' : '' %>>Unpaid</option>
+                  <option value="paid" <%= submission && submission.paymentStatus === 'paid' ? 'selected' : '' %>>Paid</option>
+                  <option value="failed" <%= submission && submission.paymentStatus === 'failed' ? 'selected' : '' %>>Failed</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-head">Product Images</div>
+          <div class="form-section-body">
+            <div class="field">
+              <input type="file" name="imageFiles" multiple accept="image/*" style="width:100%; font-size:12px;">
+              <p class="help">Upload additional images (max 5 at a time).</p>
+            </div>
+            <% if (submission && submission.images && submission.images.length) { %>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+                <% submission.images.forEach(function(img) { %>
+                  <img src="<%= img %>" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line);">
+                <% }) %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions" style="border:none; padding-top:10px;">
+      <a href="/admin/ad-submissions" class="btn btn-ghost btn-sm">Cancel</a>
+      <button type="submit" class="btn btn-signal"><i class="bi bi-shop"></i>&nbsp; Save Submission</button>
+    </div>
+  </form>
+
+<%- include('partials/foot') %>

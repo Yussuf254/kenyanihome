@@ -1,0 +1,49 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: 'Comments', crumb: comments.length + ' total', topbarRight: '<a href="/admin/comments/export" class="btn btn-green btn-sm"><i class="bi bi-download"></i>&nbsp; Export CSV</a>' }) %>
+
+  <div class="panel-card" style="overflow-x:auto;">
+    <table class="data-table" id="comment-table">
+      <thead><tr><th>Comment</th><th>On Story</th><th>Status</th><th>Posted</th><th style="text-align:right;">Actions</th></tr></thead>
+      <tbody>
+        <% if (!comments.length) { %>
+          <tr class="empty-row"><td colspan="5">No comments yet. They'll appear here once readers start discussing your stories.</td></tr>
+        <% } %>
+        <% comments.forEach(c => { %>
+          <tr>
+            <td>
+              <div class="row-title">
+                <div class="c-avatar" style="width:34px;height:34px;border-radius:50%;background:var(--signal);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none;"><%= c.name.charAt(0).toUpperCase() %></div>
+                <div>
+                  <div class="rt-title"><%= c.name %></div>
+                  <div class="comment-row-body"><%= c.body %></div>
+                </div>
+              </div>
+            </td>
+            <td class="comment-row-post">
+              <% if (c.post) { %><a href="/post/<%= c.post.slug %>" target="_blank"><%= c.post.title %></a><% } else { %>(deleted post)<% } %>
+            </td>
+            <td><span class="pill <%= c.approved ? 'pill-published' : 'pill-draft' %>"><%= c.approved ? 'approved' : 'pending' %></span></td>
+            <td><%= timeAgo(c.createdAt) %></td>
+            <td class="table-actions">
+              <% if (hasPermission(currentUser, 'comments:approve')) { %>
+                <% if (!c.approved) { %>
+                <form action="/admin/comments/<%= c.id %>/approve" method="post">
+                  <button class="icon-btn" type="submit" title="Approve"><i class="bi bi-check-lg"></i></button>
+                </form>
+                <% } else { %>
+                <form action="/admin/comments/<%= c.id %>/approve" method="post">
+                  <button class="icon-btn" type="submit" title="Hide"><i class="bi bi-eye-slash"></i></button>
+                </form>
+                <% } %>
+                <form action="/admin/comments/<%= c.id %>?_method=DELETE" method="post" onsubmit="return confirm('Delete this comment?');">
+                  <button class="icon-btn" type="submit" title="Delete"><i class="bi bi-trash3"></i></button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+<%- include('partials/foot') %>

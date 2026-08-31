@@ -1,0 +1,156 @@
+<%- include('../partials/head') %>
+<%-
+  include('../partials/topbar', {
+    heading: 'Job Categories',
+    crumb: categories.length + ' categories',
+    topbarRight: '<button class="btn btn-green btn-sm" onclick="openModal()">Add Category</button>'
+  })
+%>
+
+<!-- Categories Table -->
+<div class="panel-card">
+  <div class="panel-card-header" style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e5e7eb;">
+    <h3 style="font-size:15px;font-weight:600;margin:0;">All Categories</h3>
+    <span style="font-size:13px;color:#6b7280;"><%= categories.filter(c => c.active).length %> active</span>
+  </div>
+  <table class="data-table" id="categories-table">
+    <thead>
+      <tr>
+        <th style="width:60px;">#</th>
+        <th>Category Name</th>
+        <th>Slug</th>
+        <th style="width:80px;">Order</th>
+        <th style="width:100px;">Status</th>
+        <th style="width:140px;">Created</th>
+        <th style="text-align:right;width:160px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (categories.length === 0) { %>
+        <tr class="empty-row"><td colspan="7" style="text-align:center;padding:40px;color:#6b7280;">
+          No job categories yet. Click "Add Category" to create one.
+        </td></tr>
+      <% } %>
+      <% categories.forEach(function(cat, index) { %>
+        <tr id="cat-<%= cat.id %>" style="<%= !cat.active ? 'opacity:0.6;' : '' %>">
+          <td><span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;background:#f3f4f6;font-size:12px;font-weight:600;color:#6b7280;"><%= index + 1 %></span></td>
+          <td>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:36px;height:36px;border-radius:8px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#6b7280;"><%= cat.name.charAt(0).toUpperCase() %></div>
+              <div>
+                <div style="font-weight:600;font-size:14px;color:#111827;"><%= cat.name %></div>
+              </div>
+            </div>
+          </td>
+          <td><code style="font-size:12px;color:#6b7280;background:#f9fafb;padding:2px 6px;border-radius:4px;"><%= cat.slug %></code></td>
+          <td style="text-align:center;font-weight:600;color:#374151;"><%= cat.order %></td>
+          <td>
+            <% if (cat.active) { %>
+              <span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:#059669;background:#d1fae5;padding:4px 10px;border-radius:20px;"><span style="width:6px;height:6px;border-radius:50%;background:#059669;"></span> Active</span>
+            <% } else { %>
+              <span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:#6b7280;background:#f3f4f6;padding:4px 10px;border-radius:20px;"><span style="width:6px;height:6px;border-radius:50%;background:#9ca3af;"></span> Inactive</span>
+            <% } %>
+          </td>
+          <td style="font-size:13px;color:#6b7280;"><%= formatDate(cat.createdAt) %></td>
+          <td style="text-align:right;">
+            <div style="display:inline-flex;gap:6px;">
+              <button class="btn btn-ghost btn-sm" onclick="editCategory(<%= cat.id %>, '<%= cat.name %>', <%= cat.order %>, <%= cat.active %>)" title="Edit" style="padding:6px 10px;"><i class="bi bi-pencil"></i></button>
+              <button class="btn btn-ghost btn-sm" onclick="toggleCategory(<%= cat.id %>, <%= cat.active %>)" title="<%= cat.active ? 'Deactivate' : 'Activate' %>" style="padding:6px 10px;"><i class="bi bi-<%= cat.active ? 'pause' : 'play' %>"></i></button>
+              <button class="btn btn-ghost btn-sm" onclick="deleteCategory(<%= cat.id %>)" title="Delete" style="padding:6px 10px;color:#dc2626;"><i class="bi bi-trash3"></i></button>
+            </div>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<!-- Add/Edit Modal -->
+<div id="categoryModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+  <div style="background:#fff;border-radius:16px;padding:0;width:90%;max-width:480px;box-shadow:0 25px 50px rgba(0,0,0,.15);overflow:hidden;">
+    <div style="padding:20px 24px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;">
+      <h3 style="font-size:16px;font-weight:700;margin:0;" id="modalTitle">Add Category</h3>
+      <button onclick="closeModal()" style="background:none;border:none;font-size:18px;color:#9ca3af;cursor:pointer;line-height:1;">&times;</button>
+    </div>
+    <form id="categoryForm" method="POST" style="padding:24px;">
+      <input type="hidden" id="categoryId" name="id">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-weight:600;margin-bottom:6px;font-size:13px;color:#374151;">Category Name *</label>
+        <input type="text" id="categoryName" name="name" required placeholder="e.g. ICT & Technology" style="width:100%;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;font-family:'Montserrat',sans-serif;box-sizing:border-box;">
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-weight:600;margin-bottom:6px;font-size:13px;color:#374151;">Display Order</label>
+        <input type="number" id="categoryOrder" name="order" placeholder="0" style="width:100%;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;font-family:'Montserrat',sans-serif;box-sizing:border-box;">
+      </div>
+      <div style="margin-bottom:24px;">
+        <label style="display:flex;align-items:center;gap:10px;font-size:14px;cursor:pointer;color:#374151;">
+          <input type="checkbox" id="categoryActive" name="active" checked style="width:18px;height:18px;accent-color:#0B6B3A;">
+          Active (visible on site)
+        </label>
+      </div>
+      <div style="display:flex;gap:12px;justify-content:flex-end;">
+        <button type="button" onclick="closeModal()" class="btn btn-ghost btn-sm">Cancel</button>
+        <button type="submit" class="btn btn-green btn-sm">Save Category</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function openModal() {
+  document.getElementById('modalTitle').textContent = 'Add Category';
+  document.getElementById('categoryForm').action = '/admin/job-categories';
+  document.getElementById('categoryId').value = '';
+  document.getElementById('categoryName').value = '';
+  document.getElementById('categoryOrder').value = '';
+  document.getElementById('categoryActive').checked = true;
+  document.getElementById('categoryModal').style.display = 'flex';
+}
+
+function editCategory(id, name, order, active) {
+  document.getElementById('modalTitle').textContent = 'Edit Category';
+  document.getElementById('categoryForm').action = '/admin/job-categories/' + id;
+  document.getElementById('categoryId').value = id;
+  document.getElementById('categoryName').value = name;
+  document.getElementById('categoryOrder').value = order;
+  document.getElementById('categoryActive').checked = active;
+  document.getElementById('categoryModal').style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('categoryModal').style.display = 'none';
+}
+
+function toggleCategory(id, currentActive) {
+  if (confirm(currentActive ? 'Deactivate this category?' : 'Activate this category?')) {
+    fetch('/admin/job-categories/' + id + '/toggle', { method: 'POST' })
+      .then(r => r.json())
+      .then(() => location.reload());
+  }
+}
+
+function deleteCategory(id) {
+  if (confirm('Delete this category? This cannot be undone.')) {
+    fetch('/admin/job-categories/' + id, { method: 'DELETE' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) {
+          alert(data.error);
+        } else {
+          location.reload();
+        }
+      });
+  }
+}
+
+// Close modal on outside click
+document.getElementById('categoryModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+</script>
+
+<style>
+#categories-table .btn-ghost { padding: 6px 10px; }
+</style>
+
+<%- include('../partials/foot') %>

@@ -1,0 +1,132 @@
+<footer style="background:linear-gradient(180deg, #9F1F1F 0%, #7A1818 100%); padding:0; position:relative; overflow:hidden;">
+  <div style="position:absolute; inset:0; background:radial-gradient(circle at 10% 0%, rgba(255,255,255,.08) 0%, transparent 40%), radial-gradient(circle at 90% 100%, rgba(0,0,0,.15) 0%, transparent 50%); pointer-events:none;"></div>
+  <div class="container" style="position:relative; z-index:1; padding:56px 0 0;">
+    <div class="row">
+      <div class="col-lg-3 col-sm-6" style="margin-bottom:28px;">
+        <div class="widget" style="background:rgba(255,255,255,.95); border-radius:12px; padding:22px; height:100%; box-shadow:0 4px 20px rgba(0,0,0,.12);">
+          <h5 class="widget-title" style="color:#7A1818; font-size:14px; font-weight:800; margin:0 0 14px; font-family:'Montserrat',sans-serif; letter-spacing:-.01em;">About Us</h5>
+          <div class="widget_about">
+            <p style="font-size:13px; line-height:1.6; color:#374151; margin:0 0 16px;">Kenya ni Home is an independent newsroom built on one idea: the public deserves a clear, undistorted view of the world. We report on power, policy, culture and the everyday forces that shape people's lives — without the noise. Our reporters and editors bring decades of combined experience across investigative, political and cultural journalism, and we hold ourselves to a single standard: bring the story into focus, then get out of the way.</p>
+            <ul class="social-area social-area-2" style="display:flex; gap:10px; padding:0; list-style:none;">
+              <% if (settings.social && settings.social.twitter) { %><li><a class="twitter-icon" href="<%= settings.social.twitter %>" target="_blank" rel="noopener" style="width:34px; height:34px; border-radius:50%; background:#7A1818; color:#fff; display:flex; align-items:center; justify-content:center; transition:all .2s ease;"><i class="fa-brands fa-x-twitter"></i></a></li><% } %>
+              <% if (settings.social && settings.social.facebook) { %><li><a class="facebook-icon" href="<%= settings.social.facebook %>" target="_blank" rel="noopener" style="width:34px; height:34px; border-radius:50%; background:#7A1818; color:#fff; display:flex; align-items:center; justify-content:center; transition:all .2s ease;"><i class="fa-brands fa-facebook"></i></a></li><% } %>
+              <% if (settings.social && settings.social.instagram) { %><li><a class="instagram-icon" href="<%= settings.social.instagram %>" target="_blank" rel="noopener" style="width:34px; height:34px; border-radius:50%; background:#7A1818; color:#fff; display:flex; align-items:center; justify-content:center; transition:all .2s ease;"><i class="fa-brands fa-instagram"></i></a></li><% } %>
+              <% if (settings.social && settings.social.whatsapp) { %><li><a class="whatsapp-icon" href="<%= settings.social.whatsapp %>" target="_blank" rel="noopener" style="width:34px; height:34px; border-radius:50%; background:#7A1818; color:#fff; display:flex; align-items:center; justify-content:center; transition:all .2s ease;"><i class="fa-brands fa-whatsapp"></i></a></li><% } %>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-sm-6" style="margin-bottom:28px;">
+        <div class="widget" style="background:rgba(255,255,255,.95); border-radius:12px; padding:22px; height:100%; box-shadow:0 4px 20px rgba(0,0,0,.12);">
+          <h5 class="widget-title" style="color:#7A1818; font-size:14px; font-weight:800; margin:0 0 14px; font-family:'Montserrat',sans-serif; letter-spacing:-.01em;">Topics</h5>
+          <div class="tagcloud" style="display:flex; flex-wrap:wrap; gap:8px;">
+            <% categories.slice(0, 10).forEach(function(c) { %>
+              <a href="/category/<%= c.slug %>" style="font-size:11px; font-weight:600; color:#7A1818; padding:5px 10px; border-radius:999px; background:#FEF2F2; text-decoration:none; transition:all .2s ease; border:1px solid rgba(122,24,24,.1);"><%= c.name %></a>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-sm-6" style="margin-bottom:28px;">
+        <div class="widget" style="background:rgba(255,255,255,.95); border-radius:12px; padding:22px; height:100%; box-shadow:0 4px 20px rgba(0,0,0,.12);">
+          <h5 class="widget-title" style="color:#7A1818; font-size:14px; font-weight:800; margin:0 0 14px; font-family:'Montserrat',sans-serif; letter-spacing:-.01em;">Contacts</h5>
+          <ul class="contact_info_list" style="list-style:none; padding:0; margin:0;">
+            <li style="margin-bottom:12px; font-size:13px; color:#374151; display:flex; align-items:flex-start; gap:10px;"><i class="fa-solid fa-location-dot" style="margin-top:2px; color:#9F1F1F; font-size:14px;"></i> <span><%= settings.address || 'Nairobi, Kenya' %></span></li>
+            <li style="margin-bottom:12px; font-size:13px; color:#374151; display:flex; align-items:flex-start; gap:10px;"><i class="fa-solid fa-phone" style="margin-top:2px; color:#9F1F1F; font-size:14px;"></i> <span><%= settings.phone || '+254 20 123 4567' %></span></li>
+            <li style="font-size:13px; color:#374151; display:flex; align-items:flex-start; gap:10px;"><i class="fa-solid fa-envelope" style="margin-top:2px; color:#9F1F1F; font-size:14px;"></i> <span><%= settings.email || 'newsroom@kenyanihome.co.ke' %></span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-3 col-sm-6" style="margin-bottom:28px;">
+        <div class="widget" style="background:rgba(255,255,255,.95); border-radius:12px; padding:22px; height:100%; box-shadow:0 4px 20px rgba(0,0,0,.12);">
+          <h5 class="widget-title" style="color:#7A1818; font-size:14px; font-weight:800; margin:0 0 14px; font-family:'Montserrat',sans-serif; letter-spacing:-.01em;">Popular News</h5>
+          <% var footerPosts = typeof posts !== 'undefined' && posts ? posts.slice(0, 3) : (typeof trending !== 'undefined' ? trending.slice(0, 3) : []); %>
+          <% if (footerPosts && footerPosts.length) { %>
+            <div class="footer-popular-list" style="display:flex; flex-direction:column; gap:10px;">
+              <% footerPosts.forEach(function(post, idx) { %>
+              <a href="/post/<%= post.slug %>" style="display:flex; gap:12px; align-items:center; padding:0; text-decoration:none; transition:all .2s ease;">
+                <div style="width:44px; height:44px; border-radius:8px; overflow:hidden; flex-shrink:0; background:#E5E7EB;">
+                  <% if (post.coverImage) { %><img src="<%= post.coverImage %>" alt="" style="width:100%; height:100%; object-fit:cover;"><% } else { %><div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#9CA3AF; font-size:16px;"><i class="fa-regular fa-image"></i></div><% } %>
+                </div>
+                <div style="flex:1; min-width:0;">
+                  <div style="font-size:12px; font-weight:700; line-height:1.35; margin:0 0 4px; color:#111827; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;"><%= post.title %></div>
+                  <div style="font-size:10px; color:#9CA3AF; font-weight:500;"><%= formatDate(post.createdAt) %> · <%= readingTime(post.content) %> min</div>
+                </div>
+              </a>
+              <% }) %>
+            </div>
+          <% } else { %>
+            <p style="color:#9CA3AF; font-size:12px;">Popular stories appear here.</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+    <div style="background:#6B0000; padding:18px 0; margin-top:8px; border-radius:0;">
+      <div class="container" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+        <p style="color:rgba(255,255,255,.8); font-size:12px; margin:0;">Copyright &copy; <%= new Date().getFullYear() %> <a href="/" style="color:#fff; text-decoration:none; font-weight:700;"><%= settings.siteName %></a>. <%= settings.footerNote || 'All rights reserved.' %></p>
+        <ul style="list-style:none; padding:0; margin:0; display:flex; gap:18px; flex-wrap:wrap;">
+          <li><a href="/about" style="color:rgba(255,255,255,.85); font-size:12px; text-decoration:none; font-weight:600; transition:color .2s;">About</a></li>
+          <li><a href="/terms" style="color:rgba(255,255,255,.85); font-size:12px; text-decoration:none; font-weight:600; transition:color .2s;">Terms & Conditions</a></li>
+          <li><a href="/privacy" style="color:rgba(255,255,255,.85); font-size:12px; text-decoration:none; font-weight:600; transition:color .2s;">Privacy Policy</a></li>
+          <li><a href="/contact" style="color:rgba(255,255,255,.85); font-size:12px; text-decoration:none; font-weight:600; transition:color .2s;">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div id="fb-follow-modal" style="display:none; position:fixed; inset:0; z-index:9999; align-items:center; justify-content:center; padding:16px;">
+  <div style="position:absolute; inset:0; background:rgba(0,0,0,.55); backdrop-filter:blur(2px);" onclick="closeFbModal()"></div>
+  <div style="position:relative; background:#fff; border-radius:20px; padding:32px 24px 24px; max-width:380px; width:100%; box-shadow:0 25px 70px rgba(0,0,0,.28); text-align:center; animation:fbPop .4s cubic-bezier(.2,.8,.2,1);">
+    <div style="width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg,#1877F2,#145dbf); display:flex; align-items:center; justify-content:center; margin:0 auto 16px; box-shadow:0 8px 24px rgba(24,119,242,.35);">
+      <i class="fa-brands fa-facebook" style="color:#fff; font-size:30px;"></i>
+    </div>
+    <h3 style="font:800 20px/1.25 'Montserrat',sans-serif; color:#111827; margin:0 0 10px; letter-spacing:-.01em;">Follow us on Facebook</h3>
+    <p style="font-size:14px; color:#6b7280; line-height:1.6; margin:0 0 20px; word-break:break-word; overflow-wrap:break-word;">Stay updated with the latest news, breaking stories, and exclusive content from Kenya ni Home.</p>
+    <% if (settings.social && settings.social.facebook) { %>
+      <a href="<%= settings.social.facebook %>" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; background:#1877F2; color:#fff; padding:13px 28px; border-radius:999px; text-decoration:none; font:700 13px/1 'Montserrat',sans-serif; letter-spacing:.3px; transition:all .2s ease; box-shadow:0 4px 14px rgba(24,119,242,.35);">
+        <i class="fa-brands fa-facebook"></i> Follow Page
+      </a>
+    <% } else { %>
+      <a href="https://facebook.com" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; background:#1877F2; color:#fff; padding:13px 28px; border-radius:999px; text-decoration:none; font:700 13px/1 'Montserrat',sans-serif; letter-spacing:.3px; transition:all .2s ease; box-shadow:0 4px 14px rgba(24,119,242,.35);">
+        <i class="fa-brands fa-facebook"></i> Follow Page
+      </a>
+    <% } %>
+    <button id="fb-later-btn" style="display:block; margin:14px auto 0; background:none; border:none; color:#6b7280; font-size:12px; cursor:pointer; text-decoration:underline; font-weight:700; letter-spacing:.2px;">Maybe later</button>
+  </div>
+</div>
+
+<style>
+  @keyframes fbPop {
+    from { opacity:0; transform: translateY(24px) scale(.94); }
+    to { opacity:1; transform: translateY(0) scale(1); }
+  }
+</style>
+
+<script>
+  (function() {
+    var modal = document.getElementById('fb-follow-modal');
+    var laterBtn = document.getElementById('fb-later-btn');
+    function hide() {
+      if (modal) modal.style.display = 'none';
+      try { sessionStorage.setItem('fb-follow-hidden', '1'); } catch(e){}
+    }
+    if (laterBtn) laterBtn.addEventListener('click', hide);
+    try {
+      if (sessionStorage.getItem('fb-follow-hidden')) return;
+    } catch(e){}
+    setTimeout(function() {
+      if (modal) modal.style.display = 'flex';
+    }, 8000);
+  })();
+</script>
+
+  <!-- back to top area start -->
+  <div class="back-to-top">
+    <span class="back-top"><i class="bi bi-chevron-up"></i></span>
+  </div>
+  <!-- back to top area end -->
+
+  <script src="/assets/js/vendor.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

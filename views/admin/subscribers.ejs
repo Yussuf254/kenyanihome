@@ -1,0 +1,26 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: 'Subscribers', crumb: subscribers.length + ' total', topbarRight: '<a href="/admin/subscribers/export" class="btn btn-green btn-sm"><i class="bi bi-download"></i>&nbsp; Export CSV</a>' }) %>
+
+  <div class="panel-card" style="overflow-x:auto;">
+    <table class="data-table" id="subscriber-table">
+      <thead><tr><th>Email</th><th>Subscribed</th><th style="text-align:right;">Actions</th></tr></thead>
+      <tbody>
+        <% if (!subscribers.length) { %>
+          <tr class="empty-row"><td colspan="3">No subscribers yet. The "Weekly Focus" box on the homepage feeds this list.</td></tr>
+        <% } %>
+        <% subscribers.forEach(s => { %>
+          <tr>
+            <td class="rt-title"><%= s.email %></td>
+            <td><%= formatDate(s.createdAt) %></td>
+            <td class="table-actions">
+              <form action="/admin/subscribers/<%= s.id %>?_method=DELETE" method="post" onsubmit="return confirm('Remove this subscriber?');">
+                <button class="icon-btn" type="submit"><i class="bi bi-trash3"></i></button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+<%- include('partials/foot') %>

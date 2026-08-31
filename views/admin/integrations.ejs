@@ -1,0 +1,97 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: 'Integrations', crumb: 'Email, SMS & Payments' }) %>
+
+  <div class="admin-split-2">
+    <form action="/admin/settings/integrations" method="post">
+      <div class="form-section">
+        <div class="form-section-head">Email Integration</div>
+        <div class="form-section-body">
+          <div class="field"><label>SMTP Host</label><input type="text" name="smtpHost" value="<%= (settings.integrations && settings.integrations.email && settings.integrations.email.smtpHost) || '' %>" placeholder="smtp.example.com"></div>
+          <div class="field-row">
+            <div class="field"><label>SMTP Port</label><input type="text" name="smtpPort" value="<%= (settings.integrations && settings.integrations.email && settings.integrations.email.smtpPort) || '587' %>" placeholder="587"></div>
+            <div class="field"><label>Encryption</label>
+              <select name="smtpSecure">
+                <option value="tls" <%= (settings.integrations && settings.integrations.email && settings.integrations.email.smtpSecure === 'tls') ? 'selected' : '' %>>TLS</option>
+                <option value="ssl" <%= (settings.integrations && settings.integrations.email && settings.integrations.email.smtpSecure === 'ssl') ? 'selected' : '' %>>SSL</option>
+                <option value="none" <%= (settings.integrations && settings.integrations.email && settings.integrations.email.smtpSecure === 'none') ? 'selected' : '' %>>None</option>
+              </select>
+            </div>
+          </div>
+          <div class="field"><label>SMTP Username</label><input type="text" name="smtpUser" value="<%= (settings.integrations && settings.integrations.email && settings.integrations.email.smtpUser) || '' %>" placeholder="user@example.com"></div>
+          <div class="field"><label>SMTP Password</label><input type="password" name="smtpPass" value="<%= (settings.integrations && settings.integrations.email && settings.integrations.email.smtpPass) || '' %>" placeholder="••••••••"></div>
+          <div class="field"><label>From Address</label><input type="text" name="emailFrom" value="<%= (settings.integrations && settings.integrations.email && settings.integrations.email.from) || '' %>" placeholder="no-reply@yourdomain.com"></div>
+          <div class="field"><label>From Name</label><input type="text" name="emailFromName" value="<%= (settings.integrations && settings.integrations.email && settings.integrations.email.fromName) || '' %>" placeholder="Kenya ni Home"></div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-head">SMS Integration</div>
+        <div class="form-section-body">
+          <div class="field"><label>Provider</label>
+            <select name="smsProvider">
+              <option value="twilio" <%= (settings.integrations && settings.integrations.sms && settings.integrations.sms.provider === 'twilio') ? 'selected' : '' %>>Twilio</option>
+              <option value="nexmo" <%= (settings.integrations && settings.integrations.sms && settings.integrations.sms.provider === 'nexmo') ? 'selected' : '' %>>Nexmo / Vonage</option>
+              <option value="aws" <%= (settings.integrations && settings.integrations.sms && settings.integrations.sms.provider === 'aws') ? 'selected' : '' %>>AWS SNS</option>
+              <option value="custom" <%= (settings.integrations && settings.integrations.sms && settings.integrations.sms.provider === 'custom') ? 'selected' : '' %>>Custom API</option>
+            </select>
+          </div>
+          <div class="field"><label>Account SID / Key</label><input type="text" name="smsKey" value="<%= (settings.integrations && settings.integrations.sms && settings.integrations.sms.key) || '' %>" placeholder="ACxxxxxxxxxxxx"></div>
+          <div class="field"><label>Auth Token / Secret</label><input type="password" name="smsSecret" value="<%= (settings.integrations && settings.integrations.sms && settings.integrations.sms.secret) || '' %>" placeholder="••••••••"></div>
+          <div class="field"><label>Sender Number / Sender ID</label><input type="text" name="smsFrom" value="<%= (settings.integrations && settings.integrations.sms && settings.integrations.sms.from) || '' %>" placeholder="+254700000000"></div>
+          <div class="field"><label>Custom API Endpoint</label><input type="text" name="smsEndpoint" value="<%= (settings.integrations && settings.integrations.sms && settings.integrations.sms.endpoint) || '' %>" placeholder="https://api.example.com/sms"></div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-head">M-Pesa Integration</div>
+        <div class="form-section-body">
+          <div class="field-row">
+            <div class="field"><label>Environment</label>
+              <select name="mpesaEnvironment">
+                <option value="sandbox" <%= (settings.integrations && settings.integrations.mpesa && settings.integrations.mpesa.environment === 'sandbox') ? 'selected' : '' %>>Sandbox</option>
+                <option value="production" <%= (settings.integrations && settings.integrations.mpesa && settings.integrations.mpesa.environment === 'production') ? 'selected' : '' %>>Production</option>
+              </select>
+            </div>
+            <div class="field"><label>Shortcode</label><input type="text" name="mpesaShortcode" value="<%= (settings.integrations && settings.integrations.mpesa && settings.integrations.mpesa.shortcode) || '' %>" placeholder="174379"></div>
+          </div>
+          <div class="field"><label>Passkey</label><input type="text" name="mpesaPasskey" value="<%= (settings.integrations && settings.integrations.mpesa && settings.integrations.mpesa.passkey) || '' %>" placeholder="bfb279f9aa9bdbcf158e97dd71a467cd2e0f89"></div>
+          <div class="field"><label>Consumer Key</label><input type="text" name="mpesaConsumerKey" value="<%= (settings.integrations && settings.integrations.mpesa && settings.integrations.mpesa.consumerKey) || '' %>" placeholder="YOUR_CONSUMER_KEY"></div>
+          <div class="field"><label>Consumer Secret</label><input type="password" name="mpesaConsumerSecret" value="<%= (settings.integrations && settings.integrations.mpesa && settings.integrations.mpesa.consumerSecret) || '' %>" placeholder="YOUR_CONSUMER_SECRET"></div>
+          <div class="field"><label>Callback URL</label><input type="text" name="mpesaCallbackUrl" value="<%= (settings.integrations && settings.integrations.mpesa && settings.integrations.mpesa.callbackUrl) || '' %>" placeholder="https://your-domain.com/mpesa/callback"></div>
+          <div class="field-row">
+            <div class="field"><label>Account Reference</label><input type="text" name="mpesaAccountReference" value="<%= (settings.integrations && settings.integrations.mpesa && settings.integrations.mpesa.accountReference) || '' %>" placeholder="KenyaNiHome"></div>
+            <div class="field"><label>Paywall Amount (KSh)</label><input type="text" name="mpesaAmount" value="<%= (settings.integrations && settings.integrations.mpesa && settings.integrations.mpesa.amount) || '50' %>" placeholder="50" inputmode="numeric"></div>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-signal"><i class="bi bi-check2"></i>&nbsp; Save Integrations</button>
+    </form>
+
+    <form action="/admin/settings/integrations/test" method="post">
+      <div class="form-section">
+        <div class="form-section-head">Test Connection</div>
+        <div class="form-section-body">
+          <div class="checkbox-field field">
+            <input type="checkbox" name="testEmail" id="testEmail" checked>
+            <label for="testEmail" style="margin:0;">Test Email</label>
+          </div>
+          <div class="checkbox-field field">
+            <input type="checkbox" name="testSms" id="testSms">
+            <label for="testSms" style="margin:0;">Test SMS</label>
+          </div>
+          <div class="checkbox-field field">
+            <input type="checkbox" name="testMpesa" id="testMpesa">
+            <label for="testMpesa" style="margin:0;">Test M-Pesa STK Push</label>
+          </div>
+          <div class="field"><label>Test Recipient</label><input type="text" name="testRecipient" placeholder="email@example.com or +2547..."></div>
+          <div class="form-actions" style="border:none; padding-top:6px;">
+            <span></span>
+             <button type="submit" class="btn btn-signal"><i class="bi bi-send"></i>&nbsp; Send Test</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+<%- include('partials/foot') %>

@@ -1,0 +1,46 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: 'Users', crumb: users.length + ' total', topbarRight: '<a href="/admin/users/new" class="btn btn-signal"><i class="bi bi-person-plus"></i>&nbsp; New User</a>' }) %>
+
+  <div class="panel-card" style="overflow-x:auto;">
+    <table class="data-table" id="user-table">
+      <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Status</th><th>Last Login</th><th>Browser</th><th style="text-align:right;">Actions</th></tr></thead>
+      <tbody>
+        <% if (users.length === 0) { %>
+          <tr class="empty-row"><td colspan="7">No users yet.</td></tr>
+        <% } %>
+        <% users.forEach(u => { %>
+          <tr>
+            <td>
+              <div class="row-title">
+                <div class="avatar" style="width:36px;height:36px;font-size:14px;"><%= u.username.charAt(0).toUpperCase() %></div>
+                <div><div class="rt-title"><%= u.username %></div><div class="rt-sub">ID <%= u.id %></div></div>
+              </div>
+            </td>
+            <td><%= u.email %></td>
+            <td><span class="pill pill-<%= u.role === 'admin' ? 'active' : u.role === 'editor' ? 'published' : 'draft' %>"><%= u.role %></span></td>
+            <td><span class="pill pill-<%= u.status === 'active' ? 'active' : u.status === 'pending' ? 'draft' : 'draft' %>"><%= u.status %></span></td>
+            <td><%= u.lastLoginAt ? formatDate(u.lastLoginAt) : 'Never' %></td>
+            <td><%= u.browser || u.os || '—' %></td>
+            <td class="table-actions">
+              <a class="icon-btn" href="/admin/users/<%= u.id %>/edit" title="Edit"><i class="bi bi-pencil"></i></a>
+              <% if (u.status === 'pending') { %>
+                <form action="/admin/users/<%= u.id %>/approve" method="post" onsubmit="return confirm('Approve this user?');">
+                  <button class="icon-btn" type="submit" title="Approve"><i class="bi bi-check-lg"></i></button>
+                </form>
+                <form action="/admin/users/<%= u.id %>/reject" method="post" onsubmit="return confirm('Reject and remove this user?');">
+                  <button class="icon-btn" type="submit" title="Reject"><i class="bi bi-x-lg"></i></button>
+                </form>
+              <% } %>
+              <% if (u.id !== (currentUser && currentUser.id) && u.status !== 'pending') { %>
+                <form action="/admin/users/<%= u.id %>?_method=DELETE" method="post" onsubmit="return confirm('Delete this user permanently?');">
+                  <button class="icon-btn" type="submit" title="Delete"><i class="bi bi-trash3"></i></button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+<%- include('partials/foot') %>

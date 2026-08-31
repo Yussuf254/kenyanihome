@@ -1,0 +1,46 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: 'Notifications', crumb: notifications.length + ' total',     topbarRight: hasPermission(currentUser, '*') ? '<form action="/admin/notifications/clear" method="post" style="display:inline;"><button type="submit" class="btn btn-signal btn-sm"><i class="bi bi-trash3"></i>&nbsp; Clear All</button></form>' : '' }) %>
+
+  <div class="panel-card">
+    <div class="panel-card-body">
+      <% if (notifications.length === 0) { %>
+        <div class="empty-state">
+          <i class="bi bi-bell" style="font-size:32px; color:var(--grey-light);"></i>
+          <p>No notifications yet.</p>
+        </div>
+      <% } else { %>
+        <div class="notification-list">
+          <% notifications.forEach(n => { %>
+            <div class="notification-item <%= n.read ? 'read' : 'unread' %>" data-id="<%= n.id %>">
+              <div class="notif-icon"><i class="bi bi-<%= n.type === 'user.created' ? 'person-plus' : n.type === 'user.approved' ? 'check-circle' : n.type === 'comment.approved' ? 'chat-dots' : n.type === 'post.published' ? 'newspaper' : 'bell' %>"></i></div>
+              <div class="notif-body">
+                <p><%- n.message %></p>
+                <span class="notif-time"><%= timeAgo(n.createdAt) %></span>
+              </div>
+              <div class="notif-actions">
+                <% if (!n.read) { %><button class="btn btn-ghost btn-sm mark-read" data-id="<%= n.id %>">Mark read</button><% } %>
+                <form action="/admin/notifications/<%= n.id %>?_method=DELETE" method="post">
+                  <button type="submit" class="icon-btn" title="Delete"><i class="bi bi-trash3"></i></button>
+                </form>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+<%- include('partials/foot') %>
+
+<script>
+  document.querySelectorAll('.mark-read').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.id;
+      const item = btn.closest('.notification-item');
+      await fetch(`/admin/notifications/${id}/read`, { method: 'POST' });
+      item.classList.remove('unread');
+      item.classList.add('read');
+      btn.remove();
+    });
+  });
+</script>

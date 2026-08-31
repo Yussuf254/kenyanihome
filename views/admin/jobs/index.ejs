@@ -1,0 +1,133 @@
+<%- include('../partials/head') %>
+<%-
+  include('../partials/topbar', {
+    heading: 'Jobs Management',
+    crumb: jobs.length + ' total',
+    topbarRight: '<a href="/admin/jobs/pending" class="btn btn-signal btn-sm" style="margin-right:10px;"><i class="bi bi-hourglass-split"></i>&nbsp; Pending (' + (stats.pendingCount || 0) + ')</a><a href="/admin/jobs/published" class="btn btn-green btn-sm"><i class="bi bi-check-circle"></i>&nbsp; Published</a>'
+  })
+%>
+
+<div class="dash-bento">
+  <a href="/admin/jobs" class="bento-card active">
+    <div class="bento-head"><div class="bento-icon"><i class="bi bi-briefcase"></i></div><div><div class="bento-title">All Jobs</div><div class="bento-sub"><%= totalJobs %> listings</div></div></div>
+  </a>
+  <a href="/admin/jobs/pending" class="bento-card">
+    <div class="bento-head"><div class="bento-icon"><i class="bi bi-hourglass-split"></i></div><div><div class="bento-title">Pending</div><div class="bento-sub"><%= stats.pendingCount || 0 %> waiting</div></div></div>
+  </a>
+  <a href="/admin/jobs/published" class="bento-card">
+    <div class="bento-head"><div class="bento-icon"><i class="bi bi-check-circle"></i></div><div><div class="bento-title">Published</div><div class="bento-sub"><%= stats.publishedCount || 0 %> live</div></div></div>
+  </a>
+  <a href="/admin/employers" class="bento-card">
+    <div class="bento-head"><div class="bento-icon"><i class="bi bi-building"></i></div><div><div class="bento-title">Employers</div><div class="bento-sub"><%= stats.totalCompanies || 0 %> registered</div></div></div>
+  </a>
+  <a href="/admin/applications" class="bento-card">
+    <div class="bento-head"><div class="bento-icon"><i class="bi bi-file-earmark-person"></i></div><div><div class="bento-title">Applications</div><div class="bento-sub"><%= stats.totalApplications || 0 %> submissions</div></div></div>
+  </a>
+</div>
+
+<div class="panel-card" style="overflow-x:auto;">
+  <div class="panel-card-header" style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e5e7eb;">
+    <h3 style="font-size:15px;font-weight:600;margin:0;">All Job Listings</h3>
+    <span style="font-size:13px;color:#6b7280;"><%= jobs.length %> total jobs</span>
+  </div>
+  <table class="data-table" id="job-table" style="width:100%;border-collapse:collapse;">
+    <thead>
+      <tr style="background:#f9fafb;border-bottom:1px solid #e5e7eb;">
+        <th style="padding:12px 16px;text-align:left;font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;width:50px;">#</th>
+        <th style="padding:12px 16px;text-align:left;font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Job Title</th>
+        <th style="padding:12px 16px;text-align:left;font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Company</th>
+        <th style="padding:12px 16px;text-align:left;font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Category</th>
+        <th style="padding:12px 16px;text-align:left;font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Type</th>
+        <th style="padding:12px 16px;text-align:center;font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Status</th>
+        <th style="padding:12px 16px;text-align:center;font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Views</th>
+        <th style="padding:12px 16px;text-align:left;font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Posted</th>
+        <th style="padding:12px 16px;text-align:right;font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;width:140px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (jobs.length === 0) { %>
+        <tr class="empty-row"><td colspan="9" style="text-align:center;padding:60px;color:#6b7280;">
+          <div style="font-size:14px;margin-bottom:4px;">No jobs posted yet</div>
+          <div style="font-size:13px;color:#9ca3af;">Jobs will appear here once employers start posting</div>
+        </td></tr>
+      <% } %>
+      <% jobs.forEach(function(job, index) { %>
+        <tr style="border-bottom:1px solid #f3f4f6;<%= job.featured ? 'background:#fffbeb;' : '' %>">
+          <td style="padding:14px 16px;font-size:13px;color:#9ca3af;font-weight:500;"><%= index + 1 %></td>
+          <td style="padding:14px 16px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:36px;height:36px;border-radius:8px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#6b7280;"><%= job.title.charAt(0).toUpperCase() %></div>
+              <div>
+                <div style="font-weight:600;font-size:14px;color:#111827;"><%= job.title %><% if (job.featured) { %> <span style="color:#f59e0b;font-size:12px;">&#9733;</span><% } %></div>
+                <div style="font-size:12px;color:#6b7280;margin-top:2px;"><%= job.location || 'Nairobi' %></div>
+              </div>
+            </div>
+          </td>
+          <td style="padding:14px 16px;font-size:13px;color:#374151;"><%= job.company || 'N/A' %></td>
+          <td style="padding:14px 16px;"><span style="font-size:12px;color:#374151;background:#f3f4f6;padding:4px 10px;border-radius:6px;"><%= job.categoryName || job.category || 'General' %></span></td>
+          <td style="padding:14px 16px;font-size:13px;color:#374151;"><%= job.employmentType || 'Full Time' %></td>
+          <td style="padding:14px 16px;text-align:center;">
+            <% if (job.status === 'published') { %>
+              <span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:#059669;background:#d1fae5;padding:4px 10px;border-radius:20px;"><span style="width:6px;height:6px;border-radius:50%;background:#059669;"></span> Published</span>
+            <% } else if (job.status === 'pending') { %>
+              <span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:#d97706;background:#fef3c7;padding:4px 10px;border-radius:20px;"><span style="width:6px;height:6px;border-radius:50%;background:#d97706;"></span> Pending</span>
+            <% } else if (job.status === 'rejected') { %>
+              <span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:#dc2626;background:#fee2e2;padding:4px 10px;border-radius:20px;"><span style="width:6px;height:6px;border-radius:50%;background:#dc2626;"></span> Rejected</span>
+            <% } else { %>
+              <span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:#6b7280;background:#f3f4f6;padding:4px 10px;border-radius:20px;"><span style="width:6px;height:6px;border-radius:50%;background:#9ca3af;"></span> <%= job.status %></span>
+            <% } %>
+          </td>
+          <td style="padding:14px 16px;text-align:center;font-size:13px;font-weight:600;color:#374151;"><%= job.views || 0 %></td>
+          <td style="padding:14px 16px;font-size:13px;color:#6b7280;"><%= formatDate(job.createdAt) %></td>
+          <td style="padding:14px 16px;text-align:right;">
+            <div style="display:inline-flex;gap:4px;">
+              <a class="icon-btn" href="/admin/jobs/<%= job.id %>" title="View" style="padding:6px 10px;font-size:13px;"><i class="bi bi-eye"></i></a>
+              <% if (job.status === 'pending') { %>
+                <a class="icon-btn" href="javascript:void(0)" onclick="approveJob(<%= job.id %>)" title="Approve" style="padding:6px 10px;font-size:13px;color:#059669;"><i class="bi bi-check"></i></a>
+                <a class="icon-btn" href="javascript:void(0)" onclick="rejectJob(<%= job.id %>)" title="Reject" style="padding:6px 10px;font-size:13px;color:#dc2626;"><i class="bi bi-x"></i></a>
+              <% } else if (job.status === 'published') { %>
+                <a class="icon-btn" href="javascript:void(0)" onclick="toggleFeatured(<%= job.id %>)" title="Toggle Featured" style="padding:6px 10px;font-size:13px;color:#f59e0b;"><i class="bi bi-star"></i></a>
+                <a class="icon-btn" href="javascript:void(0)" onclick="unpublishJob(<%= job.id %>)" title="Unpublish" style="padding:6px 10px;font-size:13px;color:#6b7280;"><i class="bi bi-arrow-bar-down"></i></a>
+              <% } else if (job.status === 'rejected') { %>
+                <a class="icon-btn" href="javascript:void(0)" onclick="approveJob(<%= job.id %>)" title="Approve" style="padding:6px 10px;font-size:13px;color:#059669;"><i class="bi bi-check"></i></a>
+              <% } %>
+            </div>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<script>
+function approveJob(id) {
+  if (confirm('Approve this job?')) {
+    fetch('/admin/jobs/' + id + '/approve', { method: 'POST' })
+      .then(r => r.json())
+      .then(() => location.reload());
+  }
+}
+function rejectJob(id) {
+  const reason = prompt('Reason for rejection:');
+  if (reason) {
+    fetch('/admin/jobs/' + id + '/reject', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason })
+    }).then(() => location.reload());
+  }
+}
+function unpublishJob(id) {
+  if (confirm('Unpublish this job?')) {
+    fetch('/admin/jobs/' + id + '/unpublish', { method: 'POST' })
+      .then(() => location.reload());
+  }
+}
+function toggleFeatured(id) {
+  fetch('/admin/jobs/' + id + '/featured', { method: 'POST' })
+    .then(r => r.json())
+    .then(() => location.reload());
+}
+</script>
+
+<%- include('../partials/foot') %>

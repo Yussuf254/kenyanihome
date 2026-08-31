@@ -1,0 +1,1324 @@
+<%- include('partials/head') %>
+<% if (typeof featured !== 'undefined' && featured && featured.coverImage) { %>
+<link rel="preload" as="image" href="<%= featured.coverImage %>" fetchpriority="high">
+<% } %>
+
+<style>
+  /* ===== KenyaniHome — Premium News Design System ===== */
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+
+  :root {
+    --green: #0B6B3A;
+    --green-dark: #084d29;
+    --red: #C1121F;
+    --red-dark: #9a0e19;
+    --white: #FFFFFF;
+    --text: #111827;
+    --text-secondary: #4b5563;
+    --text-muted: #6b7280;
+    --bg: #F8F9FA;
+    --card-bg: #FFFFFF;
+    --border: #e5e7eb;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-hover: 0 10px 25px rgba(0,0,0,.1), 0 4px 10px rgba(0,0,0,.08);
+    --radius: 16px;
+    --radius-sm: 8px;
+    --transition: 250ms cubic-bezier(.4,0,.2,1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: 'Montserrat', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; transition: color var(--transition); }
+  img { display: block; max-width: 100%; }
+
+  /* ===== Layout ===== */
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 16px; }
+  @media (min-width: 768px) { .container { padding: 0 24px; } }
+
+  /* ===== Category Badge ===== */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    height: 34px;
+    padding: 0 14px;
+    background: var(--green);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-radius: 999px;
+    line-height: 1;
+    transition: background var(--transition);
+  }
+  .badge:hover { background: var(--green-dark); }
+
+  /* ===== Hero Section — Premium Editorial ===== */
+  .hero {
+    margin-bottom: 40px;
+    padding: 24px 16px 0;
+  }
+  @media (min-width: 768px) {
+    .hero { padding: 32px 24px 0; margin-bottom: 48px; }
+  }
+  .hero-card {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: #1a1a1a;
+    box-shadow: var(--shadow);
+    transition: box-shadow var(--transition), transform var(--transition);
+  }
+  .hero-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+  .hero-image-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+  @media (min-width: 768px) {
+    .hero-image-wrap { aspect-ratio: 21 / 9; }
+  }
+  .hero-image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 600ms ease;
+  }
+  .hero-card:hover .hero-image-wrap img { transform: scale(1.05); }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,.3) 50%, transparent 100%);
+  }
+  .hero-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 24px;
+    z-index: 2;
+  }
+  @media (min-width: 768px) {
+    .hero-content { padding: 32px; }
+  }
+  .hero-content .badge {
+    margin-bottom: 12px;
+    background: var(--red);
+  }
+  .hero-content .badge:hover { background: var(--red-dark); }
+  .hero-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1.25;
+    color: var(--white);
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-shadow: 0 2px 4px rgba(0,0,0,.3);
+  }
+  @media (min-width: 768px) {
+    .hero-title { font-size: 32px; }
+  }
+  .hero-title a:hover { color: #fbbf24; }
+  .hero-excerpt {
+    font-size: 14px;
+    color: rgba(255,255,255,.85);
+    line-height: 1.6;
+    margin-bottom: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-shadow: 0 1px 2px rgba(0,0,0,.3);
+  }
+  @media (min-width: 768px) {
+    .hero-excerpt { font-size: 15px; max-width: 600px; }
+  }
+  .hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: rgba(255,255,255,.7);
+    font-weight: 500;
+    flex-wrap: wrap;
+  }
+  .hero-meta .author { font-weight: 600; color: var(--white); }
+  .hero-meta .sep { opacity: .5; }
+
+  /* ===== Breaking News — Clean White ===== */
+  .breaking-section {
+    margin-bottom: 28px;
+    padding: 0 16px;
+  }
+  @media (min-width: 768px) {
+    .breaking-section { padding: 0 24px; }
+  }
+  .breaking-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,.05);
+    box-shadow: var(--shadow);
+    transition: box-shadow var(--transition), transform var(--transition);
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 768px) {
+    .breaking-card { grid-template-columns: 1.2fr 1fr; }
+  }
+  .breaking-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--red) 0%, #ff4757 50%, var(--red) 100%);
+    z-index: 3;
+  }
+  .breaking-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+  .breaking-image-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #f3f4f6;
+  }
+  @media (min-width: 768px) {
+    .breaking-image-wrap { aspect-ratio: 4 / 3; }
+  }
+  .breaking-image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 400ms ease;
+  }
+  .breaking-card:hover .breaking-image-wrap img { transform: scale(1.03); }
+  .breaking-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,.35) 0%, rgba(0,0,0,.08) 50%, transparent 100%);
+  }
+  .breaking-badge {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 14px;
+    background: var(--red);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-radius: 999px;
+    z-index: 2;
+    box-shadow: 0 4px 12px rgba(193, 18, 31, .25);
+  }
+  .breaking-badge::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--white);
+    border-radius: 50%;
+    animation: blink 1s infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .3; }
+  }
+  .breaking-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  @media (min-width: 768px) {
+    .breaking-content { padding: 28px; }
+  }
+  .breaking-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.3;
+    color: var(--text);
+    margin-bottom: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  @media (min-width: 768px) {
+    .breaking-title { font-size: 24px; }
+  }
+  .breaking-title a:hover { color: var(--red); }
+  .breaking-excerpt {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 14px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .breaking-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    flex-wrap: wrap;
+  }
+  .breaking-meta .author { font-weight: 600; color: var(--text); }
+  .breaking-meta .sep { opacity: .4; }
+
+  /* ===== Section Headers — Award Winning ===== */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    width: 100%;
+    border-bottom: none;
+  }
+  .section-title-line {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 14px;
+  }
+  .section-title-line::before,
+  .section-title-line::after {
+    content: '';
+    flex: 1;
+    height: 3px;
+    background: #8B1A1A;
+    border-radius: 2px;
+  }
+  .section-title {
+    font: 800 15px/1 'Montserrat', sans-serif;
+    color: #8B1A1A;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    white-space: nowrap;
+    padding: 6px 10px;
+    background: #fff;
+    position: relative;
+    z-index: 1;
+  }
+  .section-link {
+    font-size: 11px;
+    font-weight: 700;
+    color: #8B1A1A;
+    text-decoration: none;
+    letter-spacing: 0.4px;
+    transition: all .2s ease;
+    margin-left: 14px;
+    white-space: nowrap;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: rgba(139, 26, 26, .07);
+    border: 1px solid rgba(139, 26, 26, .18);
+  }
+  .section-link:hover {
+    color: #fff;
+    background: #8B1A1A;
+    border-color: #8B1A1A;
+  }
+
+  /* ===== Trending Now — Premium List ===== */
+  .trending-list { display: flex; flex-direction: column; gap: 0; }
+  .trending-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+    transition: background var(--transition);
+    position: relative;
+  }
+  .trending-item:last-child { border-bottom: none; }
+  .trending-item:hover { background: rgba(15, 107, 52, .03); }
+  .trending-number {
+    font: 900 24px/1 'Montserrat', sans-serif;
+    color: var(--red);
+    min-width: 36px;
+    text-align: right;
+    flex-shrink: 0;
+    letter-spacing: -0.03em;
+    margin-top: 1px;
+  }
+  .trending-content { flex: 1; min-width: 0; }
+  .trending-title {
+    font: 700 14px/1.45 'Montserrat', sans-serif;
+    color: var(--text);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color var(--transition);
+    margin-bottom: 5px;
+  }
+  .trending-item:hover .trending-title { color: var(--green); }
+  .trending-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .trending-meta .cat {
+    color: var(--green);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 9px;
+    letter-spacing: 0.6px;
+    background: rgba(15, 107, 52, .08);
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+  .trending-meta .views {
+    color: #9ca3af;
+    font-size: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .new-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #fef2f2;
+    color: var(--red);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* ===== Latest News — Magazine List ===== */
+  .story-list { display: flex; flex-direction: column; gap: 0; }
+  .story-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+    transition: background var(--transition);
+    position: relative;
+  }
+  .story-item:last-child { border-bottom: none; }
+  .story-item:hover { background: rgba(15, 107, 52, .03); }
+  .story-thumb {
+    flex-shrink: 0;
+    width: 110px;
+    height: 82px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: #e5e7eb;
+    border: 1px solid rgba(0,0,0,.05);
+  }
+  .story-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition);
+  }
+  .story-item:hover .story-thumb img { transform: scale(1.05); }
+  .story-content { flex: 1; min-width: 0; }
+  .story-content .badge { height: 26px; font-size: 10px; padding: 0 10px; margin-bottom: 6px; }
+  .story-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.4;
+    color: var(--text);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color var(--transition);
+    margin-bottom: 5px;
+  }
+  .story-item:hover .story-title { color: var(--green); }
+  .story-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .story-meta .read-time {
+    color: #9ca3af;
+    font-size: 10px;
+  }
+  .story-meta .new-pill {
+    background: #fef2f2;
+    color: var(--red);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+
+  /* ===== Article Cards — Premium Edge-to-Edge Images ===== */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  @media (min-width: 640px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .cards-grid { grid-template-columns: repeat(4, 1fr); } }
+
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: box-shadow var(--transition), transform var(--transition);
+    min-width: 0;
+  }
+  .card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+  .card-image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 400ms ease;
+  }
+  .card:hover .card-image img { transform: scale(1.05); }
+  .card-body { padding: 20px; }
+  .card-body .badge { margin-bottom: 10px; }
+  .card-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.3;
+    color: var(--text);
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color var(--transition);
+  }
+  .card:hover .card-title { color: var(--green); }
+  .card-excerpt {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .card-meta .author { font-weight: 600; color: var(--text-secondary); }
+  .card-meta .read-time { color: #9ca3af; font-size: 11px; }
+
+  /* ===== Trending Now List ===== */
+  .trending-list { display: flex; flex-direction: column; gap: 0; }
+  .trending-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+    transition: background var(--transition);
+  }
+  .trending-item:last-child { border-bottom: none; }
+  .trending-item:hover { background: rgba(0,0,0,.02); }
+  .trending-number {
+    font: 900 22px/1 'Montserrat', sans-serif;
+    color: var(--red);
+    min-width: 32px;
+    text-align: right;
+    flex-shrink: 0;
+    letter-spacing: -0.02em;
+  }
+  .trending-content { flex: 1; min-width: 0; }
+  .trending-title {
+    font: 700 13px/1.4 'Montserrat', sans-serif;
+    color: var(--text);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color var(--transition);
+    margin-bottom: 4px;
+  }
+  .trending-item:hover .trending-title { color: var(--green); }
+  .trending-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .trending-meta .cat {
+    color: var(--green);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    margin-right: 6px;
+  }
+
+  /* ===== Two Column Layout ===== */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-bottom: 16px;
+    align-items: start;
+  }
+  @media (min-width: 768px) { .two-col { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1024px) { .two-col { grid-template-columns: 1.5fr 1fr; } }
+
+  .story-list { display: flex; flex-direction: column; gap: 0; }
+  .story-item {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    transition: background var(--transition);
+  }
+  .story-item:last-child { border-bottom: none; }
+  .story-item:hover { background: rgba(0,0,0,.02); }
+  .story-thumb {
+    flex-shrink: 0;
+    width: 100px;
+    height: 75px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: #e5e7eb;
+  }
+  .story-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition);
+  }
+  .story-item:hover .story-thumb img { transform: scale(1.05); }
+  .story-content { flex: 1; min-width: 0; }
+  .story-content .badge { height: 26px; font-size: 10px; padding: 0 10px; margin-bottom: 6px; }
+  .story-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--text);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color var(--transition);
+  }
+  .story-item:hover .story-title { color: var(--green); }
+  .story-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  /* ===== Featured Side Story ===== */
+  .side-feature {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .side-feature-image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+  .side-feature-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 400ms ease;
+  }
+  .side-feature:hover .side-feature-image img { transform: scale(1.05); }
+  .side-feature-body { padding: 20px; }
+  .side-feature-body .badge { margin-bottom: 10px; }
+  .side-feature-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.3;
+    color: var(--text);
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .side-feature:hover .side-feature-title { color: var(--green); }
+  .side-feature-excerpt {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ===== Newsletter Box ===== */
+  .newsletter-box {
+    background: var(--green);
+    color: var(--white);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .newsletter-box h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .newsletter-box p { font-size: 12px; color: rgba(255,255,255,.8); margin-bottom: 14px; }
+  .newsletter-form {
+    display: flex;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(255,255,255,.15);
+  }
+  .newsletter-form input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 10px 14px;
+    color: var(--white);
+    font-size: 13px;
+    font-family: 'Montserrat', sans-serif;
+  }
+  .newsletter-form input::placeholder { color: rgba(255,255,255,.6); }
+  .newsletter-form button {
+    background: var(--white);
+    border: none;
+    padding: 0 16px;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--green);
+    font-family: 'Montserrat', sans-serif;
+    transition: background var(--transition);
+  }
+  .newsletter-form button:hover { background: #f0fdf4; }
+
+  @media (max-width: 640px) {
+    .newsletter-box { padding: 16px; }
+    .newsletter-form {
+      flex-direction: column;
+      border-radius: var(--radius);
+      background: transparent;
+      gap: 10px;
+    }
+    .newsletter-form input {
+      background: rgba(255,255,255,.15);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      width: 100%;
+    }
+    .newsletter-form button {
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      width: 100%;
+    }
+  }
+
+  /* ===== Category Grid — Magazine Style ===== */
+  .cat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  @media (min-width: 768px) {
+    .cat-grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+  }
+
+  .cat-card {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: #1a1a1a;
+    aspect-ratio: 3 / 4;
+  }
+  @media (min-width: 768px) {
+    .cat-card {
+      aspect-ratio: 4 / 3;
+      border-radius: 0;
+    }
+    .cat-card:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+    .cat-card:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
+  }
+  .cat-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-4px);
+    z-index: 2;
+  }
+  .cat-card-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  .cat-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 600ms ease;
+  }
+  .cat-card:hover .cat-card-image img { transform: scale(1.08); }
+  .cat-card-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,.25) 50%, rgba(0,0,0,.1) 100%);
+  }
+  .cat-card-body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    z-index: 2;
+    background: linear-gradient(to top, rgba(0,0,0,.55) 0%, rgba(0,0,0,.15) 60%, transparent 100%);
+  }
+  .cat-card-body .badge {
+    height: 24px;
+    font-size: 9px;
+    padding: 0 8px;
+    margin-bottom: 10px;
+    background: var(--red);
+  }
+  .cat-card-body .badge:hover { background: var(--red-dark); }
+  .cat-card-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.3;
+    color: var(--white);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-shadow: 0 1px 3px rgba(0,0,0,.4);
+    margin-bottom: 6px;
+  }
+  .cat-card:hover .cat-card-title { color: #fbbf24; }
+  @media (min-width: 768px) {
+    .cat-card-title { font-size: 16px; }
+  }
+
+  /* ===== Headlines Grid ===== */
+  .headlines-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  @media (min-width: 640px) { .headlines-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .headlines-grid { grid-template-columns: repeat(4, 1fr); } }
+
+  .headline-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: box-shadow var(--transition), transform var(--transition);
+    min-width: 0;
+  }
+  .headline-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+  .headline-card-image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+  .headline-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 400ms ease;
+  }
+  .headline-card:hover .headline-card-image img { transform: scale(1.05); }
+  .headline-card-body { padding: 20px; }
+  .headline-card-body .badge { height: 26px; font-size: 10px; padding: 0 10px; margin-bottom: 10px; }
+  .headline-card-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.3;
+    color: var(--text);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color var(--transition);
+    margin-bottom: 8px;
+  }
+  .headline-card:hover .headline-card-title { color: var(--green); }
+
+  /* ===== No Image Placeholder ===== */
+  .no-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
+  }
+  .no-image svg { width: 40px; height: 40px; opacity: .6; }
+
+  /* ===== Responsive Tweaks ===== */
+  @media (min-width: 768px) {
+    .card-body { padding: 28px; }
+    .headline-card-body { padding: 28px; }
+    .side-feature-body { padding: 28px; }
+  }
+  @media (max-width: 639px) {
+    .hero-content { padding: 16px; }
+    .hero-title { font-size: 18px; }
+    .hero-excerpt { display: none; }
+    .hero-meta { font-size: 11px; }
+    .cards-grid { gap: 16px; }
+    .story-thumb { width: 90px; height: 68px; }
+    .trending-number { font-size: 20px; min-width: 28px; }
+    .trending-title { font-size: 13px; }
+    .trending-item { gap: 10px; padding: 12px 0; }
+    .breaking-content { padding: 16px; }
+    .breaking-title { font-size: 16px; }
+    .card-title { font-size: 15px; }
+    .headline-card-title { font-size: 15px; }
+    .side-feature-title { font-size: 15px; }
+    .story-title { font-size: 14px; }
+    .card-body { padding: 16px; }
+    .headline-card-body { padding: 16px; }
+    .side-feature-body { padding: 16px; }
+  }
+</style>
+
+<% const tones = ['', '', '', '']; %>
+<% const safePosts = posts || []; %>
+<% const safeTrending = trending || []; %>
+<% const safeMostRead = mostRead || []; %>
+<% const safeFeaturedStories = featuredStories || []; %>
+<% const safeBreaking = Array.isArray(breaking) ? breaking : []; %>
+<% const quickItems = safeFeaturedStories.length ? safeFeaturedStories : (safeTrending.length ? safeTrending : safePosts).slice(0, 4); %>
+<% const wn = (safeFeaturedStories[0] || safeTrending[0] || null); %>
+
+<!-- ===== HERO SECTION ===== -->
+<% if (featured) { %>
+<section class="hero">
+  <div class="container">
+    <div class="hero-card">
+      <div class="hero-image-wrap">
+        <% if (featured.coverImage) { %>
+          <img src="<%= featured.coverImage %>" alt="<%= featured.title %>" width="1200" height="675" fetchpriority="high" decoding="async">
+        <% } else { %>
+          <div class="no-image"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+        <% } %>
+        <div class="hero-overlay"></div>
+      </div>
+      <div class="hero-content">
+        <span class="badge"><%= (featured.category || 'News').toUpperCase() %></span>
+        <h2 class="hero-title"><a href="/post/<%= featured.slug %>"><%= featured.title %></a></h2>
+        <p class="hero-excerpt"><%= featured.excerpt %></p>
+        <div class="hero-meta">
+          <span class="author"><%= (featured.author || 'Newsroom') %></span>
+          <span class="sep">·</span>
+          <span><%= formatDate(featured.createdAt) %></span>
+          <span class="sep">·</span>
+          <span><%= readingTime(featured.content) %> min read</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- ===== BREAKING NEWS ===== -->
+<% if (safeBreaking && safeBreaking.length) { %>
+<section class="breaking-section">
+  <div class="container">
+    <% safeBreaking.slice(0, 1).forEach(function(b) { %>
+    <div class="breaking-card">
+      <div class="breaking-image-wrap">
+        <% if (b.coverImage) { %>
+          <img src="<%= b.coverImage %>" alt="<%= b.title %>" loading="lazy" width="800" height="450" decoding="async">
+        <% } else { %>
+          <div class="no-image"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+        <% } %>
+        <div class="breaking-overlay"></div>
+        <span class="breaking-badge">BREAKING</span>
+      </div>
+      <div class="breaking-content">
+        <h2 class="breaking-title"><a href="/post/<%= b.slug %>"><%= b.title %></a></h2>
+        <p class="breaking-excerpt"><%= b.excerpt %></p>
+        <div class="breaking-meta">
+          <span class="author"><%= (b.author || 'Newsroom') %></span>
+          <span class="sep">·</span>
+          <span><%= formatDate(b.createdAt) %></span>
+          <span class="sep">·</span>
+          <span><%= readingTime(b.content) %> min read</span>
+        </div>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+</section>
+<% } %>
+
+<!-- ===== QUICK ROW (4 cards below hero) ===== -->
+<% if (quickItems.length) { %>
+<section style="margin-bottom: 24px;">
+  <div class="container">
+    <div class="cards-grid">
+      <% quickItems.slice(0, 4).forEach(function(p, i) { %>
+      <article class="card">
+        <div class="card-image">
+          <% if (p.coverImage) { %>
+            <img src="<%= p.coverImage %>" alt="<%= p.title %>" loading="lazy" width="400" height="225" decoding="async">
+          <% } else { %>
+            <div class="no-image"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+          <% } %>
+        </div>
+        <div class="card-body">
+          <span class="badge"><%= (p.category || 'News').toUpperCase() %></span>
+          <h3 class="card-title"><a href="/post/<%= p.slug %>"><%= p.title %></a></h3>
+          <p class="card-excerpt"><%= p.excerpt %></p>
+          <div class="card-meta">
+            <span class="author"><%= (p.author || 'Newsroom') %></span>
+            <span>·</span>
+            <span><%= formatDate(p.createdAt) %></span>
+            <span>·</span>
+            <span class="read-time"><%= readingTime(p.content) %> min read</span>
+            <% if (new Date(p.createdAt) > new Date(Date.now() - 24*60*60*1000)) { %>
+              <span class="new-pill">NEW</span>
+            <% } %>
+          </div>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- ===== TWO COLUMN: Trending Now + Latest News ===== -->
+<section style="margin-bottom: 16px;">
+  <div class="container">
+    <div class="two-col">
+      <!-- Trending Now -->
+      <div>
+        <div class="section-header">
+          <div class="section-title-line"><h2 class="section-title">Trending Now</h2></div>
+          <a class="section-link" href="/all-stories">View all →</a>
+        </div>
+        <div class="trending-list">
+          <% if (safeTrending.length) { %>
+            <% safeTrending.forEach(function(p, i) { %>
+            <a href="/post/<%= p.slug %>" class="trending-item">
+              <div class="trending-number"><%= String(i + 1).padStart(2, '0') %></div>
+              <div class="trending-content">
+                <div class="trending-title"><%= p.title %></div>
+                <div class="trending-meta">
+                  <span class="cat"><%= (p.category || 'News').toUpperCase() %></span>
+                  <span>·</span>
+                  <span><%= readingTime(p.content) %> min read</span>
+                  <% if ((p.views || 0) > 0) { %>
+                    <span>·</span>
+                    <span class="views"><%= (p.views || 0).toLocaleString() %> views</span>
+                  <% } %>
+                  <% if (new Date(p.createdAt) > new Date(Date.now() - 24*60*60*1000)) { %>
+                    <span class="new-pill">NEW</span>
+                  <% } %>
+                </div>
+              </div>
+            </a>
+            <% }) %>
+          <% } else { %>
+            <p style="color:var(--text-muted);font-size:14px;">No trending stories yet.</p>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Latest News -->
+      <div>
+        <div class="section-header">
+          <div class="section-title-line"><h2 class="section-title">Latest News</h2></div>
+        </div>
+        <div class="story-list">
+          <% if (safePosts.length) { %>
+            <% safePosts.slice(0, 6).forEach(function(p) { %>
+            <a href="/post/<%= p.slug %>" class="story-item">
+              <div class="story-thumb">
+                <% if (p.coverImage) { %>
+                  <img src="<%= p.coverImage %>" alt="<%= p.title %>" loading="lazy" width="220" height="164" decoding="async">
+                <% } else { %>
+                  <div class="no-image"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>
+                <% } %>
+              </div>
+              <div class="story-content">
+                <span class="badge"><%= (p.category || 'News').toUpperCase() %></span>
+                <div class="story-title"><%= p.title %></div>
+                <div class="story-meta">
+                  <span><%= formatDate(p.createdAt) %></span>
+                  <span>·</span>
+                  <span class="read-time"><%= readingTime(p.content) %> min read</span>
+                  <% if (new Date(p.createdAt) > new Date(Date.now() - 24*60*60*1000)) { %>
+                    <span class="new-pill">NEW</span>
+                  <% } %>
+                </div>
+              </div>
+            </a>
+            <% }) %>
+          <% } else { %>
+            <p style="color:var(--text-muted);font-size:14px;">No latest stories yet.</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== WHAT'S NEW + NEWSLETTER ===== -->
+<section style="margin-bottom: 24px;">
+  <div class="container">
+    <div class="two-col">
+      <!-- What's New Feature -->
+      <div class="side-feature">
+        <% if (wn) { %>
+        <div class="side-feature-image">
+          <% if (wn.coverImage) { %>
+            <img src="<%= wn.coverImage %>" alt="<%= wn.title %>" loading="lazy" width="600" height="338" decoding="async">
+          <% } else { %>
+            <div class="no-image"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/></svg></div>
+          <% } %>
+        </div>
+        <div class="side-feature-body">
+          <span class="badge"><%= (wn.category || 'News').toUpperCase() %></span>
+          <h3 class="side-feature-title"><a href="/post/<%= wn.slug %>"><%= wn.title %></a></h3>
+          <p class="side-feature-excerpt"><%= wn.excerpt %></p>
+          <div class="card-meta" style="margin-top: 10px;">
+            <span class="author"><%= (wn.author || 'Newsroom') %></span>
+            <span>·</span>
+            <span><%= formatDate(wn.createdAt) %></span>
+            <span>·</span>
+            <span class="read-time"><%= readingTime(wn.content) %> min read</span>
+            <% if (new Date(wn.createdAt) > new Date(Date.now() - 24*60*60*1000)) { %>
+              <span class="new-pill">NEW</span>
+            <% } %>
+          </div>
+        </div>
+        <% } else { %>
+        <div class="side-feature-image"><div class="no-image"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><circle cx="12" cy="12" r="4"/></svg></div></div>
+        <div class="side-feature-body">
+          <h3 class="side-feature-title">No featured story available</h3>
+          <p class="side-feature-excerpt">More stories appear here as they are published.</p>
+        </div>
+        <% } %>
+      </div>
+
+      <!-- Newsletter -->
+      <div>
+        <div class="newsletter-box">
+          <h3>Stay Informed</h3>
+          <p>Get the latest news delivered to your inbox.</p>
+          <form class="newsletter-form" id="newsletter-form-home" onsubmit="event.preventDefault();">
+            <input type="email" name="email" placeholder="Your email address" required>
+            <button type="submit">Subscribe</button>
+          </form>
+          <p id="newsletter-msg-home" style="font-size:12px;color:rgba(255,255,255,.8);margin-top:10px;display:none;"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CATEGORY GRID ===== -->
+<section style="margin-bottom: 24px;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-title-line"><h2 class="section-title">Explore Topics</h2></div>
+      <a class="section-link" href="/all-stories">View All →</a>
+    </div>
+    <div class="cat-grid">
+      <% const countyEntries = Object.entries(postsByCategory || {}).slice(0, 4); %>
+      <% if (countyEntries.length) { %>
+        <% countyEntries.forEach(function(entry, i) {
+             const catName = entry[0];
+             const catPosts = entry[1] || [];
+             const p = catPosts[0];
+           %>
+         <article class="cat-card">
+           <div class="cat-card-image">
+             <% if (p && p.coverImage) { %>
+               <img src="<%= p.coverImage %>" alt="<%= p.title %>" loading="lazy" width="400" height="533" decoding="async">
+             <% } else { %>
+               <div class="no-image" style="background:linear-gradient(135deg,var(--green) 0%,var(--green-dark) 100%);position:absolute;inset:0;"></div>
+             <% } %>
+           </div>
+            <div class="cat-card-body">
+              <span class="badge"><%= catName.toUpperCase() %></span>
+              <% if (p) { %><h4 class="cat-card-title"><a href="/post/<%= p.slug %>"><%= p.title %></a></h4><% } else { %><h4 class="cat-card-title"><%= catName %></h4><% } %>
+              <% if (p) { %>
+                <div class="cat-card-meta" style="font-size:11px;color:rgba(255,255,255,.7);font-weight:500;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                  <span><%= formatDate(p.createdAt) %></span>
+                  <span>·</span>
+                  <span><%= readingTime(p.content) %> min read</span>
+                  <% if (new Date(p.createdAt) > new Date(Date.now() - 24*60*60*1000)) { %>
+                    <span class="new-pill" style="background:rgba(255,255,255,.15);color:#fff;">NEW</span>
+                  <% } %>
+                </div>
+              <% } %>
+            </div>
+         </article>
+        <% }) %>
+      <% } else { %>
+        <p style="color:var(--text-muted);font-size:14px;">No category stories yet.</p>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HEADLINES GRID ===== -->
+<section style="margin-bottom: 24px;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-title-line"><h2 class="section-title">Today's Headlines</h2></div>
+      <a class="section-link" href="/all-stories">All News →</a>
+    </div>
+    <div class="headlines-grid">
+      <% const headlinePosts = safePosts.filter(function(p){ return !featured || p.id !== featured.id; }).slice(0, 8); %>
+      <% if (headlinePosts.length) { %>
+        <% headlinePosts.forEach(function(p, i) { %>
+        <article class="headline-card">
+          <div class="headline-card-image">
+            <% if (p.coverImage) { %>
+              <img src="<%= p.coverImage %>" alt="<%= p.title %>" loading="lazy" width="400" height="225" decoding="async">
+            <% } else { %>
+              <div class="no-image"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/></svg></div>
+            <% } %>
+          </div>
+          <div class="headline-card-body">
+            <span class="badge"><%= (p.category || 'News').toUpperCase() %></span>
+            <h4 class="headline-card-title"><a href="/post/<%= p.slug %>"><%= p.title %></a></h4>
+            <div class="card-meta">
+              <span class="author"><%= (p.author || 'Newsroom') %></span>
+              <span>·</span>
+              <span><%= formatDate(p.createdAt) %></span>
+              <span>·</span>
+              <span class="read-time"><%= readingTime(p.content) %> min read</span>
+              <% if (new Date(p.createdAt) > new Date(Date.now() - 24*60*60*1000)) { %>
+                <span class="new-pill">NEW</span>
+              <% } %>
+            </div>
+          </div>
+        </article>
+        <% }) %>
+      <% } else { %>
+        <p style="color:var(--text-muted);font-size:14px;">More headlines coming soon.</p>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var nf = document.getElementById('newsletter-form-home');
+    if (!nf) return;
+    var msg = document.getElementById('newsletter-msg-home');
+    nf.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var btn = nf.querySelector('button');
+      var email = nf.querySelector('input[name="email"]').value;
+      btn.disabled = true;
+      try {
+        var res = await fetch('/newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
+          body: 'email=' + encodeURIComponent(email)
+        });
+        var data = await res.json();
+        if (msg) { msg.style.display = 'block'; msg.textContent = data.message; }
+        if (data.ok) {
+          btn.textContent = 'Subscribed ✓';
+          nf.querySelector('input').value = '';
+        } else {
+          btn.disabled = false;
+        }
+      } catch (err) {
+        if (msg) { msg.style.display = 'block'; msg.textContent = 'Something went wrong — try again.'; }
+        btn.disabled = false;
+      }
+    });
+  })();
+</script>
+
+<%- include('partials/foot') %>

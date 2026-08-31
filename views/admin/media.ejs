@@ -1,0 +1,38 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: 'Media Library', crumb: media.length + ' files' }) %>
+
+  <% if (hasPermission(currentUser, 'media:write')) { %>
+  <form action="/admin/media/upload" method="post" enctype="multipart/form-data">
+    <div class="upload-zone">
+      <i class="bi bi-cloud-upload"></i>
+      <div style="font-weight:600; margin-bottom:4px;">Upload images</div>
+      <div class="help">JPG, PNG, GIF, WEBP or SVG — up to 8MB each. Select multiple files at once.</div>
+      <input type="file" name="images" accept="image/*,.jfif" multiple required>
+      <br><br>
+      <button type="submit" class="btn btn-green btn-sm"><i class="bi bi-cloud-upload"></i>&nbsp; Upload</button>
+    </div>
+  </form>
+  <% } %>
+
+  <% if (media.length) { %>
+  <div class="media-grid">
+    <% media.forEach(m => { %>
+      <div class="media-item">
+        <img src="<%= m.url %>">
+        <div class="m-name"><%= m.name.length > 22 ? m.name.slice(0,22) + '…' : m.name %></div>
+        <div class="m-actions">
+          <a href="<%= m.url %>" target="_blank" title="Open full size"><i class="bi bi-arrows-fullscreen"></i></a>
+          <% if (hasPermission(currentUser, 'media:write')) { %>
+            <form action="/admin/media/<%= encodeURIComponent(m.name) %>?_method=DELETE" method="post" onsubmit="return confirm('Delete this image?');">
+              <button type="submit" title="Delete"><i class="bi bi-trash3"></i></button>
+            </form>
+          <% } %>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+  <% } else { %>
+    <div class="empty-state" style="text-align:center; padding:50px; color:var(--grey);">No images uploaded yet.</div>
+  <% } %>
+
+<%- include('partials/foot') %>

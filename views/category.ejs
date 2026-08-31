@@ -1,0 +1,171 @@
+<%- include('partials/head') %>
+
+<main>
+  <style>
+    @media (min-width: 992px) {
+      .cat-featured-link {
+        flex-direction: row !important;
+      }
+      .cat-featured-link > div:first-child {
+        width: 50% !important;
+        max-height: none !important;
+      }
+      .cat-featured-link > div:first-child img {
+        height: 100% !important;
+        max-height: none !important;
+        object-position: top !important;
+      }
+      .cat-featured-link > div:last-child {
+        width: 50% !important;
+        justify-content: center !important;
+      }
+    }
+  </style>
+  <section style="background:#fff; border-bottom:1px solid #e4dfd7; padding:32px 0 28px;">
+    <div class="container">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+        <span style="width:24px; height:2px; background:#0F6B34; display:inline-block; border-radius:1px;"></span>
+        <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.18em; color:#0F6B34;">Category</span>
+      </div>
+      <div style="display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:12px; padding-bottom:20px; border-bottom:1px solid #e4dfd7; position:relative;">
+        <div>
+          <h1 style="font-size:clamp(26px, 5vw, 36px); font-weight:800; line-height:1.08; letter-spacing:-0.025em; margin:0; color:#0C1210;"><%= category.name %></h1>
+          <p style="font-size:clamp(13px, 2vw, 14px); color:#5f6b6c; margin:6px 0 0; line-height:1.5; max-width:480px;">Stories, features and analysis from our <%= category.name.toLowerCase() %> desk.</p>
+        </div>
+        <span style="font-size:13px; color:#8a9495; font-weight:500;"><%= posts.length %> stories</span>
+      </div>
+    </div>
+  </section>
+
+  <% if (posts.length) { %>
+  <section style="padding:32px 0 24px; background:#fff;">
+    <div class="container">
+      <a href="/post/<%= posts[0].slug %>" style="display:flex; flex-direction:column; border-radius:16px; overflow:hidden; border:1px solid #e4dfd7; text-decoration:none; color:inherit; transition:box-shadow 0.35s ease, transform 0.35s ease;" onmouseover="this.style.boxShadow='0 16px 48px rgba(0,0,0,0.08)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none'; this.style.transform='translateY(0)'" class="cat-featured-link">
+        <div style="flex:0 0 auto; position:relative;">
+          <img src="<%= posts[0].coverImage || 'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=1200&q=80' %>" alt="<%= posts[0].title %>" loading="lazy" style="width:100%; aspect-ratio:16/9; object-fit:cover; display:block;">
+          <div style="position:absolute; inset:0; background:linear-gradient(to right, transparent 60%, rgba(255,255,255,0.4) 100%);"></div>
+        </div>
+        <div style="flex:1; padding:24px; display:flex; flex-direction:column; justify-content:center; background:#fff;">
+          <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; color:#0F6B34; margin-bottom:14px; display:inline-flex; align-items:center; gap:8px;">
+            <span style="width:16px; height:1px; background:#0F6B34; display:inline-block;"></span>
+            Featured
+          </span>
+          <h2 style="font-size:clamp(18px, 3.5vw, 24px); font-weight:800; line-height:1.2; margin:0 0 14px; color:#0C1210; letter-spacing:-0.01em;"><%= posts[0].title %></h2>
+          <p style="font-size:clamp(13px, 2vw, 14px); line-height:1.65; color:#5f6b6c; margin:0 0 20px;"><%= posts[0].excerpt %></p>
+          <div style="font-size:12px; color:#8a9495; letter-spacing:0.02em; display:flex; align-items:center; gap:8px;">
+            <span style="width:20px; height:1px; background:#e4dfd7; display:inline-block;"></span>
+            <span><%= formatDate(posts[0].createdAt) %></span>
+            <span style="opacity:0.4;">·</span>
+            <span><%= readingTime(posts[0].content) %> min read</span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <% if (posts.length > 1) { %>
+  <section style="padding:0 0 48px; background:#fff;">
+    <div class="container">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:28px;">
+        <span style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#5f6b6c;">Latest</span>
+        <span style="flex:1; height:1px; background:#e4dfd7;"></span>
+        <span style="font-size:12px; color:#8a9495;"><%= posts.length - 1 %> stories</span>
+      </div>
+      <div class="row">
+        <% posts.slice(1).forEach(function(post) { %>
+        <div class="col-lg-4 col-md-6" style="margin-bottom:28px;">
+          <article style="background:#fff; border-radius:14px; overflow:hidden; border:1px solid #e4dfd7; transition:transform 0.3s ease, box-shadow 0.3s ease; height:100%;">
+            <a href="/post/<%= post.slug %>" style="display:block; position:relative;">
+              <img src="<%= post.coverImage || 'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=800&q=70' %>" alt="<%= post.title %>" loading="lazy" style="width:100%; aspect-ratio:16/10; object-fit:cover; display:block; transition:transform 0.5s ease;">
+              <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(12,18,16,0.3) 0%, transparent 50%); opacity:0; transition:opacity 0.3s ease;"></div>
+            </a>
+            <div style="padding:18px 20px 20px;">
+              <h3 style="font-size:16px; font-weight:700; line-height:1.35; margin-bottom:8px; color:#0C1210;"><a href="/post/<%= post.slug %>" style="color:inherit; text-decoration:none; transition:color 0.2s ease;"><%= post.title %></a></h3>
+              <p style="font-size:13px; color:#5f6b6c; line-height:1.5; margin-bottom:12px;"><%= post.excerpt %></p>
+              <div style="font-size:11px; color:#8a9495; letter-spacing:0.02em; display:flex; align-items:center; gap:8px;">
+                <span style="width:14px; height:1px; background:#e4dfd7; display:inline-block;"></span>
+                <span><%= formatDate(post.createdAt) %></span>
+                <span style="opacity:0.4;">·</span>
+                <span><%= readingTime(post.content) %> min</span>
+              </div>
+            </div>
+          </article>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+  <% } %>
+  <% } else { %>
+  <div class="container" style="padding:80px 0; text-align:center;">
+    <div style="width:48px; height:2px; background:#0F6B34; margin:0 auto 20px; border-radius:1px;"></div>
+    <h3 style="font-weight:800; color:#0C1210; margin:0 0 8px; font-size:20px; letter-spacing:-0.01em;">No stories yet</h3>
+    <p style="color:#5f6b6c; font-size:14px;">Stories in <%= category.name %> will appear here soon. Check back later.</p>
+  </div>
+  <% } %>
+
+  <% if (inlineAd) { %>
+  <div style="max-width:720px; margin:0 auto 48px;">
+    <%- include('partials/ad-card', { ad: inlineAd }) %>
+  </div>
+  <% } %>
+
+  <aside style="background:#fafaf9; border-top:1px solid #e4dfd7; padding:48px 0;">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4" style="margin-bottom:28px;">
+          <div style="background:linear-gradient(160deg, #0a1a12 0%, #0f2b1c 40%, #0c2418 100%); border-radius:14px; overflow:hidden; position:relative; padding:24px;">
+            <div style="position:absolute; inset:0; background:radial-gradient(circle at 20% 20%, rgba(180,95,59,.12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(15,107,52,.15) 0%, transparent 50%); pointer-events:none;"></div>
+            <div style="position:relative; z-index:1;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+                <svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.9)" width="16" height="16" style="flex:none;"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                <span style="color:#fff; font-weight:700; font-size:14px; letter-spacing:0.02em;">Weekly Brief</span>
+              </div>
+              <p style="color:rgba(255,255,255,.65); font-size:13px; line-height:1.6; margin:0 0 16px;">Stay informed with curated stories delivered every Friday.</p>
+              <form id="newsletter-form">
+                <input type="email" name="email" placeholder="your@email.com" required style="width:100%; padding:11px 14px; border-radius:8px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); color:#fff; font-size:13px; outline:none; margin-bottom:10px; transition:border-color 0.2s ease;" onfocus="this.style.borderColor='rgba(15,107,52,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'">
+                <button type="submit" style="width:100%; padding:11px; border-radius:8px; border:0; background:#0F6B34; color:#fff; font-weight:700; font-size:13px; cursor:pointer; transition:background 0.2s ease; letter-spacing:0.02em;">Subscribe</button>
+              </form>
+              <p id="newsletter-msg" style="font-size:11px; color:rgba(255,255,255,.5); margin:10px 0 0; display:none;"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+  <%- include('partials/foot') %>
+
+<script>
+  const nf = document.getElementById('newsletter-form');
+  if (nf) {
+    nf.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = nf.querySelector('button');
+      const msg = document.getElementById('newsletter-msg');
+      const email = nf.querySelector('input[name=email]').value;
+      btn.disabled = true;
+      try {
+        const res = await fetch('/newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
+          body: 'email=' + encodeURIComponent(email)
+        });
+        const data = await res.json();
+        msg.style.display = 'block';
+        msg.textContent = data.message;
+        if (data.ok) { btn.textContent = 'Subscribed ✓'; btn.style.background='#0a4f25'; nf.querySelector('input').value = ''; }
+        else { btn.disabled = false; }
+      } catch (err) {
+        msg.style.display = 'block';
+        msg.textContent = 'Something went wrong — try again.';
+        btn.disabled = false;
+      }
+    });
+  }
+</script>
+<script src="/assets/js/vendor.js"></script>
+<script src="/assets/js/main.js"></script>
+</body>
+</html>

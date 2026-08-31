@@ -1,0 +1,99 @@
+<%- include('../partials/head') %>
+<%-
+  include('../partials/topbar', {
+    heading: 'Employers',
+    crumb: employers.length + ' registered',
+    topbarRight: '<a href="/admin/jobs" class="btn btn-ghost btn-sm"><i class="bi bi-briefcase"></i>&nbsp; All Jobs</a>'
+  })
+%>
+
+<div class="panel-card" style="overflow-x:auto;">
+  <table class="data-table" id="employers-table">
+    <thead>
+      <tr>
+        <th>Company</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Status</th>
+        <th>Jobs Posted</th>
+        <th>Apps Received</th>
+        <th>Registered</th>
+        <th class="table-actions" style="text-align:right;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (employers.length === 0) { %>
+        <tr class="empty-row"><td colspan="8">No employers registered yet.</td></tr>
+      <% } %>
+      <% employers.forEach(function(e) { %>
+        <tr>
+          <td>
+            <div class="row-title">
+              <div><div class="rt-title"><%= e.companyName || e.name || 'N/A' %></div><div class="rt-sub"><%= e.location || '' %></div></div>
+            </div>
+          </td>
+          <td><%= e.email %></td>
+          <td><%= e.phone || 'N/A' %></td>
+          <td><span class="pill pill-<%= e.status || 'pending' %>"><%= e.status || 'pending' %></span></td>
+          <td><%= e.jobCount || 0 %></td>
+          <td><%= e.applicationCount || 0 %></td>
+          <td><%= formatDate(e.createdAt) %></td>
+           <td class="table-actions" style="text-align:right;">
+             <% if ((e.status || 'pending') === 'pending') { %>
+               <a class="icon-btn" href="javascript:void(0)" onclick="verifyEmployer(<%= e.id %>)" title="Verify" style="color:var(--kenya-green);"><i class="bi bi-check"></i></a>
+             <% } %>
+             <% if ((e.status || 'pending') === 'suspended') { %>
+               <a class="icon-btn" href="javascript:void(0)" onclick="activateEmployer(<%= e.id %>)" title="Activate" style="color:var(--kenya-green);"><i class="bi bi-play-circle"></i></a>
+             <% } %>
+             <% if ((e.status || 'pending') !== 'suspended') { %>
+               <a class="icon-btn" href="javascript:void(0)" onclick="suspendEmployer(<%= e.id %>)" title="Suspend" style="color:#e51d3e;"><i class="bi bi-pause-circle"></i></a>
+             <% } %>
+             <a class="icon-btn" href="javascript:void(0)" onclick="deleteEmployer(<%= e.id %>)" title="Delete" style="color:#e51d3e;"><i class="bi bi-trash3"></i></a>
+           </td>
+        </tr>
+      <% }) %>
+    </tbody>
+   </table>
+  </div>
+
+  <script>
+  function verifyEmployer(id) {
+    if (confirm('Verify this employer? They can post jobs immediately.')) {
+      fetch('/admin/employers/' + id + '/verify', { method: 'POST' })
+        .then(r => r.json())
+        .then(() => location.reload());
+    }
+  }
+  function activateEmployer(id) {
+    if (confirm('Activate this employer?')) {
+      fetch('/admin/employers/' + id + '/verify', { method: 'POST' })
+        .then(r => r.json())
+        .then(() => location.reload());
+    }
+  }
+  function suspendEmployer(id) {
+    const reason = prompt('Reason for suspension:');
+    if (reason) {
+      fetch('/admin/employers/' + id + '/suspend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason })
+      }).then(() => location.reload());
+    }
+  }
+  function deleteEmployer(id) {
+    if (confirm('Delete this employer? This cannot be undone.')) {
+      fetch('/admin/employers/' + id + '/delete', { method: 'DELETE' })
+        .then(r => r.json())
+        .then(data => {
+          if (data.error) {
+            alert(data.error);
+          } else {
+            location.reload();
+          }
+        });
+    }
+  }
+  </script>
+
+<%- include('../partials/foot') %>

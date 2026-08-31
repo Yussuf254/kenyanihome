@@ -1,0 +1,659 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: (activeTab === 'integrations' ? 'Integrations' : (activeTab === 'advertising' ? 'Advertising' : 'Settings')), crumb: (activeTab === 'integrations' ? 'Email, SMS & Payments' : (activeTab === 'advertising' ? 'Ad form & packages' : 'Site configuration')) }) %>
+
+<div class="settings-tabs">
+  <button class="tab-btn active" data-tab="general" onclick="switchTab('general')">
+    <i class="bi bi-gear"></i> General
+  </button>
+  <button class="tab-btn" data-tab="advertising" onclick="switchTab('advertising')">
+    <i class="bi bi-megaphone"></i> Advertising
+  </button>
+  <button class="tab-btn" data-tab="integrations" onclick="switchTab('integrations')">
+    <i class="bi bi-plug"></i> Integrations
+  </button>
+</div>
+
+<div class="tab-panel active" id="tab-general">
+  <form action="/admin/settings" method="post" enctype="multipart/form-data">
+    <div class="settings-bento">
+      <div class="bento-card bento-wide">
+        <div class="bento-head">
+          <div class="bento-icon"><i class="bi bi-building"></i></div>
+          <div>
+            <div class="bento-title">Identity</div>
+            <div class="bento-sub">Name, tagline and URL</div>
+          </div>
+        </div>
+        <div class="bento-body">
+          <div class="field-row">
+            <div class="field"><label>Site Name</label><input type="text" name="siteName" value="<%= settings.siteName %>"></div>
+            <div class="field"><label>Tagline</label><input type="text" name="tagline" value="<%= settings.tagline %>"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Edition Label</label><input type="text" name="heroKicker" value="<%= settings.heroKicker %>"></div>
+            <div class="field"><label>Site URL</label><input type="text" name="siteUrl" value="<%= settings.siteUrl %>" placeholder="https://your-domain.com"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bento-card bento-wide">
+        <div class="bento-head">
+          <div class="bento-icon"><i class="bi bi-image"></i></div>
+          <div>
+            <div class="bento-title">Logo</div>
+            <div class="bento-sub">Brand mark</div>
+          </div>
+        </div>
+        <div class="bento-body">
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <% if (settings.logo) { %>
+              <div class="logo-preview"><img src="<%= settings.logo %>" alt="Current logo" class="logo-preview-img" style="max-height:160px;"></div>
+            <% } %>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <input type="file" name="logoFile" accept="image/*,.jfif">
+              <p class="help">PNG, transparent background, 40px tall.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bento-card bento-wide">
+        <div class="bento-head">
+          <div class="bento-icon"><i class="bi bi-info-circle"></i></div>
+          <div>
+            <div class="bento-title">About Page</div>
+            <div class="bento-sub">Publication background</div>
+          </div>
+        </div>
+        <div class="bento-body">
+          <div class="field"><label>Title</label><input type="text" name="aboutTitle" value="<%= settings.aboutTitle %>"></div>
+          <div class="field"><label>Body</label><textarea name="aboutBody" rows="4"><%= settings.aboutBody %></textarea></div>
+          <div class="field">
+            <label>Cover Image</label>
+            <% if (settings.aboutImage) { %>
+              <div class="logo-preview" style="margin-bottom:10px;"><img src="<%= settings.aboutImage %>" alt="About image" class="logo-preview-img" style="max-height:160px;"></div>
+            <% } %>
+            <input type="file" name="aboutImageFile" accept="image/*,.jfif">
+            <p class="help">Upload a hero image for the About page.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bento-card bento-wide">
+        <div class="bento-head">
+          <div class="bento-icon"><i class="bi bi-bar-chart"></i></div>
+          <div>
+            <div class="bento-title">Stats</div>
+            <div class="bento-sub">Numbers shown on the About page</div>
+          </div>
+        </div>
+        <div class="bento-body">
+          <div class="field-row">
+            <div class="field"><label>Stat 1 Number</label><input type="text" name="aboutStat1" value="<%= settings.aboutStat1 || '' %>"></div>
+            <div class="field"><label>Stat 1 Label</label><input type="text" name="aboutStat1Label" value="<%= settings.aboutStat1Label || '' %>"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Stat 2 Number</label><input type="text" name="aboutStat2" value="<%= settings.aboutStat2 || '' %>"></div>
+            <div class="field"><label>Stat 2 Label</label><input type="text" name="aboutStat2Label" value="<%= settings.aboutStat2Label || '' %>"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Stat 3 Number</label><input type="text" name="aboutStat3" value="<%= settings.aboutStat3 || '' %>"></div>
+            <div class="field"><label>Stat 3 Label</label><input type="text" name="aboutStat3Label" value="<%= settings.aboutStat3Label || '' %>"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bento-card bento-wide">
+        <div class="bento-head">
+          <div class="bento-icon"><i class="bi bi-people"></i></div>
+          <div>
+            <div class="bento-title">Newsroom Team</div>
+            <div class="bento-sub">JSON array — name, role, img</div>
+          </div>
+        </div>
+        <div class="bento-body">
+          <div class="field"><label>Team JSON</label><textarea name="team" rows="8"><%= typeof settings.team === 'string' ? settings.team : JSON.stringify(settings.team || [], null, 2) %></textarea></div>
+          <p class="help">Edit the JSON array directly. Each item needs <strong>name</strong>, <strong>role</strong>, and <strong>img</strong> (image URL). You can paste URLs from the Media Library.</p>
+        </div>
+      </div>
+
+      <div class="bento-card">
+        <div class="bento-head">
+          <div class="bento-icon"><i class="bi bi-envelope"></i></div>
+          <div>
+            <div class="bento-title">Contact</div>
+            <div class="bento-sub">Email, phone, address</div>
+          </div>
+        </div>
+        <div class="bento-body">
+          <div class="field"><label>Email</label><input type="text" name="email" value="<%= settings.email %>"></div>
+          <div class="field"><label>Phone</label><input type="text" name="phone" value="<%= settings.phone %>"></div>
+          <div class="field"><label>Address</label><input type="text" name="address" value="<%= settings.address %>"></div>
+        </div>
+      </div>
+
+      <div class="bento-card">
+        <div class="bento-head">
+          <div class="bento-icon"><i class="bi bi-share"></i></div>
+          <div>
+            <div class="bento-title">Social</div>
+            <div class="bento-sub">Profile links</div>
+          </div>
+        </div>
+        <div class="bento-body">
+          <div class="field"><label>X / Twitter</label><input type="text" name="twitter" value="<%= settings.social.twitter %>"></div>
+          <div class="field"><label>Facebook</label><input type="text" name="facebook" value="<%= settings.social.facebook %>"></div>
+          <div class="field"><label>Instagram</label><input type="text" name="instagram" value="<%= settings.social.instagram %>"></div>
+          <div class="field"><label>LinkedIn</label><input type="text" name="linkedin" value="<%= settings.social.linkedin %>"></div>
+        </div>
+      </div>
+
+      <div class="bento-card">
+        <div class="bento-head">
+          <div class="bento-icon"><i class="bi bi-lock"></i></div>
+          <div>
+            <div class="bento-title">Paywall</div>
+            <div class="bento-sub">Metered access</div>
+          </div>
+        </div>
+        <div class="bento-body">
+          <div class="checkbox-field field">
+            <input type="checkbox" name="paywallEnabled" id="paywallEnabled" <%= settings.paywallEnabled ? 'checked' : '' %>>
+            <label for="paywallEnabled">Enable metered paywall</label>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Free Articles</label>
+              <input type="text" name="freeArticleLimit" value="<%= settings.freeArticleLimit %>" inputmode="numeric">
+              <p class="help">Readers get this many free stories before the paywall appears.</p>
+            </div>
+            <div class="field">
+              <label>Unlock Amount (KSh)</label>
+              <input type="text" name="paywallAmount" value="<%= (settings.integrations && settings.integrations.mpesa && settings.integrations.mpesa.amount) || '50' %>" inputmode="numeric">
+              <p class="help">M-Pesa STK Push amount charged to unlock a story.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bento-card">
+        <div class="bento-head">
+          <div class="bento-icon"><i class="bi bi-broadcast"></i></div>
+          <div>
+            <div class="bento-title">Breaking News</div>
+            <div class="bento-sub">Ticker strip settings</div>
+          </div>
+        </div>
+        <div class="bento-body">
+          <div class="checkbox-field field">
+            <input type="checkbox" name="breakingEnabled" id="breakingEnabled" <%= settings.breakingEnabled !== false ? 'checked' : '' %>>
+            <label for="breakingEnabled">Show breaking news ticker</label>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Max Items</label>
+              <input type="text" name="breakingMaxItems" value="<%= settings.breakingMaxItems || 5 %>" inputmode="numeric">
+              <p class="help">Maximum stories shown in the ticker.</p>
+            </div>
+            <div class="field">
+              <label>Scroll Duration (seconds)</label>
+              <input type="text" name="breakingScrollDuration" value="<%= settings.breakingScrollDuration || 25 %>" inputmode="numeric">
+              <p class="help">Lower = faster scroll.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bento-card">
+        <div class="bento-head">
+          <div class="bento-icon"><i class="bi bi-type"></i></div>
+          <div>
+            <div class="bento-title">Footer</div>
+            <div class="bento-sub">Site bottom note</div>
+          </div>
+        </div>
+        <div class="bento-body">
+          <div class="field"><label>Footer Note</label><input type="text" name="footerNote" value="<%= settings.footerNote %>"></div>
+        </div>
+      </div>
+
+      <div class="bento-card bento-wide">
+        <div class="bento-head">
+          <div class="bento-icon"><i class="bi bi-shield-check"></i></div>
+          <div>
+            <div class="bento-title">Legal & Cookies</div>
+            <div class="bento-sub">Policies and consent</div>
+          </div>
+        </div>
+        <div class="bento-body">
+          <div class="field"><label>Privacy Policy</label><textarea name="privacyPolicy" rows="3"><%= settings.privacyPolicy %></textarea></div>
+          <div class="field"><label>Terms of Service</label><textarea name="termsOfService" rows="3"><%= settings.termsOfService %></textarea></div>
+          <div class="field"><label>Cookie Consent</label><textarea name="cookieConsentText" rows="2"><%= settings.cookieConsentText %></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a href="/admin" class="btn btn-ghost btn-sm">Cancel</a>
+      <button type="submit" class="btn btn-signal"><i class="bi bi-check2"></i>&nbsp; Save Settings</button>
+    </div>
+  </form>
+
+  <form action="/admin/settings/password" method="post" style="margin-top: 20px;">
+    <div class="bento-card" style="max-width: 680px;">
+      <div class="bento-head">
+        <div class="bento-icon"><i class="bi bi-lock"></i></div>
+        <div>
+          <div class="bento-title">Change Password</div>
+          <div class="bento-sub">Update your admin password</div>
+        </div>
+      </div>
+      <div class="bento-body">
+        <div class="field"><label>Current Password</label><input type="password" name="currentPassword" required></div>
+        <div class="field"><label>New Password</label><input type="password" name="newPassword" required minlength="8"></div>
+        <div class="field"><label>Confirm New Password</label><input type="password" name="confirmPassword" required minlength="8"></div>
+        <div class="form-actions">
+          <span></span>
+          <button type="submit" class="btn btn-signal"><i class="bi bi-lock"></i>&nbsp; Update Password</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="tab-panel" id="tab-advertising">
+  <form action="/admin/settings/advertising" method="post" enctype="multipart/form-data">
+    <div class="settings-bento">
+      <div class="bento-card bento-wide">
+        <div class="bento-head">
+          <div class="bento-icon"><i class="bi bi-megaphone"></i></div>
+          <div>
+            <div class="bento-title">Advertising Hero</div>
+            <div class="bento-sub">Top section copy on /advertise</div>
+          </div>
+        </div>
+        <div class="bento-body">
+          <div class="field"><label>Hero Title</label><input type="text" name="adHeroTitle" value="<%= (settings.advertising && settings.advertising.heroTitle) || '' %>"></div>
+          <div class="field"><label>Hero Subtitle</label><input type="text" name="adHeroSubtitle" value="<%= (settings.advertising && settings.advertising.heroSubtitle) || '' %>"></div>
+          <div class="field-row">
+            <div class="field"><label>Contact Phone</label><input type="text" name="adContactPhone" value="<%= (settings.advertising && settings.advertising.contactPhone) || '' %>"></div>
+            <div class="field"><label>Contact Email</label><input type="text" name="adContactEmail" value="<%= (settings.advertising && settings.advertising.contactEmail) || '' %>"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Support Hours</label><input type="text" name="adSupportHours" value="<%= (settings.advertising && settings.advertising.supportHours) || '' %>"></div>
+            <div class="field">
+              <label>Marketplace Logo</label>
+              <input type="file" name="marketplaceLogoFile" accept="image/*">
+              <% if (settings.advertising && settings.advertising.marketplaceLogo) { %>
+                <div class="logo-preview"><img src="<%= settings.advertising.marketplaceLogo %>" class="logo-preview-img"></div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bento-card bento-wide">
+        <div class="bento-head">
+          <div class="bento-icon"><i class="bi bi-box"></i></div>
+          <div>
+            <div class="bento-title">Packages JSON</div>
+            <div class="bento-sub">Name, price, duration, features, badge and placement</div>
+          </div>
+        </div>
+        <div class="bento-body">
+          <div class="field"><label>Packages</label><textarea name="adPackages" class="code-editor" rows="8"><%= typeof settings.advertising !== 'undefined' && settings.advertising.packages ? JSON.stringify(settings.advertising.packages, null, 2) : '' %></textarea></div>
+          <p class="help">JSON array. Each item needs <strong>name</strong>, <strong>price</strong>, <strong>currency</strong>, <strong>duration</strong>, <strong>features</strong> (array), <strong>badge</strong>, and <strong>placement</strong>.</p>
+        </div>
+      </div>
+
+      <div class="bento-card bento-wide">
+        <div class="bento-head">
+          <div class="bento-icon"><i class="bi bi-list-check"></i></div>
+          <div>
+            <div class="bento-title">Why Advertise Items JSON</div>
+            <div class="bento-sub">Icons, titles and body copy</div>
+          </div>
+        </div>
+        <div class="bento-body">
+          <div class="field"><label>Why Advertise</label><textarea name="adWhyAdvertise" class="code-editor" rows="6"><%= typeof settings.advertising !== 'undefined' && settings.advertising.whyAdvertise ? JSON.stringify(settings.advertising.whyAdvertise, null, 2) : '' %></textarea></div>
+          <p class="help">JSON array. Each item needs <strong>icon</strong>, <strong>title</strong>, and <strong>body</strong>.</p>
+        </div>
+      </div>
+
+      <div class="bento-card bento-wide">
+        <div class="bento-head">
+          <div class="bento-icon"><i class="bi bi-stars"></i></div>
+          <div>
+            <div class="bento-title">Hero Benefits JSON</div>
+            <div class="bento-sub">Top-of-page benefit blocks</div>
+          </div>
+        </div>
+        <div class="bento-body">
+          <div class="field"><label>Benefits</label><textarea name="adBenefits" class="code-editor" rows="4"><%= typeof settings.advertising !== 'undefined' && settings.advertising.benefits ? JSON.stringify(settings.advertising.benefits, null, 2) : '' %></textarea></div>
+          <p class="help">JSON array. Each item needs <strong>icon</strong>, <strong>title</strong>, and <strong>body</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a href="/admin/settings" class="btn btn-ghost btn-sm">Cancel</a>
+      <button type="submit" class="btn btn-signal"><i class="bi bi-check2"></i>&nbsp; Save Advertising Settings</button>
+    </div>
+  </form>
+</div>
+
+<div class="tab-panel" id="tab-integrations">
+  <form action="/admin/settings/integrations" method="post">
+    <div class="settings-bento">
+      <div class="bento-card">
+        <div class="bento-head">
+          <div class="bento-icon"><i class="bi bi-envelope"></i></div>
+          <div>
+            <div class="bento-title">Email</div>
+            <div class="bento-sub">SMTP configuration</div>
+          </div>
+        </div>
+        <div class="bento-body">
+          <div class="field"><label>Provider</label>
+            <select name="emailProvider">
+              <option value="custom" <%= (settings.integrations && settings.integrations.email && settings.integrations.email.provider === 'custom') ? 'selected' : '' %>>Custom SMTP</option>
+              <option value="gmail" <%= (settings.integrations && settings.integrations.email && settings.integrations.email.provider === 'gmail') ? 'selected' : '' %>>Gmail / Google Workspace</option>
+              <option value="outlook" <%= (settings.integrations && settings.integrations.email && settings.integrations.email.provider === 'outlook') ? 'selected' : '' %>>Outlook / Office 365</option>
+              <option value="sendgrid" <%= (settings.integrations && settings.integrations.email && settings.integrations.email.provider === 'sendgrid') ? 'selected' : '' %>>SendGrid</option>
+              <option value="mailgun" <%= (settings.integrations && settings.integrations.email && settings.integrations.email.provider === 'mailgun') ? 'selected' : '' %>>Mailgun</option>
+              <option value="aws-ses" <%= (settings.integrations && settings.integrations.email && settings.integrations.email.provider === 'aws-ses') ? 'selected' : '' %>>AWS SES</option>
+            </select>
+          </div>
+          <div class="field"><label>SMTP Host</label><input type="text" name="smtpHost" value="<%= (settings.integrations && settings.integrations.email && settings.integrations.email.smtpHost) || '' %>" placeholder="smtp.example.com"></div>
+          <div class="field-row">
+            <div class="field"><label>Port</label><input type="text" name="smtpPort" value="<%= (settings.integrations && settings.integrations.email && settings.integrations.email.smtpPort) || '587' %>" placeholder="587"></div>
+            <div class="field"><label>Encryption</label>
+              <select name="smtpSecure">
+                <option value="tls" <%= (settings.integrations && settings.integrations.email && settings.integrations.email.smtpSecure === 'tls') ? 'selected' : '' %>>TLS</option>
+                <option value="ssl" <%= (settings.integrations && settings.integrations.email && settings.integrations.email.smtpSecure === 'ssl') ? 'selected' : '' %>>SSL</option>
+                <option value="none" <%= (settings.integrations && settings.integrations.email && settings.integrations.email.smtpSecure === 'none') ? 'selected' : '' %>>None</option>
+              </select>
+            </div>
+          </div>
+          <div class="field"><label>Username</label><input type="text" name="smtpUser" value="<%= (settings.integrations && settings.integrations.email && settings.integrations.email.smtpUser) || '' %>" placeholder="user@example.com"></div>
+          <div class="field"><label>Password</label><input type="password" name="smtpPass" value="<%= (settings.integrations && settings.integrations.email && settings.integrations.email.smtpPass) || '' %>" placeholder="••••••••"></div>
+          <div class="field"><label>From Address</label><input type="text" name="emailFrom" value="<%= (settings.integrations && settings.integrations.email && settings.integrations.email.from) || '' %>" placeholder="no-reply@yourdomain.com"></div>
+          <div class="field"><label>From Name</label><input type="text" name="emailFromName" value="<%= (settings.integrations && settings.integrations.email && settings.integrations.email.fromName) || '' %>" placeholder="Kenya ni Home"></div>
+        </div>
+      </div>
+
+      <div class="bento-card">
+        <div class="bento-head">
+          <div class="bento-icon"><i class="bi bi-chat-dots"></i></div>
+          <div>
+            <div class="bento-title">SMS</div>
+            <div class="bento-sub">Messaging provider</div>
+          </div>
+        </div>
+        <div class="bento-body">
+          <div class="field"><label>Provider</label>
+            <select name="smsProvider">
+              <option value="twilio" <%= (settings.integrations && settings.integrations.sms && settings.integrations.sms.provider === 'twilio') ? 'selected' : '' %>>Twilio</option>
+              <option value="nexmo" <%= (settings.integrations && settings.integrations.sms && settings.integrations.sms.provider === 'nexmo') ? 'selected' : '' %>>Nexmo / Vonage</option>
+              <option value="aws" <%= (settings.integrations && settings.integrations.sms && settings.integrations.sms.provider === 'aws') ? 'selected' : '' %>>AWS SNS</option>
+              <option value="custom" <%= (settings.integrations && settings.integrations.sms && settings.integrations.sms.provider === 'custom') ? 'selected' : '' %>>Custom API</option>
+            </select>
+          </div>
+          <div class="field"><label>Account SID / Key</label><input type="text" name="smsKey" value="<%= (settings.integrations && settings.integrations.sms && settings.integrations.sms.key) || '' %>" placeholder="ACxxxxxxxxxxxx"></div>
+          <div class="field"><label>Auth Token / Secret</label><input type="password" name="smsSecret" value="<%= (settings.integrations && settings.integrations.sms && settings.integrations.sms.secret) || '' %>" placeholder="••••••••"></div>
+          <div class="field"><label>Sender Number / Sender ID</label><input type="text" name="smsFrom" value="<%= (settings.integrations && settings.integrations.sms && settings.integrations.sms.from) || '' %>" placeholder="+254700000000"></div>
+          <div class="field"><label>Custom API Endpoint</label><input type="text" name="smsEndpoint" value="<%= (settings.integrations && settings.integrations.sms && settings.integrations.sms.endpoint) || '' %>" placeholder="https://api.example.com/sms"></div>
+        </div>
+      </div>
+
+      <div class="bento-card">
+        <div class="bento-head">
+          <div class="bento-icon"><i class="bi bi-phone"></i></div>
+          <div>
+            <div class="bento-title">M-Pesa</div>
+            <div class="bento-sub">Payments & paywall</div>
+          </div>
+        </div>
+        <div class="bento-body">
+          <div class="field-row">
+            <div class="field"><label>Environment</label>
+              <select name="mpesaEnvironment">
+                <option value="sandbox" <%= (settings.integrations && settings.integrations.mpesa && settings.integrations.mpesa.environment === 'sandbox') ? 'selected' : '' %>>Sandbox</option>
+                <option value="production" <%= (settings.integrations && settings.integrations.mpesa && settings.integrations.mpesa.environment === 'production') ? 'selected' : '' %>>Production</option>
+              </select>
+            </div>
+            <div class="field"><label>Shortcode</label><input type="text" name="mpesaShortcode" value="<%= (settings.integrations && settings.integrations.mpesa && settings.integrations.mpesa.shortcode) || '' %>" placeholder="174379"></div>
+          </div>
+          <div class="field"><label>Passkey</label><input type="text" name="mpesaPasskey" value="<%= (settings.integrations && settings.integrations.mpesa && settings.integrations.mpesa.passkey) || '' %>" placeholder="bfb279f9aa9bdbcf158e97dd71a467cd2e0f89"></div>
+          <div class="field"><label>Consumer Key</label><input type="text" name="mpesaConsumerKey" value="<%= (settings.integrations && settings.integrations.mpesa && settings.integrations.mpesa.consumerKey) || '' %>" placeholder="YOUR_CONSUMER_KEY"></div>
+          <div class="field"><label>Consumer Secret</label><input type="password" name="mpesaConsumerSecret" value="<%= (settings.integrations && settings.integrations.mpesa && settings.integrations.mpesa.consumerSecret) || '' %>" placeholder="YOUR_CONSUMER_SECRET"></div>
+          <div class="field"><label>Callback URL</label><input type="text" name="mpesaCallbackUrl" value="<%= (settings.integrations && settings.integrations.mpesa && settings.integrations.mpesa.callbackUrl) || '' %>" placeholder="https://your-domain.com/mpesa/callback"></div>
+          <div class="field-row">
+            <div class="field"><label>Account Reference</label><input type="text" name="mpesaAccountReference" value="<%= (settings.integrations && settings.integrations.mpesa && settings.integrations.mpesa.accountReference) || '' %>" placeholder="KenyaNiHome"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a href="/admin/settings/integrations" class="btn btn-ghost btn-sm">Cancel</a>
+      <button type="submit" class="btn btn-signal"><i class="bi bi-check2"></i>&nbsp; Save Integrations</button>
+    </div>
+  </form>
+
+  <form action="/admin/settings/integrations/test" method="post" style="margin-top: 18px;">
+    <div class="bento-card">
+      <div class="bento-head">
+        <div class="bento-icon"><i class="bi bi-send"></i></div>
+        <div>
+          <div class="bento-title">Test Connection</div>
+          <div class="bento-sub">Send a test message</div>
+        </div>
+      </div>
+      <div class="bento-body">
+        <div class="field-row">
+          <div class="checkbox-field field">
+            <input type="checkbox" name="testEmail" id="testEmail" checked>
+            <label for="testEmail">Test Email</label>
+          </div>
+          <div class="checkbox-field field">
+            <input type="checkbox" name="testSms" id="testSms">
+            <label for="testSms">Test SMS</label>
+          </div>
+          <div class="checkbox-field field">
+            <input type="checkbox" name="testMpesa" id="testMpesa">
+            <label for="testMpesa">Test M-Pesa STK Push</label>
+          </div>
+        </div>
+        <div class="field"><label>Test Recipient</label><input type="text" name="testRecipient" placeholder="email@example.com or +2547..."></div>
+        <div class="form-actions">
+          <span></span>
+          <button type="submit" class="btn btn-signal"><i class="bi bi-send"></i>&nbsp; Send Test</button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <form action="/admin/settings/integrations/broadcast" method="post" style="margin-top: 18px;">
+    <div class="bento-card">
+      <div class="bento-head">
+        <div class="bento-icon"><i class="bi bi-megaphone"></i></div>
+        <div>
+          <div class="bento-title">Newsletter Broadcast</div>
+          <div class="bento-sub">Reach all subscribers</div>
+        </div>
+      </div>
+      <div class="bento-body">
+        <p class="help" style="margin-bottom:12px;">Send to <strong><%= (typeof subscribers !== 'undefined' ? subscribers.length : 0) %></strong> newsletter subscribers via Email, SMS, or both.</p>
+        <div class="field"><label>Subject</label><input type="text" name="broadcastSubject" placeholder="Weekly Focus: The stories that mattered" required></div>
+        <div class="field"><label>Message</label><textarea name="broadcastMessage" rows="5" placeholder="Write your message here..." required></textarea></div>
+        <div class="field">
+          <label>Channel</label>
+          <select name="broadcastChannel">
+            <option value="email">Email only</option>
+            <option value="sms">SMS only</option>
+            <option value="both">Email + SMS</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <span></span>
+          <button type="submit" class="btn btn-signal" onclick="return confirm('Send this broadcast to all subscribers?');"><i class="bi bi-megaphone"></i>&nbsp; Send Broadcast</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<style>
+  .settings-bento { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .bento-card {
+    background: var(--white);
+    border: 1px solid rgba(233,226,218,0.6);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.02);
+    overflow: hidden;
+    transition: box-shadow 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.35s ease;
+    position: relative;
+  }
+  .bento-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--signal) 0%, var(--kenya-green) 100%);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+  .bento-card:hover::before {
+    opacity: 1;
+  }
+  .bento-card:hover {
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08), 0 2px 8px rgba(180,95,59,0.06);
+    transform: translateY(-3px);
+    border-color: #d9d2c7;
+  }
+  .bento-card.bento-wide { grid-column: 1 / -1; }
+  .bento-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, var(--white) 0%, var(--paper-dim) 100%);
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  .bento-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(180,95,59,.08), rgba(0,102,0,.05));
+    border: 1px solid rgba(180,95,59,.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--signal);
+    font-size: 17px;
+    flex: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,.03);
+    transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.35s ease;
+  }
+  .bento-card:hover .bento-icon {
+    transform: scale(1.08);
+    box-shadow: 0 4px 10px rgba(180,95,59,0.1);
+  }
+  .bento-title {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  .bento-sub {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--grey);
+    margin-top: 2px;
+  }
+  .bento-body {
+    padding: 16px 24px 20px;
+  }
+  .bento-body .field { margin-bottom: 14px; }
+  .bento-body .field:last-child { margin-bottom: 0; }
+  .bento-body .field label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--grey);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .bento-body .field input[type=text],
+  .bento-body .field input[type=password],
+  .bento-body .field textarea,
+  .bento-body .field select {
+    width: 100%;
+    border: 1px solid var(--line);
+    padding: 10px 12px;
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    background: var(--white);
+    color: var(--ink);
+    border-radius: 8px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .bento-body .field input:focus,
+  .bento-body .field textarea:focus,
+  .bento-body .field select:focus {
+    outline: none;
+    border-color: var(--signal);
+    box-shadow: 0 0 0 3px rgba(180,95,59,.08);
+  }
+  .bento-body .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .bento-body .help { font-size: 11px; color: var(--grey-light); margin-top: 6px; line-height: 1.5; }
+  .bento-body .checkbox-field { display: flex; align-items: center; gap: 8px; }
+  .bento-body .checkbox-field input { width: 15px; height: 15px; accent-color: var(--signal); }
+  .bento-body .checkbox-field label { margin: 0; text-transform: none; font-family: var(--font-body); font-size: 13px; color: var(--ink); letter-spacing: 0; }
+  .bento-card .form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+  }
+  .bento-card .form-actions .btn { flex: none; }
+
+  @media (max-width: 1024px) {
+    .settings-bento { grid-template-columns: 1fr; }
+    .bento-card.bento-wide { grid-column: 1; }
+  }
+  @media (max-width: 768px) {
+    .settings-bento { grid-template-columns: 1fr; }
+    .bento-card.bento-wide { grid-column: 1; }
+    .bento-body .field-row { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tab === tab);
+    });
+    document.querySelectorAll('.tab-panel').forEach(panel => {
+      panel.classList.toggle('active', panel.id === 'tab-' + tab);
+    });
+  }
+  <% if (typeof activeTab !== 'undefined') { %>
+  switchTab('<%= activeTab %>');
+  <% } %>
+</script>
+
+<%- include('partials/foot') %>

@@ -1,0 +1,59 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: 'Messages', crumb: messages.length + ' received', topbarRight: '<a href="/admin/messages/export" class="btn btn-green btn-sm"><i class="bi bi-download"></i>&nbsp; Export CSV</a>' }) %>
+
+  <div class="panel-card" style="overflow-x:auto;">
+    <table class="data-table" id="message-table">
+      <thead><tr><th>From</th><th>Subject</th><th>Status</th><th>Received</th><th style="text-align:right;">Actions</th></tr></thead>
+      <tbody>
+        <% if (!messages.length) { %>
+          <tr class="empty-row"><td colspan="5">No messages yet. They'll appear here when someone uses the Contact form.</td></tr>
+        <% } %>
+        <% messages.forEach(m => { %>
+          <tr>
+            <td><div class="rt-title"><%= m.name %></div><div class="rt-sub"><%= m.email %></div></td>
+            <td><%= m.subject || '—' %></td>
+            <td><span class="pill <%= m.read ? 'pill-published' : 'pill-draft' %>"><%= m.read ? 'read' : 'unread' %></span></td>
+            <td><%= formatDate(m.createdAt) %></td>
+            <td class="table-actions">
+              <button class="icon-btn" title="Reply" onclick="toggleReply(<%= m.id %>)"><i class="bi bi-reply"></i></button>
+              <% if (hasPermission(currentUser, 'messages:write')) { %>
+                <form action="/admin/messages/<%= m.id %>?_method=DELETE" method="post" onsubmit="return confirm('Delete this message?');">
+                  <button class="icon-btn" type="submit" title="Delete"><i class="bi bi-trash3"></i></button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+          <tr id="reply-row-<%= m.id %>" style="display:none;">
+            <td colspan="5" style="padding:16px; background:var(--paper-dim);">
+              <form action="/admin/messages/<%= m.id %>/reply" method="post" class="reply-form">
+                <div class="field" style="margin-bottom:10px;">
+                  <label>To</label>
+                  <input type="text" value="<%= m.email %>" readonly style="background:var(--white);">
+                </div>
+                <div class="field" style="margin-bottom:10px;">
+                  <label>Subject</label>
+                  <input type="text" name="subject" value="Re: <%= m.subject || 'Your message' %>" required>
+                </div>
+                <div class="field" style="margin-bottom:10px;">
+                  <label>Message</label>
+                  <textarea name="body" rows="4" required></textarea>
+                </div>
+                <div style="display:flex; gap:8px; justify-content:flex-end;">
+                  <button type="button" class="btn btn-ghost btn-sm" onclick="toggleReply(<%= m.id %>)">Cancel</button>
+                  <button type="submit" class="btn btn-green btn-sm"><i class="bi bi-send"></i>&nbsp; Send Reply</button>
+                </div>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+<script>
+  function toggleReply(id) {
+    var row = document.getElementById('reply-row-' + id);
+    if (!row) return;
+    row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
+  }
+</script>

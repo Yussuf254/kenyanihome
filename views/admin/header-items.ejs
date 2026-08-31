@@ -1,0 +1,203 @@
+<%- include('partials/head') %>
+<%- include('partials/topbar', { heading: 'Navigation', crumb: headerItems.length + ' header items' }) %>
+
+
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px; margin-top:32px;">
+    <div>
+      <h3 style="font-family: var(--font-display); font-size: 17px; margin:0; font-weight:600;">Header Navigation Items</h3>
+      <p style="color:var(--grey); font-size:13px; margin:4px 0 0;">
+        Top-level navigation items. Categories assigned to these items will appear in their dropdown menus.
+        Drag rows to reorder. New items default to inactive until you save.
+      </p>
+    </div>
+    <button type="button" id="show-add-form" class="btn btn-green btn-sm"><i class="bi bi-plus-lg"></i>&nbsp; Add Header Item</button>
+  </div>
+
+  <div class="panel-card" style="overflow-x:auto;">
+    <table class="data-table" id="header-item-table">
+      <thead>
+        <tr>
+          <th style="width:36px; text-align:center;">&nbsp;</th>
+          <th>Name</th>
+          <th>Slug</th>
+          <th>Type</th>
+          <th>URL</th>
+          <th style="width:70px; text-align:center;">Order</th>
+          <th style="width:70px; text-align:center; white-space:nowrap;">Active</th>
+          <th style="text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="header-item-list">
+        <% headerItems.forEach(hi => { %>
+          <tr id="hi-row-<%= hi.id %>" data-id="<%= hi.id %>">
+            <td class="drag-handle" title="Drag to reorder"><i class="bi bi-gripper"></i></td>
+            <td class="rt-title" id="hi-name-<%= hi.id %>"><%= hi.name %></td>
+            <td><span class="rt-sub"><%= hi.slug %></span></td>
+            <td><%= hi.type %></td>
+            <td><span class="rt-sub"><%= hi.url || '—' %></span></td>
+            <td id="hi-order-<%= hi.id %>" style="text-align:center;"><%= hi.order %></td>
+            <td style="text-align:center;">
+              <% if (hi.active) { %>
+                <span class="status-dot status-published" title="Active"></span>&nbsp;<span style="font-size:11px; color:#006600;">Active</span>
+              <% } else { %>
+                <span class="status-dot status-draft" title="Inactive"></span>&nbsp;<span style="font-size:11px; color:#5f6b6c;">Inactive</span>
+              <% } %>
+            </td>
+            <td class="table-actions">
+              <button class="icon-btn" onclick="editHeaderItem(<%= hi.id %>, '<%= hi.name.replace(/'/g, "\\'") %>', '<%= hi.slug %>', '<%= hi.type %>', <%= hi.url ? "'" + hi.url + "'" : 'null' %>, <%= hi.order %>, <%= hi.active %>)" aria-label="Edit"><i class="bi bi-pencil"></i></button>
+              <form action="/admin/header-items/<%= hi.id %>?_method=DELETE" method="post" onsubmit="return confirm('Remove this header item? Categories assigned to it will no longer appear in navigation, but will remain in the category list.')">
+                <button class="icon-btn" type="submit" aria-label="Delete"><i class="bi bi-trash3"></i></button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-top:16px; text-align:right;">
+    <button type="button" id="save-hi-order" class="btn btn-signal btn-sm"><i class="bi bi-save"></i>&nbsp; Save Order</button>
+  </div>
+
+  <div id="add-header-form" class="panel-card" style="display:none; margin-top:24px;">
+    <div class="panel-card-head"><h3 style="font-family:var(--font-display); font-size:16px; margin:0;">Add Header Item</h3></div>
+    <div class="panel-card-body">
+      <form action="/admin/header-items" method="post" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div class="field">
+          <label>Name</label>
+          <input type="text" name="name" required placeholder="e.g. Home, About, Contact">
+        </div>
+        <div class="field">
+          <label>Type</label>
+          <select name="type">
+            <option value="home">Home (links to /)</option>
+            <option value="about">About (links to /about)</option>
+            <option value="contact">Contact (links to /contact)</option>
+            <option value="category">Category Group (links to /category/slug)</option>
+            <option value="custom">Custom URL</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Slug</label>
+          <input type="text" name="slug" placeholder="auto-generated if blank (e.g. politics)" style="max-width:240px;">
+        </div>
+        <div class="field" id="custom-url-field" style="display:none;">
+          <label>Custom URL</label>
+          <input type="text" name="url" placeholder="e.g. https://example.com" style="max-width:240px;">
+        </div>
+        <div class="checkbox-field field">
+          <input type="checkbox" name="active" id="active" checked>
+          <label for="active" style="margin:0;">Active</label>
+          <p class="help">Show this item in the public navigation.</p>
+        </div>
+      </form>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('add-header-form').style.display='none'">Cancel</button>
+        <button type="submit" form="add-header-form" class="btn btn-green btn-sm"><i class="bi bi-plus-lg"></i>&nbsp; Add Header Item</button>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    document.getElementById('show-add-form').addEventListener('click', function() {
+      var form = document.getElementById('add-header-form');
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+      if (form.style.display === 'block') {
+        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+    document.querySelector('select[name="type"]').addEventListener('change', function() {
+      document.getElementById('custom-url-field').style.display = this.value === 'custom' ? 'block' : 'none';
+    });
+
+    function editHeaderItem(id, name, slug, type, url, order, active) {
+      var nameCell = document.getElementById('hi-name-' + id);
+      if (!nameCell) return;
+      var urlVal = url ? url : '';
+      nameCell.innerHTML =
+        '<form action="/admin/header-items/' + id + '?_method=PUT" method="post" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:end;">' +
+        '<input type="text" name="name" value="' + name.replace(/"/g, '&quot;') + '" required style="padding:8px 10px; border:1px solid var(--line); font-family:var(--font-body); font-size:13.5px;">' +
+        '<input type="text" name="slug" value="' + slug + '" style="padding:8px 10px; border:1px solid var(--line); font-family:var(--font-body); font-size:13.5px;">' +
+        '<select name="type" style="padding:8px 10px;">' +
+          '<option value="home" ' + (type==='home'?'selected':'') + '>Home</option>' +
+          '<option value="about" ' + (type==='about'?'selected':'') + '>About</option>' +
+          '<option value="contact" ' + (type==='contact'?'selected':'') + '>Contact</option>' +
+          '<option value="category" ' + (type==='category'?'selected':'') + '>Category Group</option>' +
+          '<option value="custom" ' + (type==='custom'?'selected':'') + '>Custom URL</option>' +
+        '</select>' +
+        '<input type="text" name="url" value="' + urlVal + '" placeholder="Custom URL">' +
+        '<input type="number" name="order" value="' + order + '" style="padding:8px 10px;">' +
+        '<label style="display:flex; align-items:center; gap:6px; font-size:12px;"><input type="checkbox" name="active" ' + (active ? 'checked' : '') + '> Active</label>' +
+        '<button type="submit" class="btn btn-signal btn-sm"><i class="bi bi-check2"></i>&nbsp; Save</button>' +
+        '<button type="button" class="btn btn-ghost btn-sm" onclick="cancelEdit(' + id + ')">Cancel</button>' +
+        '</form>';
+    }
+    function cancelEdit(id) {
+      var row = document.getElementById('hi-name-' + id);
+      if (!row) return;
+      var input = row.querySelector('input');
+      if (input) { row.textContent = input.value; }
+    }
+
+    // ---- drag-and-drop reordering ----
+    (function() {
+      var tbody = document.getElementById('header-item-list');
+      if (!tbody) return;
+      var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr[data-id]'));
+      var dragSrc = null;
+      rows.forEach(function(row, i) {
+        var handle = row.querySelector('.drag-handle');
+        if (!handle) return;
+        handle.style.cursor = 'grab';
+        handle.addEventListener('mousedown', function(e) {
+          e.preventDefault();
+          dragSrc = row;
+          dragSrc.style.opacity = '0.5';
+          document.body.style.userSelect = 'none';
+        });
+      });
+      function handleDragOver(e) {
+        e.preventDefault();
+        if (!dragSrc) return;
+        var afterElement = getDragAfter(tbody, e.clientY);
+        if (afterElement == null) { tbody.appendChild(dragSrc); }
+        else { tbody.insertBefore(dragSrc, afterElement); }
+      }
+      function handleDragDrop(e) {
+        e.preventDefault();
+        if (!dragSrc) return;
+        dragSrc.style.opacity = '';
+        document.body.style.userSelect = '';
+        dragSrc = null;
+      }
+      function getDragAfter(container, y) {
+        var closets = null, closestOffset = -100;
+        var draggableElements = container.querySelectorAll('tr[data-id]:not(.dragging)');
+        draggableElements.forEach(function(child) {
+          var rect = child.getBoundingClientRect();
+          var offset = y - rect.top - rect.height / 2;
+          if (offset < 0 && offset > closestOffset) { closestOffset = offset; closets = child; }
+        });
+        return closets;
+      }
+      tbody.addEventListener('dragover', handleDragOver);
+      tbody.addEventListener('drop', handleDragDrop);
+      document.getElementById('save-hi-order').addEventListener('click', function() {
+        var rows = tbody.querySelectorAll('tr[data-id]');
+        var order = [];
+        rows.forEach(function(row, i) {
+          order.push({ id: Number(row.getAttribute('data-id')), order: i });
+        });
+        fetch('/admin/header-items/reorder', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ order: order })
+        }).then(function(r) { return r.json(); }).then(function(data) {
+          if (data.ok) { location.reload(); }
+        }).catch(function() { alert('Failed to save order.'); });
+      });
+    })();
+  </script>
+
+<%- include('partials/foot') %>
