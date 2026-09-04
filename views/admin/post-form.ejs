@@ -101,6 +101,10 @@
               <input type="checkbox" name="trending" id="trending" <%= post && post.trending ? 'checked' : '' %>>
               <label for="trending" style="margin:0;">Show in Trending Now</label>
             </div>
+            <div class="checkbox-field field">
+              <input type="checkbox" name="editorsPick" id="editorsPick" <%= post && post.editorsPick ? 'checked' : '' %>>
+              <label for="editorsPick" style="margin:0;">Show as Editor’s Pick</label>
+            </div>
             <div class="form-actions" style="border:none; padding-top:10px;">
               <a href="/admin/posts" class="btn btn-ghost btn-sm">Cancel</a>
               <button type="submit" class="btn btn-signal"><i class="bi bi-newspaper"></i>&nbsp; <%= post ? 'Save Changes' : 'Create Post' %></button>

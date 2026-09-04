@@ -16,7 +16,7 @@
       "linkedin": "#"
     },
     "footerNote": "Independent journalism, in focus.",
-    "siteUrl": "http://localhost:3000",
+    "siteUrl": "https://kenyanihome.com",
     "paywallEnabled": false,
     "freeArticleLimit": 1,
     "privacyPolicy": "Kenya ni Home collects only what's needed to run this site: contact-form messages, newsletter subscriber emails, comments you choose to leave, and basic analytics like page views. We do not sell reader data to third parties. Cookies remember reading preferences (like dark mode) and, if the metered paywall is enabled, count free articles read. You can clear your cookies at any time to reset this. For questions about your data, contact us using the details on the Contact page.",
@@ -138,8 +138,8 @@
     },
     {
       "id": 2,
-      "name": "Education",
-      "slug": "education",
+      "name": "World",
+      "slug": "world",
       "type": "category",
       "order": 1,
       "active": true
@@ -1965,7 +1965,7 @@
     {
       "id": 1,
       "username": "admin",
-      "passwordHash": "$2a$10$tRuAtz/pxkDL1DlcnWC.Hed6LII8EhWPc3gC0p7p.We/VuGbxtekW",
+      "passwordHash": "$2a$10$2lBdxLZN0.syBzgCefpQNu5/61Ba3VErBWx3gb/nZiX8x84DN5pc.",
       "email": "admin@kenyanihome.com",
       "role": "admin",
       "status": "active",

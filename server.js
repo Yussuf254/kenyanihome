@@ -149,32 +149,41 @@ function formatLogTime(iso) {
 }
 function injectReadAlso(content, relatedPosts, baseUrl) {
   if (!content || !relatedPosts || !relatedPosts.length) return content;
-  const cards = relatedPosts.slice(0, 3).map(p => {
-    const img = p.coverImage || '/assets/img/post/list/1.png';
-    const url = p.coverImage && p.coverImage.startsWith('http') ? img : baseUrl + img;
-    return `<a href="/post/${p.slug}" class="readalso-card"><div class="readalso-pill">Related Story</div><div class="readalso-img" style="background-image:url('${url}')"></div><div class="readalso-body"><span class="readalso-tag">${(p.category || '').toUpperCase()}</span><div class="readalso-title">${p.title}</div><div class="readalso-meta">${formatDate(p.createdAt)} · ${readingTime(p.content)} min read</div></div></a>`;
-  }).join('');
-  const section = `<div class="readalso-section"><div class="readalso-header"><div class="readalso-bar"></div><h3 class="readalso-title">You May Like</h3></div><div class="readalso-grid">${cards}</div></div>`;
-  if (content.includes('<div class="paragraph"')) {
-    const positions = [];
-    let pos = 0;
-    while ((pos = content.indexOf('<div class="paragraph"', pos)) !== -1) {
-      positions.push(pos);
-      pos += 1;
+  var seen = new Set();
+  var links = [];
+  relatedPosts.forEach(function(p) {
+    if (p.id && seen.has(p.id)) return;
+    if (p.slug === (content.match(/\/post\/([^"'>\s]+)/g) || []).map(function(u){ return u.split('/').pop(); }).find(function(s){ return true; })) return;
+    seen.add(p.id);
+    links.push(`<p class="read-also"><span class="read-also-label">Read Also:</span> <a href="/post/${p.slug}">${p.title}</a></p>`);
+  });
+  if (links.length === 0) return content;
+  var sections = content.split('<p');
+  if (sections.length <= 2) return content;
+  var pCount = sections.length - 1;
+  var firstPos = Math.max(1, Math.floor(pCount * 0.25));
+  var secondPos = Math.max(firstPos + 1, Math.floor(pCount * 0.6));
+  var result = content;
+  var offset = 0;
+  function insertAfterNthP(n) {
+    var pos = 0;
+    var found = 0;
+    while (found < n && pos < result.length) {
+      var idx = result.indexOf('<p', pos);
+      if (idx === -1) break;
+      var end = result.indexOf('>', idx);
+      if (end === -1) break;
+      pos = end + 1;
+      found++;
     }
-    const insertAt = positions.length <= 2 ? 1 : 2;
-    if (positions.length < insertAt) return content;
-    return content.substring(0, positions[insertAt]) + section + content.substring(positions[insertAt]);
+    if (found >= n) {
+      result = result.substring(0, pos) + links[offset] + result.substring(pos);
+      offset++;
+    }
   }
-  const pEnds = [];
-  pos = 0;
-  while ((pos = content.indexOf('</p>', pos)) !== -1) {
-    pEnds.push(pos);
-    pos += 1;
-  }
-  if (pEnds.length < 2) return content;
-  const insertAt = pEnds.length <= 2 ? 0 : 1;
-  return content.substring(0, pEnds[insertAt] + 4) + section + content.substring(pEnds[insertAt] + 4);
+  insertAfterNthP(firstPos);
+  insertAfterNthP(secondPos);
+  return result;
 }
 function now_() {
   return new Date().toISOString();
@@ -542,18 +551,26 @@ function currentCategoryId(slug) {
 
 app.get('/', cache(15000), (req, res) => {
   autoPublishDue();
-  const allPosts = db.get('posts').filter({ status: 'published', deletedAt: null }).sortBy('createdAt').value().reverse();
-  const featured = allPosts.find((p) => p.featured) || allPosts[0];
-  const rest = allPosts.filter((p) => p.id !== (featured && featured.id));
-  const trendingMax = 5;
-  const recentCutoff = new Date(Date.now() - 7 * 86400000).toISOString();
-  const trendingRecent = rest.filter((p) => p.createdAt >= recentCutoff).sort((a, b) => (b.views || 0) - (a.views || 0));
-  const trending = (trendingRecent.length ? trendingRecent : rest).slice(0, trendingMax);
-  const mostRead = rest.filter((p) => !trending.find((t) => t.id === p.id)).sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 4);
+   const allPosts = db.get('posts').filter({ status: 'published', deletedAt: null }).sortBy('createdAt').value().reverse();
+   const featured = allPosts.find((p) => p.featured) || allPosts[0];
+   const rest = allPosts.filter((p) => p.id !== (featured && featured.id));
+   const trendingMax = 5;
+   const recentCutoff = new Date(Date.now() - 30 * 86400000).getTime();
+   const trendingRecent = rest.filter((p) => new Date(p.createdAt).getTime() >= recentCutoff);
+   const trendingByViews = trendingRecent.sort((a, b) => (b.views || 0) - (a.views || 0));
+   const minViewsThreshold = 10;
+   let trending = trendingByViews.filter((p) => (p.views || 0) >= minViewsThreshold);
+   if (trending.length < trendingMax) {
+     trending = trendingByViews.slice(0, trendingMax);
+   } else {
+     trending = trending.slice(0, trendingMax);
+   }
+   const mostRead = rest.filter((p) => !trending.find((t) => t.id === p.id)).sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 4);
   const breakingMax = (res.locals.settings.breakingMaxItems) || 5;
   const breaking = allPosts.filter((p) => p.breaking && (!p.breakingExpiry || new Date(p.breakingExpiry) > new Date())).sort((a, b) => (a.breakingOrder || 0) - (b.breakingOrder || 0) || new Date(b.createdAt) - new Date(a.createdAt)).slice(0, breakingMax);
-  const featuredStories = allPosts.filter((p) => p.featured && p.id !== (featured && featured.id)).slice(0, 4);
-  if (!featuredStories.length) featuredStories.push(...trending.slice(0, 4));
+   const featuredStories = allPosts.filter((p) => p.featured && p.id !== (featured && featured.id)).slice(0, 4);
+   if (!featuredStories.length) featuredStories.push(...trending.slice(0, 4));
+   const editorsPick = allPosts.find((p) => p.editorsPick && (!featured || p.id !== featured.id)) || null;
   const postsByCategory = {};
   rest.forEach((p) => {
     const cat = p.category || 'General';
@@ -572,6 +589,7 @@ app.get('/', cache(15000), (req, res) => {
       type: 'website'
     },
     featured,
+    editorsPick,
     posts: rest.slice(0, 9),
     trending,
     mostRead,
@@ -822,6 +840,31 @@ app.get('/privacy', (req, res) => {
 app.get('/terms', (req, res) => {
   res.render('legal', { title: `Terms of Service — ${res.locals.settings.siteName}`, heading: 'Terms of Service', body: res.locals.settings.termsOfService });
 });
+function formatPolicyBody(text) {
+  if (!text) return '';
+  return text
+    .replace(/\n/g, '<br>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^### (.*?)$/gm, '<h4>$1</h4>')
+    .replace(/^## (.*?)$/gm, '<h3>$1</h3>')
+    .replace(/^- (.*?)$/gm, '<li>$1</li>');
+}
+
+app.get('/cookies', (req, res) => {
+  res.render('legal', { title: `Cookie Policy — ${res.locals.settings.siteName}`, heading: 'Cookie Policy', body: formatPolicyBody(res.locals.settings.cookiePolicy) });
+});
+app.get('/disclaimer', (req, res) => {
+  res.render('legal', { title: `Disclaimer — ${res.locals.settings.siteName}`, heading: 'Disclaimer', body: formatPolicyBody(res.locals.settings.disclaimer) });
+});
+app.get('/editorial', (req, res) => {
+  res.render('legal', { title: `Editorial Policy — ${res.locals.settings.siteName}`, heading: 'Editorial Policy & Standards', body: formatPolicyBody(res.locals.settings.editorialPolicy) });
+});
+app.get('/corrections', (req, res) => {
+  res.render('legal', { title: `Corrections Policy — ${res.locals.settings.siteName}`, heading: 'Corrections Policy', body: formatPolicyBody(res.locals.settings.correctionsPolicy) });
+});
+app.get('/ownership', (req, res) => {
+  res.render('legal', { title: `Ownership & Funding — ${res.locals.settings.siteName}`, heading: 'Ownership & Funding Disclosure', body: formatPolicyBody(res.locals.settings.ownershipDisclosure) });
+});
 
 app.get('/category/:slug', (req, res) => {
   const category = db.get('categories').find({ slug: req.params.slug, status: 'published' }).value();
@@ -877,23 +920,59 @@ app.get('/post/:slug', (req, res) => {
     .value()
     .slice(0, 3);
 
+  const relatedStories = db
+    .get('posts')
+    .filter((p) => p.status === 'published' && p.deletedAt === null && p.id !== post.id)
+    .value()
+    .filter((p) => {
+      if (p.category === post.category) return true;
+      if (post.tags && p.tags) {
+        const shared = post.tags.filter((t) => p.tags.includes(t));
+        return shared.length > 0;
+      }
+      return false;
+    })
+    .slice(0, 6);
+
   const featuredStories = db
     .get('posts')
     .filter((p) => p.status === 'published' && p.deletedAt === null && p.id !== post.id)
+    .sortBy('createdAt')
+    .reverse()
     .value()
     .slice(0, 4);
 
   const trending = db
     .get('posts')
     .filter({ status: 'published', deletedAt: null })
+    .sortBy('views')
+    .reverse()
     .value()
     .slice(0, 5);
+
+  const categories = db.get('categories').filter({ status: 'published' }).value();
+  const worldCat = categories.find((c) => c.slug === 'world');
+  const worldStories = worldCat
+    ? db.get('posts').filter({ status: 'published', deletedAt: null, category_id: worldCat.id }).value().filter((p) => p.id !== post.id).slice(0, 3)
+    : [];
+
+  const editorsPick = db.get('posts').find({ status: 'published', deletedAt: null, editorsPick: true }).value() || null;
+
+  const authorName = (post.author || '').trim();
+  const authorProfile = authorName
+    ? {
+        name: authorName,
+        slug: authorName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''),
+        avatar: '',
+        bio: ''
+      }
+    : null;
 
   const settings = res.locals.settings;
   const paywallActive = !!settings.paywallEnabled;
   const baseUrl = siteUrl(req);
   const seoSchema = buildArticleSchema(post, settings, baseUrl);
-  const contentWithReadAlso = injectReadAlso(post.content, related, baseUrl);
+  const contentWithReadAlso = injectReadAlso(post.content, relatedStories, baseUrl);
 
   res.render('single-post', {
     title: `${post.title} — ${settings.siteName}`,
@@ -914,8 +993,13 @@ app.get('/post/:slug', (req, res) => {
     },
     post: { ...post, content: contentWithReadAlso || post.content },
     related,
+    relatedStories,
     featuredStories,
     trending,
+    categories,
+    worldStories,
+    editorsPick,
+    authorProfile,
     comments: approvedComments(post.id),
     inlineAd: pickAd('inline'),
     sidebarAd: pickAd('sidebar'),
@@ -994,21 +1078,37 @@ function esc(s = '') {
 function buildArticleSchema(post, settings, baseUrl) {
   const image = post.coverImage ? [post.coverImage.startsWith('http') ? post.coverImage : baseUrl + post.coverImage] : [baseUrl + '/assets/img/post/list/1.png'];
   const logoUrl = (settings.logo || '').startsWith('http') ? settings.logo : baseUrl + (settings.logo || '');
+  const authorUrl = baseUrl + '/author/' + (post.author || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   return JSON.stringify({
     "@context": "https://schema.org",
-    "@type": "NewsArticle",
-    "headline": post.title,
-    "description": post.excerpt || '',
-    "image": image,
-    "datePublished": post.createdAt,
-    "dateModified": post.updatedAt,
-    "author": { "@type": "Person", "name": post.author },
-    "publisher": {
-      "@type": "Organization",
-      "name": settings.siteName,
-      "logo": { "@type": "ImageObject", "url": logoUrl }
-    },
-    "mainEntityOfPage": { "@type": "WebPage", "@id": baseUrl + '/post/' + post.slug }
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": baseUrl + "/" },
+          { "@type": "ListItem", "position": 2, "name": post.category.charAt(0).toUpperCase() + post.category.slice(1), "item": baseUrl + "/category/" + post.category },
+          { "@type": "ListItem", "position": 3, "name": post.title, "item": baseUrl + '/post/' + post.slug }
+        ]
+      },
+      {
+        "@type": "NewsArticle",
+        "headline": post.title,
+        "description": post.excerpt || '',
+        "image": image,
+        "datePublished": post.createdAt,
+        "dateModified": post.updatedAt || post.createdAt,
+        "author": { "@type": "Person", "name": post.author, "url": authorUrl },
+        "publisher": {
+          "@type": "Organization",
+          "name": settings.siteName,
+          "logo": { "@type": "ImageObject", "url": logoUrl, "width": 600, "height": 60 }
+        },
+        "mainEntityOfPage": { "@type": "WebPage", "@id": baseUrl + '/post/' + post.slug },
+        "articleSection": post.category,
+        "keywords": (post.tags || []).join(', '),
+        "isAccessibleForFree": "True"
+      }
+    ]
   });
 }
 
@@ -1016,7 +1116,7 @@ function buildSitemapXml() {
   const base = (db.get('settings.siteUrl').value() || '').trim().replace(/\/$/, '') || 'http://localhost:3000';
   const posts = db.get('posts').filter({ status: 'published', deletedAt: null }).value();
   const categories = db.get('categories').value();
-  const staticUrls = ['/', '/about', '/contact', '/privacy', '/terms'];
+   const staticUrls = ['/', '/about', '/contact', '/privacy', '/terms', '/cookies', '/disclaimer', '/editorial', '/corrections', '/ownership'];
   const urls = [
     ...staticUrls.map((u) => `<url><loc>${base}${u}</loc></url>`),
     ...categories.map((c) => `<url><loc>${base}/category/${c.slug}</loc></url>`),
@@ -1441,12 +1541,13 @@ admin.post('/posts', requirePermission('posts:write'), postUpload, asyncHandler(
     author: author || 'Newsroom Staff',
     status: resolveStatus(status, publishAt),
     publishAt: status === 'scheduled' && publishAt ? new Date(publishAt).toISOString() : null,
-    featured: req.body.featured === 'on',
-    sponsored: req.body.sponsored === 'on',
-    breaking: req.body.breaking === 'on',
-    breakingExpiry: req.body.breakingExpiry || null,
-    trending: req.body.trending === 'on',
-    tags: (tags || '').split(',').map((t) => t.trim()).filter(Boolean),
+     featured: req.body.featured === 'on',
+     sponsored: req.body.sponsored === 'on',
+     breaking: req.body.breaking === 'on',
+     breakingExpiry: req.body.breakingExpiry || null,
+     trending: req.body.trending === 'on',
+     editorsPick: req.body.editorsPick === 'on',
+     tags: (tags || '').split(',').map((t) => t.trim()).filter(Boolean),
     photoCredit: (photoCredit || '').trim(),
     views: 0,
     shares: 0,
@@ -1523,6 +1624,7 @@ admin.put('/posts/:id', requirePermission('posts:edit'), postUpload, asyncHandle
       breaking: req.body.breaking === 'on',
       breakingExpiry: req.body.breakingExpiry || null,
       trending: req.body.trending === 'on',
+      editorsPick: req.body.editorsPick === 'on',
       tags: (tags || '').split(',').map((t) => t.trim()).filter(Boolean),
       photoCredit: (photoCredit || '').trim(),
       updatedAt: now_()
@@ -2440,13 +2542,14 @@ admin.get('/settings/integrations', requirePermission('*'), (req, res) => {
 });
 
 admin.post('/settings', requirePermission('*'), upload.fields([{ name: 'logoFile', maxCount: 1 }, { name: 'aboutImageFile', maxCount: 1 }]), (req, res) => {
-  const {
-    siteName, tagline, heroKicker, aboutTitle, aboutBody, email, phone, address,
-    twitter, facebook, instagram, linkedin, footerNote, siteUrl: siteUrlField,
-    paywallEnabled, freeArticleLimit, paywallAmount, privacyPolicy, termsOfService, cookieConsentText,
-    aboutStat1, aboutStat1Label, aboutStat2, aboutStat2Label, aboutStat3, aboutStat3Label,
-    team, breakingEnabled, breakingMaxItems, breakingScrollDuration
-  } = req.body;
+   const {
+     siteName, tagline, heroKicker, aboutTitle, aboutBody, email, phone, address,
+     twitter, facebook, instagram, linkedin, footerNote, siteUrl: siteUrlField,
+     paywallEnabled, freeArticleLimit, paywallAmount, privacyPolicy, termsOfService, cookieConsentText,
+     cookiePolicy, disclaimer, editorialPolicy, correctionsPolicy, ownershipDisclosure,
+     aboutStat1, aboutStat1Label, aboutStat2, aboutStat2Label, aboutStat3, aboutStat3Label,
+     team, breakingEnabled, breakingMaxItems, breakingScrollDuration
+   } = req.body;
   let logo = db.get('settings.logo').value();
   let aboutImage = db.get('settings.aboutImage').value();
   if (req.files && req.files.logoFile && req.files.logoFile[0]) {
@@ -2477,10 +2580,15 @@ admin.post('/settings', requirePermission('*'), upload.fields([{ name: 'logoFile
     breakingEnabled: breakingEnabled !== 'off',
     breakingMaxItems: Number(breakingMaxItems) || 5,
     breakingScrollDuration: Number(breakingScrollDuration) || 25,
-    privacyPolicy,
-    termsOfService,
-    cookieConsentText,
-    integrations: {
+     privacyPolicy,
+     termsOfService,
+     cookieConsentText,
+     cookiePolicy: (cookiePolicy || '').trim(),
+     disclaimer: (disclaimer || '').trim(),
+     editorialPolicy: (editorialPolicy || '').trim(),
+     correctionsPolicy: (correctionsPolicy || '').trim(),
+     ownershipDisclosure: (ownershipDisclosure || '').trim(),
+     integrations: {
       ...integrations,
       mpesa: {
         ...mpesa,

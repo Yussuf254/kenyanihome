@@ -5,12 +5,12 @@
 
 <style>
   /* ===== KenyaniHome — Premium News Design System ===== */
-  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
   :root {
     --green: #0B6B3A;
     --green-dark: #084d29;
-    --red: #C1121F;
+    --red: #e53935;
     --red-dark: #9a0e19;
     --white: #FFFFFF;
     --text: #111827;
@@ -29,7 +29,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
   body {
-    font-family: 'Montserrat', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     background: var(--bg);
     color: var(--text);
     line-height: 1.6;
@@ -118,7 +118,7 @@
   }
   .hero-content .badge:hover { background: var(--red-dark); }
   .hero-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 22px;
     font-weight: 900;
     line-height: 1.25;
@@ -259,7 +259,7 @@
     .breaking-content { padding: 28px; }
   }
   .breaking-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 18px;
     font-weight: 800;
     line-height: 1.3;
@@ -296,7 +296,7 @@
   .breaking-meta .author { font-weight: 600; color: var(--text); }
   .breaking-meta .sep { opacity: .4; }
 
-  /* ===== Section Headers — Award Winning ===== */
+  /* ===== Section Headers — Premium Inline Line ===== */
   .section-header {
     display: flex;
     align-items: center;
@@ -306,34 +306,58 @@
     border-bottom: none;
   }
   .section-title-line {
+    position: relative;
     display: flex;
     align-items: center;
+    justify-content: center;
     width: 100%;
-    gap: 14px;
+    min-height: 44px;
   }
-  .section-title-line::before,
-  .section-title-line::after {
+  .section-title-line::before {
     content: '';
-    flex: 1;
-    height: 3px;
-    background: #8B1A1A;
-    border-radius: 2px;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #138A41;
+    transform: translateY(-50%);
+    z-index: 1;
+  }
+  .section-title-line::after {
+    display: none;
   }
   .section-title {
-    font: 800 15px/1 'Montserrat', sans-serif;
-    color: #8B1A1A;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font: 700 18px/1 'Montserrat', sans-serif;
+    color: #138A41;
     text-transform: uppercase;
-    letter-spacing: 1.2px;
+    letter-spacing: 0.5px;
     white-space: nowrap;
-    padding: 6px 10px;
+    margin: 0 !important;
+    padding: 8px 18px;
     background: #fff;
-    position: relative;
-    z-index: 1;
+    z-index: 2;
+  }
+  @media (min-width: 768px) {
+    .section-title { font-size: 30px; }
+  }
+  .section-title-line {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity .4s ease, transform .4s ease;
+  }
+  .section-revealed .section-title-line {
+    opacity: 1;
+    transform: translateY(0);
   }
   .section-link {
     font-size: 11px;
     font-weight: 700;
-    color: #8B1A1A;
+    color: #e53935;
     text-decoration: none;
     letter-spacing: 0.4px;
     transition: all .2s ease;
@@ -346,8 +370,8 @@
   }
   .section-link:hover {
     color: #fff;
-    background: #8B1A1A;
-    border-color: #8B1A1A;
+    background: #e53935;
+    border-color: #e53935;
   }
 
   /* ===== Trending Now — Premium List ===== */
@@ -366,7 +390,7 @@
   .trending-item:last-child { border-bottom: none; }
   .trending-item:hover { background: rgba(15, 107, 52, .03); }
   .trending-number {
-    font: 900 24px/1 'Montserrat', sans-serif;
+    font: 900 24px/1 'Inter', sans-serif;
     color: var(--red);
     min-width: 36px;
     text-align: right;
@@ -376,7 +400,7 @@
   }
   .trending-content { flex: 1; min-width: 0; }
   .trending-title {
-    font: 700 14px/1.45 'Montserrat', sans-serif;
+    font: 700 14px/1.45 'Inter', sans-serif;
     color: var(--text);
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -458,7 +482,7 @@
   .story-content { flex: 1; min-width: 0; }
   .story-content .badge { height: 26px; font-size: 10px; padding: 0 10px; margin-bottom: 6px; }
   .story-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 15px;
     font-weight: 800;
     line-height: 1.4;
@@ -533,7 +557,7 @@
   .card-body { padding: 20px; }
   .card-body .badge { margin-bottom: 10px; }
   .card-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 17px;
     font-weight: 800;
     line-height: 1.3;
@@ -583,7 +607,7 @@
   .trending-item:last-child { border-bottom: none; }
   .trending-item:hover { background: rgba(0,0,0,.02); }
   .trending-number {
-    font: 900 22px/1 'Montserrat', sans-serif;
+    font: 900 22px/1 'Inter', sans-serif;
     color: var(--red);
     min-width: 32px;
     text-align: right;
@@ -592,7 +616,7 @@
   }
   .trending-content { flex: 1; min-width: 0; }
   .trending-title {
-    font: 700 13px/1.4 'Montserrat', sans-serif;
+    font: 700 13px/1.4 'Inter', sans-serif;
     color: var(--text);
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -655,7 +679,7 @@
   .story-content { flex: 1; min-width: 0; }
   .story-content .badge { height: 26px; font-size: 10px; padding: 0 10px; margin-bottom: 6px; }
   .story-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 700;
     line-height: 1.35;
@@ -697,7 +721,7 @@
   .side-feature-body { padding: 20px; }
   .side-feature-body .badge { margin-bottom: 10px; }
   .side-feature-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 17px;
     font-weight: 800;
     line-height: 1.3;
@@ -727,7 +751,7 @@
     padding: 20px;
   }
   .newsletter-box h3 {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 16px;
     margin-bottom: 6px;
     font-weight: 700;
@@ -746,7 +770,7 @@
     padding: 10px 14px;
     color: var(--white);
     font-size: 13px;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Inter', sans-serif;
   }
   .newsletter-form input::placeholder { color: rgba(255,255,255,.6); }
   .newsletter-form button {
@@ -757,7 +781,7 @@
     font-size: 12px;
     cursor: pointer;
     color: var(--green);
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Inter', sans-serif;
     transition: background var(--transition);
   }
   .newsletter-form button:hover { background: #f0fdf4; }
@@ -855,7 +879,7 @@
   }
   .cat-card-body .badge:hover { background: var(--red-dark); }
   .cat-card-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 15px;
     font-weight: 800;
     line-height: 1.3;
@@ -910,7 +934,7 @@
   .headline-card-body { padding: 20px; }
   .headline-card-body .badge { height: 26px; font-size: 10px; padding: 0 10px; margin-bottom: 10px; }
   .headline-card-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 17px;
     font-weight: 800;
     line-height: 1.3;
@@ -1070,13 +1094,47 @@
 </section>
 <% } %>
 
+<!-- ===== EDITOR'S PICK ===== -->
+<% if (typeof editorsPick !== 'undefined' && editorsPick && editorsPick.id !== (featured && featured.id)) { %>
+<section style="margin-bottom: 24px;">
+  <div class="container">
+    <div class="section-header section-reveal">
+      <div class="section-title-line"><h2 class="section-title">Editor’s Pick</h2></div>
+    </div>
+    <div class="cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+      <article class="card" style="border-left: 4px solid var(--green);">
+        <div class="card-image">
+          <% if (editorsPick.coverImage) { %>
+            <img src="<%= editorsPick.coverImage %>" alt="<%= editorsPick.title %>" loading="lazy" width="400" height="225" decoding="async">
+          <% } else { %>
+            <div class="no-image"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+          <% } %>
+        </div>
+        <div class="card-body">
+          <span class="badge"><%= (editorsPick.category || 'News').toUpperCase() %></span>
+          <h3 class="card-title"><a href="/post/<%= editorsPick.slug %>"><%= editorsPick.title %></a></h3>
+          <p class="card-excerpt"><%= editorsPick.excerpt %></p>
+          <div class="card-meta">
+            <span class="author"><%= (editorsPick.author || 'Newsroom') %></span>
+            <span>·</span>
+            <span><%= formatDate(editorsPick.createdAt) %></span>
+            <span>·</span>
+            <span class="read-time"><%= readingTime(editorsPick.content) %> min read</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+<% } %>
+
 <!-- ===== TWO COLUMN: Trending Now + Latest News ===== -->
 <section style="margin-bottom: 16px;">
   <div class="container">
     <div class="two-col">
       <!-- Trending Now -->
       <div>
-        <div class="section-header">
+        <div class="section-header section-reveal">
           <div class="section-title-line"><h2 class="section-title">Trending Now</h2></div>
           <a class="section-link" href="/all-stories">View all →</a>
         </div>
@@ -1106,11 +1164,35 @@
             <p style="color:var(--text-muted);font-size:14px;">No trending stories yet.</p>
           <% } %>
         </div>
+
+        <!-- Most Read -->
+        <% if (safeMostRead.length) { %>
+        <div style="margin-top: 24px;">
+          <div class="section-header section-reveal">
+            <div class="section-title-line"><h2 class="section-title">Most Read</h2></div>
+          </div>
+          <div class="trending-list">
+            <% safeMostRead.slice(0, 5).forEach(function(p, i) { %>
+            <a href="/post/<%= p.slug %>" class="trending-item">
+              <div class="trending-number"><%= String(i + 1).padStart(2, '0') %></div>
+              <div class="trending-content">
+                <div class="trending-title"><%= p.title %></div>
+                <div class="trending-meta">
+                  <span class="cat"><%= (p.category || 'News').toUpperCase() %></span>
+                  <span>·</span>
+                  <span><%= readingTime(p.content) %> min read</span>
+                </div>
+              </div>
+            </a>
+            <% }) %>
+          </div>
+        </div>
+        <% } %>
       </div>
 
       <!-- Latest News -->
       <div>
-        <div class="section-header">
+        <div class="section-header section-reveal">
           <div class="section-title-line"><h2 class="section-title">Latest News</h2></div>
         </div>
         <div class="story-list">
@@ -1153,6 +1235,9 @@
     <div class="two-col">
       <!-- What's New Feature -->
       <div class="side-feature">
+        <div class="section-header section-reveal">
+          <div class="section-title-line"><h2 class="section-title">What's New</h2></div>
+        </div>
         <% if (wn) { %>
         <div class="side-feature-image">
           <% if (wn.coverImage) { %>
@@ -1204,7 +1289,7 @@
 <!-- ===== CATEGORY GRID ===== -->
 <section style="margin-bottom: 24px;">
   <div class="container">
-    <div class="section-header">
+    <div class="section-header section-reveal">
       <div class="section-title-line"><h2 class="section-title">Explore Topics</h2></div>
       <a class="section-link" href="/all-stories">View All →</a>
     </div>
@@ -1250,7 +1335,7 @@
 <!-- ===== HEADLINES GRID ===== -->
 <section style="margin-bottom: 24px;">
   <div class="container">
-    <div class="section-header">
+    <div class="section-header section-reveal">
       <div class="section-title-line"><h2 class="section-title">Today's Headlines</h2></div>
       <a class="section-link" href="/all-stories">All News →</a>
     </div>
@@ -1319,6 +1404,21 @@
       }
     });
   })();
+
+  /* Section title line — appear on scroll into view, disappear on scroll out */
+  if ('IntersectionObserver' in window) {
+    var revealEls = document.querySelectorAll('.section-reveal');
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('section-revealed');
+        } else {
+          entry.target.classList.remove('section-revealed');
+        }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(function(el) { observer.observe(el); });
+  }
 </script>
 
 <%- include('partials/foot') %>
